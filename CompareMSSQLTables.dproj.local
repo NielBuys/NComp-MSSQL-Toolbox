@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2011/05/12 10:24:23.506.pas,C:\Users\niel\Documents\RAD Studio\Projects\Unit2.pas=U:\bron\Compare MS SQL Table\DataFrm.pas</Transaction>
+    <Transaction>2011/05/12 10:24:23.506.dfm,C:\Users\niel\Documents\RAD Studio\Projects\Unit2.dfm=U:\bron\Compare MS SQL Table\DataFrm.dfm</Transaction>
+    <Transaction>2011/05/12 10:24:35.883.pas,C:\Users\niel\Documents\RAD Studio\Projects\Unit1.pas=U:\bron\Compare MS SQL Table\MainFrm.pas</Transaction>
+    <Transaction>2011/05/12 10:24:35.883.dfm,C:\Users\niel\Documents\RAD Studio\Projects\Unit1.dfm=U:\bron\Compare MS SQL Table\MainFrm.dfm</Transaction>
+    <Transaction>2011/05/12 10:53:56.369.dproj,C:\Users\niel\Documents\RAD Studio\Projects\Project1.dproj=U:\bron\Compare MS SQL Table\CompareMSSQLTables.dproj</Transaction>
+    <Transaction>2012/09/01 13:22:58.955.pas,U:\bron\MSSQL Compare Tables Table\Unit1.pas=U:\bron\MSSQL Compare Tables Table\AboutFrm.pas</Transaction>
+    <Transaction>2012/09/01 13:22:58.955.dfm,U:\bron\MSSQL Compare Tables Table\Unit1.dfm=U:\bron\MSSQL Compare Tables Table\AboutFrm.dfm</Transaction>
+  </Transactions>
+</BorlandProject>
