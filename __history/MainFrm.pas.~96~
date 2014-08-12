@@ -44,7 +44,6 @@ type
     SaveDialog1: TSaveDialog;
     Button2: TButton;
     Button3: TButton;
-    About1: TMenuItem;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure JvBitBtn1Click(Sender: TObject);
     procedure JvBitBtn4Click(Sender: TObject);
@@ -52,7 +51,6 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
-    procedure About1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -63,16 +61,9 @@ var
   MainForm: TMainForm;
 
 implementation
-      uses datafrm, AboutFrm;
+      uses datafrm;
 
 {$R *.dfm}
-
-procedure TMainForm.About1Click(Sender: TObject);
-begin
-        Application.CreateForm(TAboutForm, AboutForm);
-        AboutForm.showmodal;
-        AboutForm.Free;
-end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
@@ -274,11 +265,6 @@ var
           RecordChanged: Boolean;
           FieldsString,ValuesString,QueryString:WideString;
 begin
-          if Dataform.ToConnection.Connected = False then
-          begin
-            showmessage('Connect to SQL server first');
-            exit;
-          end;
           Outputlog.Clear;
           SQL.Clear;
           FieldsString := '';
@@ -325,7 +311,7 @@ begin
               begin
                 if Dataform.ToQuery2.Fields[I].Value <> Dataform.FromQuery1.Fields[I].Value then
                 begin
-//                  showmessage(InttoStr(I));
+                  showmessage(InttoStr(I));
                   RecordChanged := True;
                   if FieldsString = '' then
                     FieldsString := DataForm.FromQuery1.Fields[I].FieldName + ' = ' +  ConvertFieldtoSQLString(DataForm.FromQuery1.Fields[I])
@@ -335,7 +321,7 @@ begin
               end;
               if RecordChanged = true then
               begin
-                QueryString := 'update ' + FromTable.Text + ' set ' + FieldsString + ' where ' + FromUniqueField.Text + ' = ' + ConvertFieldtoSQLString(Dataform.FromQuery1.FieldByName(FromUniquefield.Text)) + ';';
+                QueryString := 'update ' + FromTable.Text + ' set ' + FieldsString + ' where ' + FromUniqueField.Text + ' = ' + ConvertFieldtoSQLString(Dataform.FromQuery1.FieldByName(FromUniquefield.Text));
                 SQL.Lines.Add(QueryString);
                 FieldsString := '';
                 OutputLog.Lines.Add(s);

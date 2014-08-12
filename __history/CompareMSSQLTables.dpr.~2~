@@ -1,0 +1,16 @@
+program CompareMSSQLTables;
+
+uses
+  Forms,
+  MainFrm in 'MainFrm.pas' {MainForm},
+  DataFrm in 'DataFrm.pas' {DataForm: TDataModule};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TDataForm, DataForm);
+  Application.CreateForm(TMainForm, MainForm);
+  Application.Run;
+end.

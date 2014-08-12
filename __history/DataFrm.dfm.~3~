@@ -1,0 +1,25 @@
+object DataForm: TDataForm
+  OldCreateOrder = False
+  Height = 570
+  Width = 808
+  object FromConnection: TADConnection
+    Params.Strings = (
+      'DriverID=MSSQL2005')
+    Left = 56
+    Top = 40
+  end
+  object ToConnection: TADConnection
+    Params.Strings = (
+      'DriverID=MSSQL2005')
+    Left = 512
+    Top = 40
+  end
+  object ADPhysMSSQLDriverLink1: TADPhysMSSQLDriverLink
+    Left = 440
+    Top = 504
+  end
+  object ADGUIxWaitCursor1: TADGUIxWaitCursor
+    Left = 584
+    Top = 504
+  end
+end

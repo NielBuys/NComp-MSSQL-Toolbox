@@ -1,0 +1,28 @@
+unit DataFrm;
+
+interface
+
+uses
+  SysUtils, Classes, daADStanIntf, daADStanOption, daADStanDef, daADPhysIntf,
+  daADGUIxFormsWait, daADPhysManager, daADPhysMSSQL, DB, daADCompClient;
+
+type
+  TDataForm = class(TDataModule)
+    FromConnection: TADConnection;
+    ToConnection: TADConnection;
+    ADPhysMSSQLDriverLink1: TADPhysMSSQLDriverLink;
+    ADGUIxWaitCursor1: TADGUIxWaitCursor;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  DataForm: TDataForm;
+
+implementation
+
+{$R *.dfm}
+
+end.

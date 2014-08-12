@@ -1,8 +1,8 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  Caption = 'MSSQL Compare Tool'
-  ClientHeight = 518
+  Caption = 'MainForm'
+  ClientHeight = 475
   ClientWidth = 752
   Color = clBtnFace
   DefaultMonitor = dmMainForm
@@ -159,8 +159,6 @@ object MainForm: TMainForm
     Width = 122
     Height = 19
     Caption = 'Connect to servers'
-    DoubleBuffered = True
-    ParentDoubleBuffered = False
     TabOrder = 7
     OnClick = JvBitBtn1Click
     HotTrackFont.Charset = DEFAULT_CHARSET
@@ -223,9 +221,9 @@ object MainForm: TMainForm
   end
   object OutputLog: TJvMemo
     Left = 6
-    Top = 400
+    Top = 401
     Width = 679
-    Height = 64
+    Height = 67
     Lines.Strings = (
       '')
     ScrollBars = ssVertical
@@ -233,14 +231,12 @@ object MainForm: TMainForm
     WordWrap = False
   end
   object JvBitBtn3: TJvBitBtn
-    Left = 691
-    Top = 488
+    Left = 689
+    Top = 449
     Width = 57
-    Height = 25
-    DoubleBuffered = True
-    Kind = bkClose
-    ParentDoubleBuffered = False
+    Height = 19
     TabOrder = 15
+    Kind = bkClose
     HotTrackFont.Charset = DEFAULT_CHARSET
     HotTrackFont.Color = clWindowText
     HotTrackFont.Height = -10
@@ -254,8 +250,6 @@ object MainForm: TMainForm
     Height = 19
     Hint = 'Compare Right to Left'
     Caption = '>>'
-    DoubleBuffered = True
-    ParentDoubleBuffered = False
     ParentShowHint = False
     ShowHint = True
     TabOrder = 16
@@ -286,56 +280,11 @@ object MainForm: TMainForm
     ShowHint = True
     TabOrder = 12
   end
-  object SQL: TMemo
-    Left = 6
-    Top = 464
-    Width = 679
-    Height = 51
-    ScrollBars = ssVertical
-    TabOrder = 17
-  end
-  object Button1: TButton
-    Left = 691
-    Top = 439
-    Width = 57
-    Height = 25
-    Caption = 'Save SQL'
-    TabOrder = 18
-    OnClick = Button1Click
-  end
-  object Button2: TButton
-    Left = 691
-    Top = 403
-    Width = 57
-    Height = 25
-    Caption = 'Save log'
-    TabOrder = 19
-    OnClick = Button2Click
-  end
-  object Button3: TButton
-    Left = 691
-    Top = 463
-    Width = 57
-    Height = 25
-    Caption = 'Run SQL'
-    TabOrder = 20
-    OnClick = Button3Click
-  end
   object MainMenu1: TMainMenu
     Left = 848
     Top = 456
     object File1: TMenuItem
-      Caption = 'Help'
-      object About1: TMenuItem
-        Caption = 'About'
-        OnClick = About1Click
-      end
+      Caption = 'File'
     end
-  end
-  object SaveDialog1: TSaveDialog
-    DefaultExt = 'txt'
-    Filter = 'txt|*.txt|All Files|*.*'
-    Left = 544
-    Top = 456
   end
 end

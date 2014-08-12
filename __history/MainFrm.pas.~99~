@@ -52,7 +52,6 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
-    procedure About1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -63,16 +62,9 @@ var
   MainForm: TMainForm;
 
 implementation
-      uses datafrm, AboutFrm;
+      uses datafrm;
 
 {$R *.dfm}
-
-procedure TMainForm.About1Click(Sender: TObject);
-begin
-        Application.CreateForm(TAboutForm, AboutForm);
-        AboutForm.showmodal;
-        AboutForm.Free;
-end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
@@ -274,11 +266,6 @@ var
           RecordChanged: Boolean;
           FieldsString,ValuesString,QueryString:WideString;
 begin
-          if Dataform.ToConnection.Connected = False then
-          begin
-            showmessage('Connect to SQL server first');
-            exit;
-          end;
           Outputlog.Clear;
           SQL.Clear;
           FieldsString := '';

@@ -1,0 +1,23 @@
+unit DataFrm;
+
+interface
+
+uses
+  SysUtils, Classes;
+
+type
+  TDataForm = class(TDataModule)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  DataForm: TDataForm;
+
+implementation
+
+{$R *.dfm}
+
+end.
