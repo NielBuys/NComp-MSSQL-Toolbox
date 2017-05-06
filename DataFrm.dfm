@@ -1,56 +1,83 @@
 object DataForm: TDataForm
   OldCreateOrder = False
-  Height = 570
-  Width = 808
-  object FromConnection: TADConnection
+  Height = 292
+  HorizontalOffset = 453
+  VerticalOffset = 213
+  Width = 675
+  object FromConnection: TMSSQLConnection
+    Connected = False
+    LoginPrompt = False
+    KeepConnection = False
     Params.Strings = (
-      'DriverID=MSSQL2005')
-    Left = 56
-    Top = 40
+      'DriverID=MSSQL2005'
+    )
+    Transaction = FromTransaction
+    LogEvents = []
+    left = 56
+    top = 40
   end
-  object ToConnection: TADConnection
+  object ToConnection: TMSSQLConnection
+    Connected = False
+    LoginPrompt = False
+    KeepConnection = False
     Params.Strings = (
-      'DriverID=MSSQL2005')
-    Left = 512
-    Top = 40
+      'DriverID=MSSQL2005'
+    )
+    Transaction = ToTransaction
+    LogEvents = []
+    left = 512
+    top = 40
   end
-  object ADPhysMSSQLDriverLink1: TADPhysMSSQLDriverLink
-    Left = 440
-    Top = 504
-  end
-  object ADGUIxWaitCursor1: TADGUIxWaitCursor
-    Left = 584
-    Top = 504
-  end
-  object FromQuery1: TADQuery
-    Connection = FromConnection
+  object FromQuery1: TSQLQuery
+    PacketRecords = -1
+    FieldDefs = <>
+    Database = FromConnection
+    Transaction = FromTransaction
     SQL.Strings = (
-      'select * from tblBatch')
-    Left = 56
-    Top = 112
+      'select * from tblBatch'
+    )
+    Params = <>
+    left = 56
+    top = 112
   end
   object FromQuerySource1: TDataSource
     DataSet = FromQuery1
-    Left = 152
-    Top = 112
+    left = 152
+    top = 112
   end
-  object ToQuery1: TADQuery
-    Connection = ToConnection
-    Left = 512
-    Top = 112
+  object ToQuery1: TSQLQuery
+    PacketRecords = -1
+    FieldDefs = <>
+    Database = ToConnection
+    Transaction = ToTransaction
+    Params = <>
+    left = 512
+    top = 112
   end
   object ToQuerySource1: TDataSource
     DataSet = ToQuery1
-    Left = 592
-    Top = 112
+    left = 592
+    top = 112
   end
-  object ToQuery2: TADQuery
-    Connection = ToConnection
-    Left = 512
-    Top = 168
+  object ToQuery2: TSQLQuery
+    PacketRecords = -1
+    FieldDefs = <>
+    Database = ToConnection
+    Transaction = ToTransaction
+    Params = <>
+    left = 512
+    top = 168
   end
-  object AnydacMonitor: TADMoniRemoteClientLink
-    Left = 304
-    Top = 248
+  object FromTransaction: TSQLTransaction
+    Active = False
+    Database = FromConnection
+    left = 152
+    top = 40
+  end
+  object ToTransaction: TSQLTransaction
+    Active = False
+    Database = ToConnection
+    left = 592
+    top = 40
   end
 end

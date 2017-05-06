@@ -4,12 +4,14 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Grids, DBGrids, JvExDBGrids, JvDBGrid, StdCtrls, Buttons,
-  JvExButtons, JvBitBtn, Menus, JvExStdCtrls, JvMemo, UtilsUnit,Registry,db;
+  Dialogs, Grids, DBGrids, StdCtrls, Buttons, Menus, UtilsUnit,Registry;
 
 type
+
+  { TMainForm }
+
   TMainForm = class(TForm)
-    JvDBGrid1: TJvDBGrid;
+    JvDBGrid1: TDBGrid;
     FromDatabase: TEdit;
     MainMenu1: TMainMenu;
     File1: TMenuItem;
@@ -22,7 +24,7 @@ type
     Label4: TLabel;
     FromTable: TEdit;
     Label5: TLabel;
-    JvBitBtn1: TJvBitBtn;
+    JvBitBtn1: TBitBtn;
     Label6: TLabel;
     ToDatabase: TEdit;
     Label7: TLabel;
@@ -31,10 +33,10 @@ type
     ToPassword: TEdit;
     Label9: TLabel;
     ToServerName: TEdit;
-    JvDBGrid2: TJvDBGrid;
-    OutputLog: TJvMemo;
-    JvBitBtn3: TJvBitBtn;
-    JvBitBtn4: TJvBitBtn;
+    JvDBGrid2: TDBGrid;
+    OutputLog: TMemo;
+    JvBitBtn3: TBitBtn;
+    BtnCompareRight: TBitBtn;
     FromUniqueField: TEdit;
     Label11: TLabel;
     SQLEdit: TMemo;
@@ -46,13 +48,13 @@ type
     Button3: TButton;
     About1: TMenuItem;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure JvBitBtn1Click(Sender: TObject);
-    procedure JvBitBtn4Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure About1Click(Sender: TObject);
+    procedure JvBitBtn1Click(Sender: TObject);
+    procedure BtnCompareRightClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -65,7 +67,7 @@ var
 implementation
       uses datafrm, AboutFrm;
 
-{$R *.dfm}
+{$R *.lfm}
 
 procedure TMainForm.About1Click(Sender: TObject);
 begin
@@ -95,19 +97,24 @@ begin
       if MessageDlg('Are you sure you want to Run this it cannot be undone!',
       mtConfirmation, [mbYes, mbNo], 0) = mrYes then
       begin
-        Dataform.ToConnection.StartTransaction;
+        Dataform.ToTransaction.Commit;
+        Dataform.ToTransaction.StartTransaction;
         try
-          Dataform.ToQuery1.SQL.Clear;
-          Dataform.ToQuery1.SQL.Add(SQL.Lines.Text);
-          Dataform.ToQuery1.ExecSQL;
-          Dataform.ToQuery1.SQL.Clear;
-          Dataform.ToConnection.Commit;
+          Dataform.ToQuery2.SQL.Clear;
+          Dataform.ToQuery2.SQL.Add(SQL.Lines.Text);
+          Dataform.ToQuery2.ExecSQL;
+          Dataform.ToQuery2.SQL.Clear;
+          Dataform.ToTransaction.Commit;
           showmessage('Finished');
         finally
-          if DataForm.ToConnection.InTransaction then
+          if DataForm.ToTransaction.Active then
           begin
-            Dataform.ToConnection.Rollback;
+            Dataform.ToTransaction.Rollback;
             showmessage('Something went wrong all changes were dropped!');
+          end
+          else
+          begin
+            Dataform.ToTransaction.StartTransaction;
           end;
         end;
       end;
@@ -117,6 +124,9 @@ end;
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
             Dataform.FromQuery1.Close;
+            Dataform.ToQuery1.Close;
+            Dataform.ToQuery2.Close;
+
             SetRegistryData(HKEY_CURRENT_USER,
             '\Software\CompareMSSQLTables\',
             'FromDatabase', rdString, FromDatabase.Text);
@@ -151,6 +161,7 @@ begin
             '\Software\CompareMSSQLTables\',
             'SQLEdit', rdString, SQLEdit.Text);
 end;
+
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
@@ -221,11 +232,12 @@ begin
           try
             Dataform.FromConnection.Close;
             Dataform.FromConnection.Params.Clear;
-            Dataform.FromConnection.Params.Add('DriverID=MSSQL');
-            Dataform.FromConnection.Params.Add('Database=' + FromDatabase.Text);
-            Dataform.FromConnection.Params.Add('User_Name=' + FromUserName.Text);
-            Dataform.FromConnection.Params.Add('Password=' + FromPassword.Text);
-            Dataform.FromConnection.Params.Add('Server=' + FromServerName.Text);
+       //     Dataform.FromConnection.Params.Add('DriverID=MSSQL');
+
+            Dataform.FromConnection.DatabaseName := FromDatabase.Text;
+            Dataform.FromConnection.UserName := FromUserName.Text;
+            Dataform.FromConnection.Password := FromPassword.Text;
+            Dataform.FromConnection.HostName := FromServerName.Text;
             Dataform.FromConnection.Open;
             DataForm.FromQuery1.close;
             with Dataform.FromQuery1.SQL do
@@ -244,11 +256,10 @@ begin
           try
             Dataform.ToConnection.Close;
             Dataform.ToConnection.Params.Clear;
-            Dataform.ToConnection.Params.Add('DriverID=MSSQL');
-            Dataform.ToConnection.Params.Add('Database=' + ToDatabase.Text);
-            Dataform.ToConnection.Params.Add('User_Name=' + ToUserName.Text);
-            Dataform.ToConnection.Params.Add('Password=' + ToPassword.Text);
-            Dataform.ToConnection.Params.Add('Server=' + ToServerName.Text);
+            Dataform.ToConnection.DatabaseName :=  ToDatabase.Text;
+            Dataform.ToConnection.UserName := ToUserName.Text;
+            Dataform.ToConnection.Password := ToPassword.Text;
+            Dataform.ToConnection.HostName := ToServerName.Text;
             Dataform.ToConnection.Open;
             DataForm.ToQuery1.close;
             with Dataform.ToQuery1.SQL do
@@ -267,7 +278,7 @@ begin
 
 end;
 
-procedure TMainForm.JvBitBtn4Click(Sender: TObject);
+procedure TMainForm.BtnCompareRightClick(Sender: TObject);
 var
           I:Integer;
           s: String;
@@ -296,6 +307,7 @@ begin
               Add('where ' + FROMUniquefield.Text + ' = ' + ConvertFieldtoSQLString(Dataform.FromQuery1.FieldByName(FromUniquefield.Text)));
             end;
             Dataform.ToQuery2.Open;
+            Dataform.ToQuery2.Prepare;
             if Dataform.ToQuery2.RecordCount = 0 then
             begin
               OutputLog.Lines.Add('Insert ' + Dataform.FromQuery1.FieldByName(FromUniquefield.Text).asString);

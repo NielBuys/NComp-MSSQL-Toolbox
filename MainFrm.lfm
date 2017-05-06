@@ -1,280 +1,269 @@
 object MainForm: TMainForm
-  Left = 0
-  Top = 0
-  Caption = 'MainForm'
-  ClientHeight = 519
-  ClientWidth = 752
+  Left = 554
+  Height = 552
+  Top = 188
+  Width = 767
+  Caption = 'MSSQL Compare Tool'
+  ClientHeight = 527
+  ClientWidth = 767
   Color = clBtnFace
   DefaultMonitor = dmMainForm
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -10
   Font.Name = 'Tahoma'
-  Font.Style = []
   Menu = MainMenu1
-  OldCreateOrder = False
   OnClose = FormClose
   OnCreate = FormCreate
-  PixelsPerInch = 96
-  TextHeight = 12
+  LCLVersion = '1.6.4.0'
   object Label1: TLabel
     Left = 12
+    Height = 12
     Top = 8
     Width = 71
-    Height = 12
     Caption = 'From Database:'
+    ParentColor = False
   end
   object Label2: TLabel
     Left = 12
+    Height = 12
     Top = 31
     Width = 76
-    Height = 12
     Caption = 'From UserName:'
+    ParentColor = False
   end
   object Label3: TLabel
     Left = 12
+    Height = 12
     Top = 53
     Width = 74
-    Height = 12
     Caption = 'From Password:'
+    ParentColor = False
   end
   object Label4: TLabel
     Left = 12
+    Height = 12
     Top = 76
     Width = 89
-    Height = 12
     Caption = 'From Server Name:'
+    ParentColor = False
   end
   object Label5: TLabel
     Left = 150
+    Height = 12
     Top = 107
     Width = 56
-    Height = 12
     Caption = 'Table Name:'
+    ParentColor = False
   end
   object Label6: TLabel
     Left = 397
+    Height = 12
     Top = 8
     Width = 59
-    Height = 12
     Caption = 'To Database:'
+    ParentColor = False
   end
   object Label7: TLabel
     Left = 397
+    Height = 12
     Top = 31
     Width = 64
-    Height = 12
     Caption = 'To UserName:'
+    ParentColor = False
   end
   object Label8: TLabel
     Left = 397
+    Height = 12
     Top = 53
     Width = 62
-    Height = 12
     Caption = 'To Password:'
+    ParentColor = False
   end
   object Label9: TLabel
     Left = 397
+    Height = 12
     Top = 76
     Width = 77
-    Height = 12
     Caption = 'To Server Name:'
+    ParentColor = False
   end
   object Label11: TLabel
     Left = 413
+    Height = 12
     Top = 107
     Width = 60
-    Height = 12
     Caption = 'Unique Field:'
+    ParentColor = False
   end
   object Label10: TLabel
     Left = 6
+    Height = 12
     Top = 113
     Width = 83
-    Height = 12
     Caption = 'SQL for from table'
+    ParentColor = False
   end
-  object JvDBGrid1: TJvDBGrid
+  object JvDBGrid1: TDBGrid
+    AnchorSideRight.Control = BtnCompareRight
     Left = 6
-    Top = 174
-    Width = 355
-    Height = 223
+    Height = 218
     Hint = 'From Table'
+    Top = 174
+    Width = 356
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Color = clWindow
+    Columns = <>
     DataSource = DataForm.FromQuerySource1
-    ParentShowHint = False
     ReadOnly = True
     ShowHint = True
     TabOrder = 0
-    TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -10
     TitleFont.Name = 'Tahoma'
-    TitleFont.Style = []
-    SelectColumnsDialogStrings.Caption = 'Select columns'
-    SelectColumnsDialogStrings.OK = '&OK'
-    SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
-    EditControls = <>
-    RowsHeight = 16
-    TitleRowHeight = 16
   end
   object FromDatabase: TEdit
     Left = 108
+    Height = 20
     Top = 6
     Width = 127
-    Height = 20
     TabOrder = 1
   end
   object FromUserName: TEdit
     Left = 108
+    Height = 20
     Top = 29
     Width = 127
-    Height = 20
     TabOrder = 2
   end
   object FromPassword: TEdit
     Left = 108
+    Height = 20
     Top = 51
     Width = 127
-    Height = 20
+    EchoMode = emPassword
     PasswordChar = '*'
     TabOrder = 3
   end
   object FromServerName: TEdit
     Left = 108
+    Height = 20
     Top = 74
     Width = 127
-    Height = 20
     TabOrder = 4
   end
   object FromTable: TEdit
     Left = 234
+    Height = 20
     Top = 107
     Width = 127
-    Height = 20
     TabOrder = 5
   end
-  object JvBitBtn1: TJvBitBtn
-    Left = 624
+  object JvBitBtn1: TBitBtn
+    Left = 642
+    Height = 19
     Top = 151
     Width = 122
-    Height = 19
+    Anchors = [akTop, akRight]
     Caption = 'Connect to servers'
-    TabOrder = 7
     OnClick = JvBitBtn1Click
-    HotTrackFont.Charset = DEFAULT_CHARSET
-    HotTrackFont.Color = clWindowText
-    HotTrackFont.Height = -10
-    HotTrackFont.Name = 'Tahoma'
-    HotTrackFont.Style = []
+    TabOrder = 7
   end
   object ToDatabase: TEdit
     Left = 493
+    Height = 20
     Top = 6
     Width = 127
-    Height = 20
     TabOrder = 8
   end
   object ToUserName: TEdit
     Left = 493
+    Height = 20
     Top = 29
     Width = 127
-    Height = 20
     TabOrder = 9
   end
   object ToPassword: TEdit
     Left = 493
+    Height = 20
     Top = 51
     Width = 127
-    Height = 20
+    EchoMode = emPassword
     PasswordChar = '*'
     TabOrder = 10
   end
   object ToServerName: TEdit
     Left = 493
+    Height = 20
     Top = 74
     Width = 127
-    Height = 20
     TabOrder = 11
   end
-  object JvDBGrid2: TJvDBGrid
-    Left = 391
-    Top = 174
-    Width = 355
-    Height = 223
+  object JvDBGrid2: TDBGrid
+    AnchorSideLeft.Control = BtnCompareRight
+    AnchorSideLeft.Side = asrBottom
+    Left = 386
+    Height = 218
     Hint = 'To Table'
+    Top = 174
+    Width = 375
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Color = clWindow
+    Columns = <>
     DataSource = DataForm.ToQuerySource1
-    ParentShowHint = False
     ReadOnly = True
     ShowHint = True
     TabOrder = 13
-    TitleFont.Charset = DEFAULT_CHARSET
     TitleFont.Color = clWindowText
     TitleFont.Height = -10
     TitleFont.Name = 'Tahoma'
-    TitleFont.Style = []
-    SelectColumnsDialogStrings.Caption = 'Select columns'
-    SelectColumnsDialogStrings.OK = '&OK'
-    SelectColumnsDialogStrings.NoSelectionWarning = 'At least one column must be visible!'
-    EditControls = <>
-    RowsHeight = 16
-    TitleRowHeight = 16
   end
-  object OutputLog: TJvMemo
+  object OutputLog: TMemo
     Left = 6
-    Top = 400
-    Width = 679
     Height = 64
+    Top = 395
+    Width = 694
+    Anchors = [akLeft, akRight, akBottom]
     Lines.Strings = (
-      '')
+      ''
+    )
     ScrollBars = ssVertical
     TabOrder = 14
     WordWrap = False
   end
-  object JvBitBtn3: TJvBitBtn
-    Left = 691
-    Top = 488
-    Width = 57
+  object JvBitBtn3: TBitBtn
+    Left = 706
     Height = 25
-    TabOrder = 15
+    Top = 494
+    Width = 57
+    Anchors = [akRight, akBottom]
     Kind = bkClose
-    HotTrackFont.Charset = DEFAULT_CHARSET
-    HotTrackFont.Color = clWindowText
-    HotTrackFont.Height = -10
-    HotTrackFont.Name = 'Tahoma'
-    HotTrackFont.Style = []
+    TabOrder = 15
   end
-  object JvBitBtn4: TJvBitBtn
+  object BtnCompareRight: TBitBtn
     Left = 362
-    Top = 240
-    Width = 26
     Height = 19
     Hint = 'Compare Right to Left'
+    Top = 240
+    Width = 24
     Caption = '>>'
+    OnClick = BtnCompareRightClick
     ParentShowHint = False
     ShowHint = True
     TabOrder = 16
-    OnClick = JvBitBtn4Click
-    HotTrackFont.Charset = DEFAULT_CHARSET
-    HotTrackFont.Color = clWindowText
-    HotTrackFont.Height = -10
-    HotTrackFont.Name = 'Tahoma'
-    HotTrackFont.Style = []
   end
   object FromUniqueField: TEdit
     Left = 493
+    Height = 20
     Top = 107
     Width = 127
-    Height = 20
     TabOrder = 6
   end
   object SQLEdit: TMemo
     Left = 6
+    Height = 41
+    Hint = 'SQL for from table the fields in the output must be identicle as the Table.'
     Top = 129
     Width = 614
-    Height = 41
-    Hint = 
-      'SQL for from table the fields in the output must be identicle as' +
-      ' the Table.'
     ParentShowHint = False
     ScrollBars = ssVertical
     ShowHint = True
@@ -282,50 +271,58 @@ object MainForm: TMainForm
   end
   object SQL: TMemo
     Left = 6
-    Top = 464
-    Width = 679
-    Height = 51
+    Height = 59
+    Top = 459
+    Width = 694
+    Anchors = [akLeft, akRight, akBottom]
     ScrollBars = ssVertical
     TabOrder = 17
   end
   object Button1: TButton
-    Left = 691
-    Top = 439
-    Width = 57
+    Left = 706
     Height = 25
+    Top = 445
+    Width = 57
+    Anchors = [akRight, akBottom]
     Caption = 'Save SQL'
-    TabOrder = 18
     OnClick = Button1Click
+    TabOrder = 18
   end
   object Button2: TButton
-    Left = 691
-    Top = 403
-    Width = 57
+    Left = 706
     Height = 25
+    Top = 409
+    Width = 57
+    Anchors = [akRight, akBottom]
     Caption = 'Save log'
-    TabOrder = 19
     OnClick = Button2Click
+    TabOrder = 19
   end
   object Button3: TButton
-    Left = 691
-    Top = 463
-    Width = 57
+    Left = 706
     Height = 25
+    Top = 469
+    Width = 57
+    Anchors = [akRight, akBottom]
     Caption = 'Run SQL'
-    TabOrder = 20
     OnClick = Button3Click
+    TabOrder = 20
   end
   object MainMenu1: TMainMenu
-    Left = 848
-    Top = 456
+    left = 848
+    top = 456
     object File1: TMenuItem
-      Caption = 'File'
+      Caption = 'Help'
+      object About1: TMenuItem
+        Caption = 'About'
+        OnClick = About1Click
+      end
     end
   end
   object SaveDialog1: TSaveDialog
-    DefaultExt = 'txt'
+    DefaultExt = '.txt'
     Filter = 'txt|*.txt|All Files|*.*'
-    Left = 544
-    Top = 456
+    left = 528
+    top = 248
   end
 end

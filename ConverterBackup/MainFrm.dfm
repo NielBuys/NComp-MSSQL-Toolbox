@@ -1,8 +1,8 @@
 object MainForm: TMainForm
   Left = 0
   Top = 0
-  Caption = 'MainForm'
-  ClientHeight = 519
+  Caption = 'MSSQL Compare Tool'
+  ClientHeight = 518
   ClientWidth = 752
   Color = clBtnFace
   DefaultMonitor = dmMainForm
@@ -159,6 +159,8 @@ object MainForm: TMainForm
     Width = 122
     Height = 19
     Caption = 'Connect to servers'
+    DoubleBuffered = True
+    ParentDoubleBuffered = False
     TabOrder = 7
     OnClick = JvBitBtn1Click
     HotTrackFont.Charset = DEFAULT_CHARSET
@@ -235,8 +237,10 @@ object MainForm: TMainForm
     Top = 488
     Width = 57
     Height = 25
-    TabOrder = 15
+    DoubleBuffered = True
     Kind = bkClose
+    ParentDoubleBuffered = False
+    TabOrder = 15
     HotTrackFont.Charset = DEFAULT_CHARSET
     HotTrackFont.Color = clWindowText
     HotTrackFont.Height = -10
@@ -250,6 +254,8 @@ object MainForm: TMainForm
     Height = 19
     Hint = 'Compare Right to Left'
     Caption = '>>'
+    DoubleBuffered = True
+    ParentDoubleBuffered = False
     ParentShowHint = False
     ShowHint = True
     TabOrder = 16
@@ -319,7 +325,11 @@ object MainForm: TMainForm
     Left = 848
     Top = 456
     object File1: TMenuItem
-      Caption = 'File'
+      Caption = 'Help'
+      object About1: TMenuItem
+        Caption = 'About'
+        OnClick = About1Click
+      end
     end
   end
   object SaveDialog1: TSaveDialog

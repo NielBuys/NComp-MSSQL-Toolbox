@@ -3,24 +3,22 @@ unit DataFrm;
 interface
 
 uses
-  SysUtils, Classes, DB, uADStanIntf, uADStanOption, uADStanDef, uADPhysIntf,
-  uADGUIxIntf, uADDatSManager, uADStanError, uADStanParam, uADDAptIntf,
-  uADCompDataSet, uADCompClient, uADStanPool, uADPhysManager, uADStanAsync,
-  uADDAptManager, uADMoniBase, uADMoniRemoteClient, uADGUIxFormsWait,
-  uADPhysODBCBase, uADPhysMSSQL;
+  SysUtils, Classes, DB, sqldb, mssqlconn;
 
 type
+
+  { TDataForm }
+
   TDataForm = class(TDataModule)
-    FromConnection: TADConnection;
-    ToConnection: TADConnection;
-    ADPhysMSSQLDriverLink1: TADPhysMSSQLDriverLink;
-    ADGUIxWaitCursor1: TADGUIxWaitCursor;
-    FromQuery1: TADQuery;
+    FromConnection: TMSSQLConnection;
+    FromTransaction: TSQLTransaction;
+    ToTransaction: TSQLTransaction;
+    ToConnection: TMSSQLConnection;
+    FromQuery1: TSQLQuery;
     FromQuerySource1: TDataSource;
-    ToQuery1: TADQuery;
+    ToQuery1: TSQLQuery;
     ToQuerySource1: TDataSource;
-    ToQuery2: TADQuery;
-    AnydacMonitor: TADMoniRemoteClientLink;
+    ToQuery2: TSQLQuery;
   private
     { Private declarations }
   public

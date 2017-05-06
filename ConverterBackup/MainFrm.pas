@@ -63,7 +63,7 @@ var
   MainForm: TMainForm;
 
 implementation
-      uses datafrm;
+      uses datafrm, AboutFrm;
 
 {$R *.dfm}
 
@@ -274,6 +274,11 @@ var
           RecordChanged: Boolean;
           FieldsString,ValuesString,QueryString:WideString;
 begin
+          if Dataform.ToConnection.Connected = False then
+          begin
+            showmessage('Connect to SQL server first');
+            exit;
+          end;
           Outputlog.Clear;
           SQL.Clear;
           FieldsString := '';
