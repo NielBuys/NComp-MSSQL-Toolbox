@@ -747,10 +747,12 @@ begin
         case TFieldType(Ord(FieldStore.DataType)) of
           ftString, ftGuid, ftWideString:
           begin
-            if (FieldStore.AsString ='') or (FieldStore.IsNull) then
+            if (FieldStore.AsString = '') or (FieldStore.IsNull) then
                temp :='null'  //Put a default string
             else
-               temp := '''' + FixSQLString(FieldStore.AsString) + '''';
+            begin
+                 temp := '''' + FixSQLString(FieldStore.AsString) + '''';
+            end;
           end;
 
           ftInteger, ftWord, ftSmallint, ftAutoinc, ftLargeint:

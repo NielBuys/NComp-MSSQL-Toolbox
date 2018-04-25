@@ -4,49 +4,68 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Grids, DBGrids, StdCtrls, Buttons, Menus, UtilsUnit,Registry;
+  Dialogs, Grids, DBGrids, StdCtrls, Buttons, Menus, ComCtrls, UtilsUnit,
+  Registry, Types;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
-    JvDBGrid1: TDBGrid;
-    FromDatabase: TEdit;
-    MainMenu1: TMainMenu;
-    File1: TMenuItem;
-    Label1: TLabel;
-    FromUserName: TEdit;
-    Label2: TLabel;
-    FromPassword: TEdit;
-    Label3: TLabel;
-    FromServerName: TEdit;
-    Label4: TLabel;
-    FromTable: TEdit;
-    Label5: TLabel;
-    JvBitBtn1: TBitBtn;
-    Label6: TLabel;
-    ToDatabase: TEdit;
-    Label7: TLabel;
-    ToUserName: TEdit;
-    Label8: TLabel;
-    ToPassword: TEdit;
-    Label9: TLabel;
-    ToServerName: TEdit;
-    JvDBGrid2: TDBGrid;
-    OutputLog: TMemo;
-    JvBitBtn3: TBitBtn;
     BtnCompareRight: TBitBtn;
-    FromUniqueField: TEdit;
-    Label11: TLabel;
-    SQLEdit: TMemo;
-    Label10: TLabel;
-    SQL: TMemo;
     Button1: TButton;
-    SaveDialog1: TSaveDialog;
     Button2: TButton;
     Button3: TButton;
+    FromRowsCountLabel: TLabel;
+    SaveSQLBtn: TButton;
+    ExportSQLBtn: TButton;
+    CloseBtn: TBitBtn;
+    FromDatabase: TEdit;
+    FromPassword: TEdit;
+    FromServerName: TEdit;
+    FromUserName: TEdit;
+    ConnecttoServerBtn: TBitBtn;
+    ScriptGrid: TDBGrid;
+    Label1: TLabel;
+    Label12: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    ExecuteQueryBtn: TBitBtn;
+    ProgressBar1: TProgressBar;
+    ScriptTableName: TEdit;
+    Label16: TLabel;
+    RowsCountLabel: TLabel;
+    FromTable: TEdit;
+    FromUniqueField: TEdit;
+    JvBitBtn1: TBitBtn;
+    FromGrid: TDBGrid;
+    JvDBGrid2: TDBGrid;
+    Label10: TLabel;
+    Label11: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    MainMenu1: TMainMenu;
+    File1: TMenuItem;
+    OutputLog: TMemo;
+    PageControl1: TPageControl;
+    SQL: TMemo;
+    ScriptSQL: TMemo;
+    SQLEdit: TMemo;
+    ScriptSQLEdit: TMemo;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    ToDatabase: TEdit;
+    ToPassword: TEdit;
+    SaveDialog1: TSaveDialog;
     About1: TMenuItem;
+    ToServerName: TEdit;
+    ToUserName: TEdit;
+    procedure ConnecttoServerBtnClick(Sender: TObject);
+    procedure ExportSQLBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -55,7 +74,11 @@ type
     procedure About1Click(Sender: TObject);
     procedure JvBitBtn1Click(Sender: TObject);
     procedure BtnCompareRightClick(Sender: TObject);
+    procedure ExecuteQueryBtnClick(Sender: TObject);
+    procedure SaveSQLBtnClick(Sender: TObject);
+
   private
+    function countrows(): Integer;
     { Private declarations }
   public
     { Public declarations }
@@ -160,6 +183,91 @@ begin
             SetRegistryData(HKEY_CURRENT_USER,
             '\Software\CompareMSSQLTables\',
             'SQLEdit', rdString, SQLEdit.Text);
+
+            SetRegistryData(HKEY_CURRENT_USER,
+            '\Software\CompareMSSQLTables\',
+            'ScriptSQLEdit', rdString, ScriptSQLEdit.Text);
+            SetRegistryData(HKEY_CURRENT_USER,
+            '\Software\CompareMSSQLTables\',
+            'ScriptTableName', rdString, ScriptTableName.Text);
+
+end;
+
+procedure TMainForm.ExportSQLBtnClick(Sender: TObject);
+var
+          I,ProgressI:Integer;
+          FieldsString,ValuesString,QueryString:WideString;
+          tempQueryString: WideString;
+begin
+      if Dataform.FromConnection.Connected = False then
+      begin
+        showmessage('Connect to SQL server first');
+        exit;
+      end;
+      ScriptSQL.Clear;
+      FieldsString := '';
+      ValuesString := '';
+      ProgressBar1.Max := Dataform.FromQuery1.RecordCount;
+      ProgressBar1.Position := 0;
+      Dataform.FromQuery1.First;
+      Dataform.FromQuery1.DisableControls;
+      while not Dataform.FromQuery1.EOF do
+      begin
+           ProgressBar1.StepIt;
+           Application.processMessages;
+           for I := 0 to Dataform.FromQuery1.Fields.Count - 1 do
+          begin
+            if FieldsString = '' then
+            begin
+              FieldsString := DataForm.FromQuery1.Fields[I].FieldName;
+              ValuesString := ConvertFieldtoSQLString(DataForm.FromQuery1.Fields[I]);
+            end
+            else
+            begin
+              FieldsString := FieldsString + ',' + DataForm.FromQuery1.Fields[I].FieldName;
+              ValuesString := ValuesString + ',' + ConvertFieldtoSQLString(DataForm.FromQuery1.Fields[I]);
+            end;
+          end;
+          QueryString := 'insert into ' + FromTable.Text + ' (' + FieldsString + ') Values (' + ValuesString + ');' + #13#10;
+          tempQueryString := tempQueryString + QueryString;
+          FieldsString := '';
+          ValuesString := '';
+          Dataform.FromQuery1.Next;
+      end;
+      ScriptSQL.Lines.Clear;
+      ScriptSQL.Lines.Add(tempQueryString);
+      Dataform.FromQuery1.EnableControls;
+      showmessage('Finished');
+end;
+
+procedure TMainForm.ConnecttoServerBtnClick(Sender: TObject);
+begin
+      If ConnecttoServerBtn.Caption = 'Disconnect server' then
+      begin
+           Dataform.FromConnection.Close;
+           ConnecttoServerBtn.Caption := 'Connect to server';
+      end
+      else
+      begin
+          try
+            Dataform.FromConnection.Close;
+            Dataform.FromConnection.Params.Clear;
+       //     Dataform.FromConnection.Params.Add('DriverID=MSSQL');
+
+            Dataform.FromConnection.DatabaseName := FromDatabase.Text;
+            Dataform.FromConnection.UserName := FromUserName.Text;
+            Dataform.FromConnection.Password := FromPassword.Text;
+            Dataform.FromConnection.HostName := FromServerName.Text;
+            Dataform.FromConnection.Open;
+            ConnecttoServerBtn.Caption := 'Disconnect server';
+          except
+          begin
+            ShowMessage('Unable to connect to MSSQL From Server, make sure the Database exist');
+            Dataform.FromConnection.Close;
+          end;
+          raise;
+          end;
+      end;
 end;
 
 
@@ -220,25 +328,33 @@ begin
             except
               SQLEdit.Text := '';
             end;
+
+            try
+              ScriptSQLEdit.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ScriptSQLEdit');
+            except
+              ScriptSQLEdit.Text := '';
+            end;
+
+            try
+              ScriptTableName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ScriptTableName');
+            except
+              ScriptTableName.Text := '';
+            end;
 end;
 
 procedure TMainForm.JvBitBtn1Click(Sender: TObject);
 begin
+          if Dataform.FromConnection.Connected = False then
+          begin
+            showmessage('Connect from database first');
+            exit;
+          end;
           if POS(FromTable.Text,SQLEdit.Text) = 0 then
           begin
             showmessage('Table name must be present in Query');
             exit;
           end;
           try
-            Dataform.FromConnection.Close;
-            Dataform.FromConnection.Params.Clear;
-       //     Dataform.FromConnection.Params.Add('DriverID=MSSQL');
-
-            Dataform.FromConnection.DatabaseName := FromDatabase.Text;
-            Dataform.FromConnection.UserName := FromUserName.Text;
-            Dataform.FromConnection.Password := FromPassword.Text;
-            Dataform.FromConnection.HostName := FromServerName.Text;
-            Dataform.FromConnection.Open;
             DataForm.FromQuery1.close;
             with Dataform.FromQuery1.SQL do
             begin
@@ -249,7 +365,6 @@ begin
           except
           begin
             ShowMessage('Unable to connect to MSSQL From Server, make sure the Database exist');
-            Dataform.FromConnection.Close;
           end;
           raise;
           end;
@@ -268,6 +383,7 @@ begin
               Text := SQLEdit.Text;
             end;
             Dataform.ToQuery1.Open;
+            FromRowsCountLabel.Caption := inttostr(countrows());
           except
           begin
             ShowMessage('Unable to connect to MSSQL To Server, make sure the Database exist');
@@ -295,10 +411,14 @@ begin
           FieldsString := '';
           ValuesString := '';
           OutputLog.Lines.Clear;
+          ProgressBar1.Max := Dataform.FromQuery1.RecordCount;
+          ProgressBar1.Position := 0;
           Dataform.FromQuery1.First;
           Dataform.FromQuery1.DisableControls;
           while not Dataform.FromQuery1.EOF do
           begin
+            ProgressBar1.StepIt;
+            Application.processMessages;
             DataForm.ToQuery2.close;
             with Dataform.ToQuery2.SQL do
             begin
@@ -360,5 +480,59 @@ begin
           showmessage('Finished');
 end;
 
+
+procedure TMainForm.ExecuteQueryBtnClick(Sender: TObject);
+begin
+          if Dataform.FromConnection.Connected = False then
+          begin
+            showmessage('Connect from database first');
+            exit;
+          end;
+          if POS(ScriptTableName.Text,ScriptSQLEdit.Text) = 0 then
+          begin
+            showmessage('Table name must be present in Query');
+            exit;
+          end;
+          try
+            DataForm.FromQuery1.close;
+            with Dataform.FromQuery1.SQL do
+            begin
+              Clear;
+              Text := ScriptSQLEdit.Text;
+            end;
+            Dataform.FromQuery1.Open;
+            RowsCountLabel.Caption := inttostr(countrows());
+          except
+          begin
+            ShowMessage('Unable Execute query');
+          end;
+          raise;
+          end;
+end;
+
+procedure TMainForm.SaveSQLBtnClick(Sender: TObject);
+begin
+          if Savedialog1.Execute then
+          begin
+            ScriptSQL.Lines.SaveToFile(SaveDialog1.FileName);
+          end;
+end;
+
+function TMainForm.countrows(): Integer;
+var
+          I: Integer;
+begin
+      I := 0;
+      Dataform.FromQuery1.First;
+      Dataform.FromQuery1.DisableControls;
+      while not Dataform.FromQuery1.EOF do
+      begin
+           Inc(I);
+           Dataform.FromQuery1.Next;
+      end;
+      Dataform.FromQuery1.EnableControls;
+      Dataform.FromQuery1.First;
+      countrows := I;
+end;
 
 end.

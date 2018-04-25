@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 554
-  Height = 552
-  Top = 188
-  Width = 767
+  Left = 322
+  Height = 650
+  Top = 137
+  Width = 1024
   Caption = 'MSSQL Compare Tool'
-  ClientHeight = 527
-  ClientWidth = 767
+  ClientHeight = 630
+  ClientWidth = 1024
   Color = clBtnFace
   DefaultMonitor = dmMainForm
   Font.Color = clWindowText
@@ -14,303 +14,451 @@ object MainForm: TMainForm
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
-  LCLVersion = '1.6.4.0'
-  object Label1: TLabel
-    Left = 12
-    Height = 12
-    Top = 8
-    Width = 71
-    Caption = 'From Database:'
-    ParentColor = False
-  end
-  object Label2: TLabel
-    Left = 12
-    Height = 12
-    Top = 31
-    Width = 76
-    Caption = 'From UserName:'
-    ParentColor = False
-  end
-  object Label3: TLabel
-    Left = 12
-    Height = 12
-    Top = 53
-    Width = 74
-    Caption = 'From Password:'
-    ParentColor = False
-  end
-  object Label4: TLabel
-    Left = 12
-    Height = 12
-    Top = 76
-    Width = 89
-    Caption = 'From Server Name:'
-    ParentColor = False
-  end
-  object Label5: TLabel
-    Left = 150
-    Height = 12
-    Top = 107
-    Width = 56
-    Caption = 'Table Name:'
-    ParentColor = False
-  end
-  object Label6: TLabel
-    Left = 397
-    Height = 12
-    Top = 8
-    Width = 59
-    Caption = 'To Database:'
-    ParentColor = False
-  end
-  object Label7: TLabel
-    Left = 397
-    Height = 12
-    Top = 31
-    Width = 64
-    Caption = 'To UserName:'
-    ParentColor = False
-  end
-  object Label8: TLabel
-    Left = 397
-    Height = 12
-    Top = 53
-    Width = 62
-    Caption = 'To Password:'
-    ParentColor = False
-  end
-  object Label9: TLabel
-    Left = 397
-    Height = 12
-    Top = 76
-    Width = 77
-    Caption = 'To Server Name:'
-    ParentColor = False
-  end
-  object Label11: TLabel
-    Left = 413
-    Height = 12
-    Top = 107
-    Width = 60
-    Caption = 'Unique Field:'
-    ParentColor = False
-  end
-  object Label10: TLabel
-    Left = 6
-    Height = 12
-    Top = 113
-    Width = 83
-    Caption = 'SQL for from table'
-    ParentColor = False
-  end
-  object JvDBGrid1: TDBGrid
-    AnchorSideRight.Control = BtnCompareRight
-    Left = 6
-    Height = 218
-    Hint = 'From Table'
-    Top = 174
-    Width = 356
+  LCLVersion = '1.8.2.0'
+  object PageControl1: TPageControl
+    Left = 0
+    Height = 558
+    Top = 40
+    Width = 1024
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight, akBottom]
-    Color = clWindow
-    Columns = <>
-    DataSource = DataForm.FromQuerySource1
-    ReadOnly = True
-    ShowHint = True
+    TabIndex = 0
     TabOrder = 0
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -10
-    TitleFont.Name = 'Tahoma'
+    object TabSheet1: TTabSheet
+      Caption = 'Compare'
+      ClientHeight = 533
+      ClientWidth = 1016
+      object Label6: TLabel
+        Left = 32
+        Height = 12
+        Top = 10
+        Width = 59
+        Caption = 'To Database:'
+        ParentColor = False
+      end
+      object ToDatabase: TEdit
+        Left = 128
+        Height = 20
+        Top = 8
+        Width = 127
+        TabOrder = 0
+      end
+      object Label7: TLabel
+        Left = 272
+        Height = 12
+        Top = 10
+        Width = 64
+        Caption = 'To UserName:'
+        ParentColor = False
+      end
+      object ToUserName: TEdit
+        Left = 368
+        Height = 20
+        Top = 8
+        Width = 127
+        TabOrder = 1
+      end
+      object Label8: TLabel
+        Left = 520
+        Height = 12
+        Top = 10
+        Width = 62
+        Caption = 'To Password:'
+        ParentColor = False
+      end
+      object ToPassword: TEdit
+        Left = 616
+        Height = 20
+        Top = 8
+        Width = 127
+        EchoMode = emPassword
+        PasswordChar = '*'
+        TabOrder = 2
+      end
+      object Label9: TLabel
+        Left = 768
+        Height = 12
+        Top = 10
+        Width = 77
+        Caption = 'To Server Name:'
+        ParentColor = False
+      end
+      object ToServerName: TEdit
+        Left = 864
+        Height = 20
+        Top = 8
+        Width = 127
+        TabOrder = 3
+      end
+      object Label5: TLabel
+        Left = 152
+        Height = 12
+        Top = 40
+        Width = 56
+        Caption = 'Table Name:'
+        ParentColor = False
+      end
+      object FromTable: TEdit
+        Left = 236
+        Height = 20
+        Top = 40
+        Width = 127
+        TabOrder = 4
+      end
+      object Label11: TLabel
+        Left = 415
+        Height = 12
+        Top = 40
+        Width = 60
+        Caption = 'Unique Field:'
+        ParentColor = False
+      end
+      object FromUniqueField: TEdit
+        Left = 490
+        Height = 20
+        Top = 40
+        Width = 127
+        TabOrder = 5
+      end
+      object Label10: TLabel
+        Left = 8
+        Height = 12
+        Top = 46
+        Width = 83
+        Caption = 'SQL for from table'
+        ParentColor = False
+      end
+      object JvBitBtn1: TBitBtn
+        Left = 872
+        Height = 27
+        Top = 151
+        Width = 122
+        Anchors = [akTop, akRight]
+        Caption = 'Connect to servers'
+        OnClick = JvBitBtn1Click
+        TabOrder = 6
+      end
+      object SQLEdit: TMemo
+        Left = 8
+        Height = 82
+        Hint = 'SQL for from table the fields in the output must be identicle as the Table.'
+        Top = 72
+        Width = 614
+        ParentShowHint = False
+        ScrollBars = ssVertical
+        ShowHint = True
+        TabOrder = 7
+      end
+      object FromGrid: TDBGrid
+        AnchorSideRight.Control = BtnCompareRight
+        Left = 9
+        Height = 192
+        Hint = 'From Table'
+        Top = 183
+        Width = 353
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        Color = clWindow
+        Columns = <>
+        DataSource = DataForm.FromQuerySource1
+        ReadOnly = True
+        ShowHint = True
+        TabOrder = 8
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -10
+        TitleFont.Name = 'Tahoma'
+      end
+      object BtnCompareRight: TBitBtn
+        Left = 362
+        Height = 24
+        Hint = 'Compare Right to Left'
+        Top = 240
+        Width = 24
+        Caption = '>>'
+        OnClick = BtnCompareRightClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 9
+      end
+      object JvDBGrid2: TDBGrid
+        AnchorSideLeft.Control = BtnCompareRight
+        AnchorSideLeft.Side = asrBottom
+        Left = 386
+        Height = 192
+        Hint = 'To Table'
+        Top = 184
+        Width = 622
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        Color = clWindow
+        Columns = <>
+        DataSource = DataForm.ToQuerySource1
+        ReadOnly = True
+        ShowHint = True
+        TabOrder = 10
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -10
+        TitleFont.Name = 'Tahoma'
+      end
+      object OutputLog: TMemo
+        Left = 6
+        Height = 64
+        Top = 385
+        Width = 951
+        Anchors = [akLeft, akRight, akBottom]
+        Lines.Strings = (
+          ''
+        )
+        ScrollBars = ssVertical
+        TabOrder = 11
+        WordWrap = False
+      end
+      object SQL: TMemo
+        Left = 6
+        Height = 75
+        Top = 454
+        Width = 951
+        Anchors = [akLeft, akRight, akBottom]
+        ScrollBars = ssVertical
+        TabOrder = 12
+      end
+      object Button2: TButton
+        Left = 959
+        Height = 25
+        Top = 399
+        Width = 57
+        Anchors = [akRight, akBottom]
+        Caption = 'Save log'
+        OnClick = Button2Click
+        TabOrder = 13
+      end
+      object Button1: TButton
+        Left = 959
+        Height = 25
+        Top = 435
+        Width = 57
+        Anchors = [akRight, akBottom]
+        Caption = 'Save SQL'
+        OnClick = Button1Click
+        TabOrder = 14
+      end
+      object Button3: TButton
+        Left = 959
+        Height = 25
+        Top = 459
+        Width = 57
+        Anchors = [akRight, akBottom]
+        Caption = 'Run SQL'
+        OnClick = Button3Click
+        TabOrder = 15
+      end
+      object FromRowsCountLabel: TLabel
+        Left = 8
+        Height = 12
+        Top = 165
+        Width = 5
+        Caption = '0'
+        ParentColor = False
+      end
+    end
+    object TabSheet2: TTabSheet
+      Caption = 'Export'
+      ClientHeight = 533
+      ClientWidth = 1016
+      object Label16: TLabel
+        Left = 147
+        Height = 12
+        Top = 15
+        Width = 56
+        Caption = 'Table Name:'
+        ParentColor = False
+      end
+      object ScriptTableName: TEdit
+        Left = 231
+        Height = 20
+        Top = 15
+        Width = 127
+        TabOrder = 0
+      end
+      object RowsCountLabel: TLabel
+        Left = 48
+        Height = 12
+        Top = 32
+        Width = 5
+        Caption = '0'
+        ParentColor = False
+      end
+      object ScriptSQLEdit: TMemo
+        Left = 8
+        Height = 128
+        Hint = 'SQL for from table the fields in the output must be identicle as the Table.'
+        Top = 48
+        Width = 999
+        Anchors = [akTop, akLeft, akRight]
+        ParentShowHint = False
+        ScrollBars = ssVertical
+        ShowHint = True
+        TabOrder = 1
+      end
+      object ExecuteQueryBtn: TBitBtn
+        Left = 885
+        Height = 27
+        Top = 8
+        Width = 122
+        Anchors = [akTop, akRight]
+        Caption = 'Execute query'
+        OnClick = ExecuteQueryBtnClick
+        TabOrder = 2
+      end
+      object ScriptGrid: TDBGrid
+        AnchorSideRight.Control = BtnCompareRight
+        Left = 8
+        Height = 233
+        Hint = 'From Table'
+        Top = 184
+        Width = 999
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        Color = clWindow
+        Columns = <>
+        DataSource = DataForm.FromQuerySource1
+        ReadOnly = True
+        ShowHint = True
+        TabOrder = 3
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -10
+        TitleFont.Name = 'Tahoma'
+      end
+      object ScriptSQL: TMemo
+        Left = 8
+        Height = 104
+        Top = 425
+        Width = 892
+        Anchors = [akLeft, akRight, akBottom]
+        ScrollBars = ssVertical
+        TabOrder = 4
+      end
+      object ExportSQLBtn: TButton
+        Left = 908
+        Height = 25
+        Top = 425
+        Width = 99
+        Anchors = [akRight, akBottom]
+        Caption = 'Export SQL'
+        OnClick = ExportSQLBtnClick
+        TabOrder = 5
+      end
+      object Label12: TLabel
+        Left = 8
+        Height = 12
+        Top = 32
+        Width = 19
+        Caption = 'SQL'
+        ParentColor = False
+      end
+      object SaveSQLBtn: TButton
+        Left = 908
+        Height = 25
+        Top = 504
+        Width = 99
+        Caption = 'Save SQL'
+        OnClick = SaveSQLBtnClick
+        TabOrder = 6
+      end
+    end
   end
-  object FromDatabase: TEdit
-    Left = 108
-    Height = 20
-    Top = 6
-    Width = 127
+  object CloseBtn: TBitBtn
+    Left = 944
+    Height = 25
+    Hint = 'Close Application'
+    Top = 600
+    Width = 73
+    Anchors = [akRight, akBottom]
+    Kind = bkClose
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 1
   end
-  object FromUserName: TEdit
-    Left = 108
+  object Label1: TLabel
+    Left = 15
+    Height = 12
+    Top = 6
+    Width = 44
+    Caption = 'Database:'
+    ParentColor = False
+  end
+  object FromDatabase: TEdit
+    Left = 72
     Height = 20
-    Top = 29
+    Top = 5
     Width = 127
     TabOrder = 2
   end
-  object FromPassword: TEdit
-    Left = 108
+  object Label2: TLabel
+    Left = 216
+    Height = 12
+    Top = 6
+    Width = 49
+    Caption = 'UserName:'
+    ParentColor = False
+  end
+  object FromUserName: TEdit
+    Left = 280
     Height = 20
-    Top = 51
+    Top = 5
+    Width = 127
+    TabOrder = 3
+  end
+  object Label3: TLabel
+    Left = 424
+    Height = 12
+    Top = 6
+    Width = 47
+    Caption = 'Password:'
+    ParentColor = False
+  end
+  object FromPassword: TEdit
+    Left = 480
+    Height = 20
+    Top = 5
     Width = 127
     EchoMode = emPassword
     PasswordChar = '*'
-    TabOrder = 3
-  end
-  object FromServerName: TEdit
-    Left = 108
-    Height = 20
-    Top = 74
-    Width = 127
     TabOrder = 4
   end
-  object FromTable: TEdit
-    Left = 234
+  object Label4: TLabel
+    Left = 624
+    Height = 12
+    Top = 6
+    Width = 62
+    Caption = 'Server Name:'
+    ParentColor = False
+  end
+  object FromServerName: TEdit
+    Left = 696
     Height = 20
-    Top = 107
+    Top = 5
     Width = 127
     TabOrder = 5
   end
-  object JvBitBtn1: TBitBtn
-    Left = 642
-    Height = 19
-    Top = 151
+  object ConnecttoServerBtn: TBitBtn
+    Left = 864
+    Height = 27
+    Top = 0
     Width = 122
     Anchors = [akTop, akRight]
-    Caption = 'Connect to servers'
-    OnClick = JvBitBtn1Click
-    TabOrder = 7
-  end
-  object ToDatabase: TEdit
-    Left = 493
-    Height = 20
-    Top = 6
-    Width = 127
-    TabOrder = 8
-  end
-  object ToUserName: TEdit
-    Left = 493
-    Height = 20
-    Top = 29
-    Width = 127
-    TabOrder = 9
-  end
-  object ToPassword: TEdit
-    Left = 493
-    Height = 20
-    Top = 51
-    Width = 127
-    EchoMode = emPassword
-    PasswordChar = '*'
-    TabOrder = 10
-  end
-  object ToServerName: TEdit
-    Left = 493
-    Height = 20
-    Top = 74
-    Width = 127
-    TabOrder = 11
-  end
-  object JvDBGrid2: TDBGrid
-    AnchorSideLeft.Control = BtnCompareRight
-    AnchorSideLeft.Side = asrBottom
-    Left = 386
-    Height = 218
-    Hint = 'To Table'
-    Top = 174
-    Width = 375
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    Color = clWindow
-    Columns = <>
-    DataSource = DataForm.ToQuerySource1
-    ReadOnly = True
-    ShowHint = True
-    TabOrder = 13
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -10
-    TitleFont.Name = 'Tahoma'
-  end
-  object OutputLog: TMemo
-    Left = 6
-    Height = 64
-    Top = 395
-    Width = 694
-    Anchors = [akLeft, akRight, akBottom]
-    Lines.Strings = (
-      ''
-    )
-    ScrollBars = ssVertical
-    TabOrder = 14
-    WordWrap = False
-  end
-  object JvBitBtn3: TBitBtn
-    Left = 706
-    Height = 25
-    Top = 494
-    Width = 57
-    Anchors = [akRight, akBottom]
-    Kind = bkClose
-    TabOrder = 15
-  end
-  object BtnCompareRight: TBitBtn
-    Left = 362
-    Height = 19
-    Hint = 'Compare Right to Left'
-    Top = 240
-    Width = 24
-    Caption = '>>'
-    OnClick = BtnCompareRightClick
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 16
-  end
-  object FromUniqueField: TEdit
-    Left = 493
-    Height = 20
-    Top = 107
-    Width = 127
+    Caption = 'Connect to server'
+    OnClick = ConnecttoServerBtnClick
     TabOrder = 6
   end
-  object SQLEdit: TMemo
-    Left = 6
-    Height = 41
-    Hint = 'SQL for from table the fields in the output must be identicle as the Table.'
-    Top = 129
-    Width = 614
-    ParentShowHint = False
-    ScrollBars = ssVertical
-    ShowHint = True
-    TabOrder = 12
-  end
-  object SQL: TMemo
-    Left = 6
-    Height = 59
-    Top = 459
-    Width = 694
-    Anchors = [akLeft, akRight, akBottom]
-    ScrollBars = ssVertical
-    TabOrder = 17
-  end
-  object Button1: TButton
-    Left = 706
-    Height = 25
-    Top = 445
-    Width = 57
-    Anchors = [akRight, akBottom]
-    Caption = 'Save SQL'
-    OnClick = Button1Click
-    TabOrder = 18
-  end
-  object Button2: TButton
-    Left = 706
-    Height = 25
-    Top = 409
-    Width = 57
-    Anchors = [akRight, akBottom]
-    Caption = 'Save log'
-    OnClick = Button2Click
-    TabOrder = 19
-  end
-  object Button3: TButton
-    Left = 706
-    Height = 25
-    Top = 469
-    Width = 57
-    Anchors = [akRight, akBottom]
-    Caption = 'Run SQL'
-    OnClick = Button3Click
-    TabOrder = 20
+  object ProgressBar1: TProgressBar
+    Left = 256
+    Height = 20
+    Top = 600
+    Width = 320
+    Step = 1
+    TabOrder = 7
   end
   object MainMenu1: TMainMenu
-    left = 848
-    top = 456
+    left = 616
+    top = 248
     object File1: TMenuItem
       Caption = 'Help'
       object About1: TMenuItem
