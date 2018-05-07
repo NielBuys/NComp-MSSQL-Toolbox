@@ -11,7 +11,8 @@
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <Title Value="Compare MSSQL Tables"/>
+      <Title Value="NComp MSSQL Toolbox"/>
+      <Scaled Value="True"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
       <Icon Value="0"/>
@@ -23,7 +24,7 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="1"/>
       <BuildNr Value="4"/>
-      <StringTable CompanyName="ncomp.co.za" FileDescription="ncomp.co.za Compare MSSQL Tables" ProductName="Compare MSSQL Tables" ProductVersion="1.0.0.3"/>
+      <StringTable CompanyName="ncomp.co.za" FileDescription="ncomp.co.za NComp MSSQL Toolbox" ProductName="NComp MSSQL Toolbox" ProductVersion="1.0"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
@@ -36,18 +37,21 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="3">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="FCL"/>
+        <PackageName Value="SDFLaz"/>
       </Item1>
       <Item2>
-        <PackageName Value="SQLDBLaz"/>
+        <PackageName Value="FCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="SQLDBLaz"/>
       </Item3>
+      <Item4>
+        <PackageName Value="LCL"/>
+      </Item4>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="6">
       <Unit0>
         <Filename Value="CompareMSSQLTables.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -77,6 +81,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="fixlinkedvaluesfrm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FixLinkedValuesForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="FixLinkedValuesFrm"/>
+      </Unit5>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -91,10 +103,6 @@
         <SyntaxMode Value="Delphi"/>
       </SyntaxOptions>
     </Parsing>
-    <CodeGeneration>
-      <TargetCPU Value="i386"/>
-      <TargetOS Value="win32"/>
-    </CodeGeneration>
     <Linking>
       <Debugging>
         <UseExternalDbgSyms Value="True"/>

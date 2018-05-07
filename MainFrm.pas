@@ -3,9 +3,9 @@ unit MainFrm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Grids, DBGrids, StdCtrls, Buttons, Menus, ComCtrls, UtilsUnit,
-  Registry, Types;
+  Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, Grids, DBGrids, StdCtrls, Buttons, Menus, ComCtrls, DbCtrls,
+  UtilsUnit, Registry, Types, IniFiles, DB;
 
 type
 
@@ -16,7 +16,38 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    AddColumnBtn: TButton;
+    AddValueBtn: TButton;
+    ValueEdt: TEdit;
+    GenerateInsertBtn: TButton;
+    CSVSearchNextBtn: TButton;
+    CSVSearchBtn: TButton;
+    CSVSearchCombo: TComboBox;
+    CSVSearchEdt: TEdit;
+    FixLinkedValueMenuBtn: TMenuItem;
+    OpenProjectBtn: TButton;
+    CSVGridMenu: TPopupMenu;
+    SaveProjectBtn: TButton;
+    DeleteSelectedRowBtn: TButton;
+    TestLinkedTableBtn: TButton;
+    DBNavigator1: TDBNavigator;
+    Label15: TLabel;
+    LogMemo: TMemo;
+    PrimaryColumnsList: TDBLookupListBox;
+    Label13: TLabel;
+    Label14: TLabel;
+    AddLinkedColumnBtn: TButton;
+    FieldSelectList: TListBox;
+    PrimaryColumnEdt: TEdit;
+    PrimaryTableNameEdt: TEdit;
+    LoadTablesBtn: TButton;
+    AddPrimaryTableDetailBtn: TButton;
+    TableList: TDBLookupListBox;
+    ColumnsList: TDBLookupListBox;
+    CSVFirstLineCheck: TCheckBox;
+    LoadCSVBtn: TButton;
     FromRowsCountLabel: TLabel;
+    OpenDialog1: TOpenDialog;
     SaveSQLBtn: TButton;
     ExportSQLBtn: TButton;
     CloseBtn: TBitBtn;
@@ -58,13 +89,29 @@ type
     ScriptSQLEdit: TMemo;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
     ToDatabase: TEdit;
     ToPassword: TEdit;
     SaveDialog1: TSaveDialog;
     About1: TMenuItem;
     ToServerName: TEdit;
     ToUserName: TEdit;
+    SetupGrid: TStringGrid;
+    CSVGrid: TDBGrid;
+    procedure AddColumnBtnClick(Sender: TObject);
+    procedure AddValueBtnClick(Sender: TObject);
+    procedure CSVSearchBtnClick(Sender: TObject);
+    procedure DeleteSelectedRowBtnClick(Sender: TObject);
+    procedure FixLinkedValueMenuBtnClick(Sender: TObject);
+    procedure AddLinkedColumnBtnClick(Sender: TObject);
+    procedure GenerateInsertBtnClick(Sender: TObject);
+    procedure LoadTablesBtnClick(Sender: TObject);
+    procedure AddPrimaryTableDetailBtnClick(Sender: TObject);
     procedure ConnecttoServerBtnClick(Sender: TObject);
+    procedure OpenProjectBtnClick(Sender: TObject);
+    procedure SaveProjectBtnClick(Sender: TObject);
+    procedure CSVSearchNextBtnClick(Sender: TObject);
+    procedure TableListClick(Sender: TObject);
     procedure ExportSQLBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
@@ -75,12 +122,17 @@ type
     procedure JvBitBtn1Click(Sender: TObject);
     procedure BtnCompareRightClick(Sender: TObject);
     procedure ExecuteQueryBtnClick(Sender: TObject);
+    procedure LoadCSVBtnClick(Sender: TObject);
     procedure SaveSQLBtnClick(Sender: TObject);
-
+    procedure TestLinkedTableBtnClick(Sender: TObject);
+    procedure SetupGridClick(Sender: TObject);
   private
-    function countrows(): Integer;
+    function LoadPrimaryTable(): Boolean;
     { Private declarations }
   public
+    SetupGridSelectedRow: Integer;
+    CSVGridSelectedField: TField;
+    SharedSetupGrid: TStringGrid;
     { Public declarations }
   end;
 
@@ -88,7 +140,7 @@ var
   MainForm: TMainForm;
 
 implementation
-      uses datafrm, AboutFrm;
+      uses datafrm, AboutFrm, FixLinkedValuesFrm;
 
 {$R *.lfm}
 
@@ -101,18 +153,22 @@ end;
 
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
-            if Savedialog1.Execute then
-            begin
+          SaveDialog1.FilterIndex := 1;
+          SaveDialog1.DefaultExt := '.txt';
+          if Savedialog1.Execute then
+          begin
               SQL.Lines.SaveToFile(SaveDialog1.FileName);
-            end;
+          end;
 end;
 
 procedure TMainForm.Button2Click(Sender: TObject);
 begin
-            if Savedialog1.Execute then
-            begin
+          SaveDialog1.FilterIndex := 1;
+          SaveDialog1.DefaultExt := '.txt';
+          if Savedialog1.Execute then
+          begin
               Outputlog.Lines.SaveToFile(SaveDialog1.FileName);
-            end;
+          end;
 end;
 
 procedure TMainForm.Button3Click(Sender: TObject);
@@ -145,51 +201,66 @@ begin
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
+var
+        ConfigFilePath :String;
+        INI: TINIFile;
 begin
-            Dataform.FromQuery1.Close;
-            Dataform.ToQuery1.Close;
-            Dataform.ToQuery2.Close;
+      Dataform.FromQuery1.Close;
+      Dataform.ToQuery1.Close;
+      Dataform.ToQuery2.Close;
 
-            SetRegistryData(HKEY_CURRENT_USER,
-            '\Software\CompareMSSQLTables\',
-            'FromDatabase', rdString, FromDatabase.Text);
-            SetRegistryData(HKEY_CURRENT_USER,
-            '\Software\CompareMSSQLTables\',
-            'FromUserName', rdString, FromUserName.Text);
-            SetRegistryData(HKEY_CURRENT_USER,
-            '\Software\CompareMSSQLTables\',
-            'FromPassword', rdString, encrypt(FromPassword.Text));
-            SetRegistryData(HKEY_CURRENT_USER,
-            '\Software\CompareMSSQLTables\',
-            'FromServerName', rdString, FromServerName.Text);
-            SetRegistryData(HKEY_CURRENT_USER,
-            '\Software\CompareMSSQLTables\',
-            'FromTable', rdString, FromTable.Text);
-            SetRegistryData(HKEY_CURRENT_USER,
-            '\Software\CompareMSSQLTables\',
-            'FromUniqueField', rdString, FromUniqueField.Text);
-            SetRegistryData(HKEY_CURRENT_USER,
-            '\Software\CompareMSSQLTables\',
-            'ToDatabase', rdString, ToDatabase.Text);
-            SetRegistryData(HKEY_CURRENT_USER,
-            '\Software\CompareMSSQLTables\',
-            'ToUserName', rdString, ToUserName.Text);
-            SetRegistryData(HKEY_CURRENT_USER,
-            '\Software\CompareMSSQLTables\',
-            'ToPassword', rdString, encrypt(ToPassword.Text));
-            SetRegistryData(HKEY_CURRENT_USER,
-            '\Software\CompareMSSQLTables\',
-            'ToServerName', rdString, ToServerName.Text);
-            SetRegistryData(HKEY_CURRENT_USER,
-            '\Software\CompareMSSQLTables\',
-            'SQLEdit', rdString, SQLEdit.Text);
+      ConfigFilePath := GetAppConfigFile(False);
+      INI := TINIFile.Create(ConfigFilePath + 'DB.ini');
+      try
+        INI.WriteString('DB','FromDatabase',FromDatabase.Text);
+        INI.WriteString('DB','FromUserName',FromUserName.Text);
+        INI.WriteString('DB','FromPassword',encrypt(FromPassword.Text));
+        INI.WriteString('DB','FromServerName',FromServerName.Text);
+      finally
+        INI.Free;
+      end;
 
-            SetRegistryData(HKEY_CURRENT_USER,
-            '\Software\CompareMSSQLTables\',
-            'ScriptSQLEdit', rdString, ScriptSQLEdit.Text);
-            SetRegistryData(HKEY_CURRENT_USER,
-            '\Software\CompareMSSQLTables\',
-            'ScriptTableName', rdString, ScriptTableName.Text);
+//
+//            SetRegistryData(HKEY_CURRENT_USER,
+//            '\Software\CompareMSSQLTables\',
+//            'FromDatabase', rdString, FromDatabase.Text);
+//            SetRegistryData(HKEY_CURRENT_USER,
+//            '\Software\CompareMSSQLTables\',
+//            'FromUserName', rdString, FromUserName.Text);
+//            SetRegistryData(HKEY_CURRENT_USER,
+//            '\Software\CompareMSSQLTables\',
+//            'FromPassword', rdString, encrypt(FromPassword.Text));
+//            SetRegistryData(HKEY_CURRENT_USER,
+//            '\Software\CompareMSSQLTables\',
+//            'FromServerName', rdString, FromServerName.Text);
+//            SetRegistryData(HKEY_CURRENT_USER,
+//            '\Software\CompareMSSQLTables\',
+//            'FromTable', rdString, FromTable.Text);
+//            SetRegistryData(HKEY_CURRENT_USER,
+//            '\Software\CompareMSSQLTables\',
+//            'FromUniqueField', rdString, FromUniqueField.Text);
+//            SetRegistryData(HKEY_CURRENT_USER,
+//            '\Software\CompareMSSQLTables\',
+//            'ToDatabase', rdString, ToDatabase.Text);
+//            SetRegistryData(HKEY_CURRENT_USER,
+//            '\Software\CompareMSSQLTables\',
+//            'ToUserName', rdString, ToUserName.Text);
+//            SetRegistryData(HKEY_CURRENT_USER,
+//            '\Software\CompareMSSQLTables\',
+//            'ToPassword', rdString, encrypt(ToPassword.Text));
+//            SetRegistryData(HKEY_CURRENT_USER,
+//            '\Software\CompareMSSQLTables\',
+//            'ToServerName', rdString, ToServerName.Text);
+//            SetRegistryData(HKEY_CURRENT_USER,
+//            '\Software\CompareMSSQLTables\',
+//            'SQLEdit', rdString, SQLEdit.Text);
+//
+//            SetRegistryData(HKEY_CURRENT_USER,
+//            '\Software\CompareMSSQLTables\',
+//            'ScriptSQLEdit', rdString, ScriptSQLEdit.Text);
+//            SetRegistryData(HKEY_CURRENT_USER,
+//            '\Software\CompareMSSQLTables\',
+//            'ScriptTableName', rdString, ScriptTableName.Text);
 
 end;
 
@@ -204,39 +275,44 @@ begin
         showmessage('Connect to SQL server first');
         exit;
       end;
+      if POS(ScriptTableName.Text,ScriptSQLEdit.Text) = 0 then
+      begin
+        showmessage('Table name must be present in Query');
+        exit;
+      end;
       ScriptSQL.Clear;
       FieldsString := '';
       ValuesString := '';
-      ProgressBar1.Max := Dataform.FromQuery1.RecordCount;
+      ProgressBar1.Max := Dataform.ScriptQuery1.RecordCount;
       ProgressBar1.Position := 0;
-      Dataform.FromQuery1.First;
-      Dataform.FromQuery1.DisableControls;
-      while not Dataform.FromQuery1.EOF do
+      Dataform.ScriptQuery1.First;
+      Dataform.ScriptQuery1.DisableControls;
+      while not Dataform.ScriptQuery1.EOF do
       begin
            ProgressBar1.StepIt;
            Application.processMessages;
-           for I := 0 to Dataform.FromQuery1.Fields.Count - 1 do
+           for I := 0 to Dataform.ScriptQuery1.Fields.Count - 1 do
           begin
             if FieldsString = '' then
             begin
-              FieldsString := DataForm.FromQuery1.Fields[I].FieldName;
-              ValuesString := ConvertFieldtoSQLString(DataForm.FromQuery1.Fields[I]);
+              FieldsString := DataForm.ScriptQuery1.Fields[I].FieldName;
+              ValuesString := ConvertFieldtoSQLString(DataForm.ScriptQuery1.Fields[I]);
             end
             else
             begin
-              FieldsString := FieldsString + ',' + DataForm.FromQuery1.Fields[I].FieldName;
-              ValuesString := ValuesString + ',' + ConvertFieldtoSQLString(DataForm.FromQuery1.Fields[I]);
+              FieldsString := FieldsString + ',' + DataForm.ScriptQuery1.Fields[I].FieldName;
+              ValuesString := ValuesString + ',' + ConvertFieldtoSQLString(DataForm.ScriptQuery1.Fields[I]);
             end;
           end;
-          QueryString := 'insert into ' + FromTable.Text + ' (' + FieldsString + ') Values (' + ValuesString + ');' + #13#10;
+          QueryString := 'insert into ' + ScriptTableName.Text + ' (' + FieldsString + ') Values (' + ValuesString + ');' + #13#10;
           tempQueryString := tempQueryString + QueryString;
           FieldsString := '';
           ValuesString := '';
-          Dataform.FromQuery1.Next;
+          Dataform.ScriptQuery1.Next;
       end;
       ScriptSQL.Lines.Clear;
       ScriptSQL.Lines.Add(tempQueryString);
-      Dataform.FromQuery1.EnableControls;
+      Dataform.ScriptQuery1.EnableControls;
       showmessage('Finished');
 end;
 
@@ -270,76 +346,446 @@ begin
       end;
 end;
 
+procedure TMainForm.OpenProjectBtnClick(Sender: TObject);
+begin
+      if Dataform.FromConnection.Connected = False then
+      begin
+        showmessage('Connect to SQL server first');
+        exit;
+      end;
+      OpenDialog1.FilterIndex := 2;
+      OpenDialog1.DefaultExt := '.csv';
+      if Opendialog1.Execute then
+      begin
+           SetupGrid.LoadFromCSVFile(OpenDialog1.FileName);
+           if LoadPrimaryTable = false then
+           begin
+             showmessage('No primary row found.');
+           end;
+      end;
+end;
+
+function TMainForm.LoadPrimaryTable(): Boolean;
+var
+          I: Integer;
+          Found: Boolean;
+begin
+      Found := false;
+      for I := 0 to SetupGrid.RowCount - 1 do
+      begin
+           If SetupGrid.Cells[0,I] = 'Primary' then
+           begin
+             PrimaryTableNameEdt.Text := SetupGrid.Cells[3,I];
+             PrimaryColumnEdt.Text := SetupGrid.Cells[4,I];
+             Dataform.ColumnsQuery2.Close;
+             Dataform.ColumnsQuery2.ParamByName('tablename').Value := PrimaryTableNameEdt.Text;
+             Dataform.ColumnsQuery2.Open;
+             Found := true;
+           end;
+      end;
+      LoadPrimaryTable := Found;
+end;
+
+procedure TMainForm.SaveProjectBtnClick(Sender: TObject);
+begin
+     SaveDialog1.FilterIndex := 2;
+     SaveDialog1.DefaultExt := '.csv';
+     if Savedialog1.Execute then
+     begin
+          SetupGrid.SaveToCSVFile(SaveDialog1.FileName);
+     end;
+end;
+
+procedure TMainForm.SetupGridClick(Sender: TObject);
+begin
+     SetupGridSelectedRow := SetupGrid.Row;
+end;
+
+procedure TMainForm.TableListClick(Sender: TObject);
+begin
+      Dataform.ColumnsQuery1.Close;
+      Dataform.ColumnsQuery1.ParamByName('tablename').Value := TableList.Items[TableList.ItemIndex];
+      Dataform.ColumnsQuery1.Open;
+end;
+
+procedure TMainForm.LoadTablesBtnClick(Sender: TObject);
+begin
+      Dataform.TablesQuery1.Open;
+end;
+
+procedure TMainForm.AddLinkedColumnBtnClick(Sender: TObject);
+begin
+      if FieldSelectList.ItemIndex = -1 then
+      begin
+        showmessage('Select CSV column');
+        exit;
+      end;
+      if PrimaryColumnsList.ItemIndex = -1 then
+      begin
+        showmessage('Select Primary column');
+        exit;
+      end;
+      if TableList.ItemIndex = -1 then
+      begin
+        showmessage('Select Link Table');
+        exit;
+      end;
+      if ColumnsList.ItemIndex = -1 then
+      begin
+        showmessage('Select Link Table Column');
+        exit;
+      end;
+      SetupGrid.RowCount := SetupGrid.RowCount + 1;
+      SetupGrid.Cells[0,SetupGrid.RowCount - 1] := 'Linked';
+      SetupGrid.Cells[1,SetupGrid.RowCount - 1] := FieldSelectList.Items[FieldSelectList.ItemIndex];
+      SetupGrid.Cells[2,SetupGrid.RowCount - 1] := PrimaryColumnsList.Items[PrimaryColumnsList.ItemIndex];
+      SetupGrid.Cells[3,SetupGrid.RowCount - 1] := TableList.Items[TableList.ItemIndex];
+      SetupGrid.Cells[4,SetupGrid.RowCount - 1] := ColumnsList.Items[ColumnsList.ItemIndex];
+end;
+
+procedure TMainForm.GenerateInsertBtnClick(Sender: TObject);
+var
+          FieldsString, ValuesString, QueryString, TempValue, KeyColumnName: String;
+          I: integer;
+          RecordGuid: TGUID;
+begin
+      if Dataform.FromConnection.Connected = False then
+      begin
+        showmessage('Connect from database first');
+        exit;
+      end;
+      if Dataform.CSVDataSet.Active = False then
+      begin
+        showmessage('Load CSV File First first');
+        exit;
+      end;
+      Dataform.CSVDataset.First;
+      Dataform.CSVDataset.DisableControls;
+      ProgressBar1.Max := Dataform.CSVDataset.RecordCount;
+      ProgressBar1.Position := 0;
+      LogMemo.Clear;
+      while not Dataform.CSVDataset.EOF do
+      begin
+           ProgressBar1.StepIt;
+           Application.processMessages;
+           FieldsString := '';
+           ValuesString := '';
+           for I := 0 to SetupGrid.RowCount - 1 do
+           begin
+                if SetupGrid.Cells[0,I] = 'Column' then
+                begin
+                     if FieldsString = '' then
+                     begin
+                          FieldsString := SetupGrid.Cells[2,I];
+                          ValuesString := ConvertFieldtoSQLString(Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,I]));
+                     end
+                     else
+                     begin
+                          FieldsString := FieldsString + ',' + SetupGrid.Cells[2,I];
+                          ValuesString := ValuesString + ',' + ConvertFieldtoSQLString(Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,I]));
+                     end;
+                end;
+                if SetupGrid.Cells[0,I] = 'Primary' then
+                begin
+                     CreateGUID(RecordGuid);
+                     if FieldsString = '' then
+                     begin
+                          FieldsString := SetupGrid.Cells[2,I];
+                          ValuesString := '''' + GuidtoString(RecordGuid) + '''';
+                     end
+                     else
+                     begin
+                          FieldsString := FieldsString + ',' + SetupGrid.Cells[2,I];
+                          ValuesString := ValuesString + ',' + '''' + GuidtoString(RecordGuid) + '''';
+                     end;
+                end;
+                if SetupGrid.Cells[0,I] = 'Linked' then
+                begin
+                     Dataform.FromQuery1.Close;
+                     with Dataform.FromQuery1.SQL do
+                     begin
+                          Clear;
+                          Add('SELECT COLUMN_NAME');
+                          Add('FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE');
+                          Add('WHERE OBJECTPROPERTY(OBJECT_ID(CONSTRAINT_SCHEMA + ''.'' + QUOTENAME(CONSTRAINT_NAME)), ''IsPrimaryKey'') = 1');
+                          Add('AND TABLE_NAME = ''' + SetupGrid.Cells[3,I] + '''');
+                     end;
+                     Dataform.FromQuery1.Open;
+                     If Dataform.FromQuery1.RecordCount > 0 then
+                     begin
+                          KeyColumnName := Dataform.FromQuery1.FieldbyName('COLUMN_NAME').AsString;
+                     end
+                     else
+                     begin
+                       showmessage('Primary Key not found for linked table ' + SetupGrid.Cells[3,I]);
+                       exit;
+                     end;
+                     TempValue := 'select ' + KeyColumnName + ' from ' + SetupGrid.Cells[3,I] +
+                     ' where ' + SetupGrid.Cells[4,I] + ' = ''' + Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,I]).asString + '''';
+
+                     if FieldsString = '' then
+                     begin
+                          FieldsString := SetupGrid.Cells[2,I];
+                          ValuesString := '(' + TempValue + ')';
+                     end
+                     else
+                     begin
+                          FieldsString := FieldsString + ',' + SetupGrid.Cells[2,I];
+                          ValuesString := ValuesString + ',' + '(' + TempValue + ')';
+                     end;
+                end;
+                if SetupGrid.Cells[0,I] = 'Value' then
+                begin
+                     if pos('()',SetupGrid.Cells[1,I]) > 0 then
+                     begin
+                          TempValue := SetupGrid.Cells[1,I];
+                     end
+                     else
+                     begin
+                          TempValue := '''' + SetupGrid.Cells[1,I] + '''';
+                     end;
+                     if FieldsString = '' then
+                     begin
+                          FieldsString := SetupGrid.Cells[2,I];
+                          ValuesString := TempValue;
+                     end
+                     else
+                     begin
+                          FieldsString := FieldsString + ',' + SetupGrid.Cells[2,I];
+                          ValuesString := ValuesString + ',' + TempValue;
+                     end;
+                end;
+           end;
+           QueryString := 'insert into ' + PrimaryTableNameEdt.Text + ' (' + FieldsString + ') Values (' + ValuesString + ');';
+           LogMemo.Lines.Add(QueryString);
+           Dataform.CSVDataset.Next;
+      end;
+      Dataform.CSVDataset.EnableControls;
+      Dataform.FromQuery1.Close;
+end;
+
+procedure TMainForm.DeleteSelectedRowBtnClick(Sender: TObject);
+begin
+      SetupGrid.DeleteRow(SetupGrid.Row);
+end;
+
+procedure TMainForm.CSVSearchBtnClick(Sender: TObject);
+begin
+      if CSVSearchCombo.ItemIndex = -1 then
+      begin
+        showmessage('Select search column');
+        exit;
+      end;
+      if Dataform.CSVDataSet.Active = False then
+      begin
+           showmessage('Load CSV File First first');
+           exit;
+      end;
+      Dataform.CSVDataset.First;
+      Dataform.CSVDataset.DisableControls;
+      while not Dataform.CSVDataset.EOF do
+      begin
+           if pos(lowercase(CSVSearchEdt.Text),lowercase(Dataform.CSVDataSet.FieldByName(CSVSearchCombo.Items[CSVSearchCombo.ItemIndex]).asString)) > 0 then
+           begin
+             Dataform.CSVDataset.EnableControls;
+             exit;
+           end;
+           Dataform.CSVDataset.Next;
+      end;
+      Dataform.CSVDataset.EnableControls;
+end;
+
+procedure TMainForm.AddColumnBtnClick(Sender: TObject);
+begin
+      if FieldSelectList.ItemIndex = -1 then
+      begin
+        showmessage('Select CSV column');
+        exit;
+      end;
+      if PrimaryColumnsList.ItemIndex = -1 then
+      begin
+        showmessage('Select Primary column');
+        exit;
+      end;
+      SetupGrid.RowCount := SetupGrid.RowCount + 1;
+      SetupGrid.Cells[0,SetupGrid.RowCount - 1] := 'Column';
+      SetupGrid.Cells[1,SetupGrid.RowCount - 1] := FieldSelectList.Items[FieldSelectList.ItemIndex];
+      SetupGrid.Cells[2,SetupGrid.RowCount - 1] := PrimaryColumnsList.Items[PrimaryColumnsList.ItemIndex];
+end;
+
+procedure TMainForm.AddValueBtnClick(Sender: TObject);
+begin
+      if PrimaryColumnsList.ItemIndex = -1 then
+      begin
+        showmessage('Select Primary column');
+        exit;
+      end;
+      SetupGrid.RowCount := SetupGrid.RowCount + 1;
+      SetupGrid.Cells[0,SetupGrid.RowCount - 1] := 'Value';
+      SetupGrid.Cells[1,SetupGrid.RowCount - 1] := ValueEdt.Text;
+      SetupGrid.Cells[2,SetupGrid.RowCount - 1] := PrimaryColumnsList.Items[PrimaryColumnsList.ItemIndex];
+end;
+
+procedure TMainForm.CSVSearchNextBtnClick(Sender: TObject);
+begin
+     if CSVSearchCombo.ItemIndex = -1 then
+     begin
+       showmessage('Select search column');
+       exit;
+     end;
+     if Dataform.CSVDataSet.Active = False then
+     begin
+          showmessage('Load CSV File First first');
+          exit;
+     end;
+     Dataform.CSVDataset.Next;
+     Dataform.CSVDataset.DisableControls;
+     while not Dataform.CSVDataset.EOF do
+     begin
+          if pos(lowercase(CSVSearchEdt.Text),lowercase(Dataform.CSVDataSet.FieldByName(CSVSearchCombo.Items[CSVSearchCombo.ItemIndex]).asString)) > 0 then
+          begin
+            Dataform.CSVDataset.EnableControls;
+            exit;
+          end;
+          Dataform.CSVDataset.Next;
+     end;
+     Dataform.CSVDataset.EnableControls;
+end;
+
+
+procedure TMainForm.FixLinkedValueMenuBtnClick(Sender: TObject);
+begin
+      if Dataform.CSVDataSet.Active = False then
+      begin
+           showmessage('Load CSV File First first');
+           exit;
+      end;
+      CSVGridSelectedField := CSVGrid.SelectedField;
+      SharedSetupGrid := SetupGrid;
+      Application.CreateForm(TFixLinkedValuesForm, FixLinkedValuesForm);
+      FixLinkedValuesForm.showmodal;
+      FixLinkedValuesForm.Free;
+end;
+
+procedure TMainForm.AddPrimaryTableDetailBtnClick(Sender: TObject);
+begin
+      if FieldSelectList.ItemIndex = -1 then
+      begin
+        showmessage('Select CSV column');
+        exit;
+      end;
+      if PrimaryColumnsList.ItemIndex = -1 then
+      begin
+        showmessage('Select primary table primary key');
+        exit;
+      end;
+      if TableList.ItemIndex = -1 then
+      begin
+        showmessage('Select Link Table');
+        exit;
+      end;
+      if ColumnsList.ItemIndex = -1 then
+      begin
+        showmessage('Select Link Table Column');
+        exit;
+      end;
+      SetupGrid.RowCount := SetupGrid.RowCount + 1;
+      SetupGrid.Cells[0,SetupGrid.RowCount - 1] := 'Primary';
+      SetupGrid.Cells[1,SetupGrid.RowCount - 1] := FieldSelectList.Items[FieldSelectList.ItemIndex];
+      SetupGrid.Cells[2,SetupGrid.RowCount - 1] := PrimaryColumnsList.Items[PrimaryColumnsList.ItemIndex];
+      SetupGrid.Cells[3,SetupGrid.RowCount - 1] := TableList.Items[TableList.ItemIndex];
+      SetupGrid.Cells[4,SetupGrid.RowCount - 1] := ColumnsList.Items[ColumnsList.ItemIndex];
+      PrimaryTableNameEdt.Text := TableList.Items[TableList.ItemIndex];
+      PrimaryColumnEdt.Text := ColumnsList.Items[ColumnsList.ItemIndex];
+      Dataform.ColumnsQuery2.Close;
+      Dataform.ColumnsQuery2.ParamByName('tablename').Value := PrimaryTableNameEdt.Text;
+      Dataform.ColumnsQuery2.Open;
+end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
+var
+        ConfigFilePath :String;
+        INI: TINIFile;
 begin
-            try
-              FromDatabase.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromDatabase');
-            except
-              FromDatabase.Text := '';
-            end;
-            try
-              FromUserName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromUserName');
-            except
-              FromUserName.Text := '';
-            end;
-            try
-              FromPassword.Text := Decrypt(GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromPassword'));
-            except
-              FromPassword.Text := '';
-            end;
-            try
-              FromServerName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromServerName');
-            except
-              FromServerName.Text := '';
-            end;
-            try
-              FromTable.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromTable');
-            except
-              FromTable.Text := '';
-            end;
-            try
-              FromUniqueField.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromUniqueField');
-            except
-              FromUniqueField.Text := '';
-            end;
-            try
-              ToDatabase.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ToDatabase');
-            except
-              ToDatabase.Text := '';
-            end;
-            try
-              ToUserName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ToUserName');
-            except
-              ToUserName.Text := '';
-            end;
-            try
-              ToPassword.Text := Decrypt(GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ToPassword'));
-            except
-              ToPassword.Text := '';
-            end;
-            try
-              ToServerName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ToServerName');
-            except
-              ToServerName.Text := '';
-            end;
-            try
-              SQLEdit.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','SQLEdit');
-            except
-              SQLEdit.Text := '';
-            end;
+      ConfigFilePath := GetAppConfigFile(False);
+      INI := TINIFile.Create(ConfigFilePath + 'DB.ini');
+      try
+        FromDatabase.Text := INI.ReadString('DB','FromDatabase','');
+        FromUserName.Text := INI.ReadString('DB','FromUserName','');
+        FromPassword.Text := Decrypt(INI.ReadString('DB','FromPassword',''));
+        FromServerName.Text := INI.ReadString('DB','FromServerName','');
+      finally
+        INI.Free;
+      end;
 
-            try
-              ScriptSQLEdit.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ScriptSQLEdit');
-            except
-              ScriptSQLEdit.Text := '';
-            end;
 
-            try
-              ScriptTableName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ScriptTableName');
-            except
-              ScriptTableName.Text := '';
-            end;
+      //try
+      //        FromDatabase.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromDatabase');
+      //      except
+      //        FromDatabase.Text := '';
+      //      end;
+      //      try
+      //        FromUserName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromUserName');
+      //      except
+      //        FromUserName.Text := '';
+      //      end;
+      //      try
+      //        FromPassword.Text := Decrypt(GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromPassword'));
+      //      except
+      //        FromPassword.Text := '';
+      //      end;
+      //      try
+      //        FromServerName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromServerName');
+      //      except
+      //        FromServerName.Text := '';
+      //      end;
+      //      try
+      //        FromTable.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromTable');
+      //      except
+      //        FromTable.Text := '';
+      //      end;
+      //      try
+      //        FromUniqueField.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromUniqueField');
+      //      except
+      //        FromUniqueField.Text := '';
+      //      end;
+      //      try
+      //        ToDatabase.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ToDatabase');
+      //      except
+      //        ToDatabase.Text := '';
+      //      end;
+      //      try
+      //        ToUserName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ToUserName');
+      //      except
+      //        ToUserName.Text := '';
+      //      end;
+      //      try
+      //        ToPassword.Text := Decrypt(GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ToPassword'));
+      //      except
+      //        ToPassword.Text := '';
+      //      end;
+      //      try
+      //        ToServerName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ToServerName');
+      //      except
+      //        ToServerName.Text := '';
+      //      end;
+      //      try
+      //        SQLEdit.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','SQLEdit');
+      //      except
+      //        SQLEdit.Text := '';
+      //      end;
+      //
+      //      try
+      //        ScriptSQLEdit.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ScriptSQLEdit');
+      //      except
+      //        ScriptSQLEdit.Text := '';
+      //      end;
+      //
+      //      try
+      //        ScriptTableName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ScriptTableName');
+      //      except
+      //        ScriptTableName.Text := '';
+      //      end;
 end;
 
 procedure TMainForm.JvBitBtn1Click(Sender: TObject);
@@ -383,7 +829,7 @@ begin
               Text := SQLEdit.Text;
             end;
             Dataform.ToQuery1.Open;
-            FromRowsCountLabel.Caption := inttostr(countrows());
+            FromRowsCountLabel.Caption := InttoStr(DataForm.FromQuery1.RecordCount);
           except
           begin
             ShowMessage('Unable to connect to MSSQL To Server, make sure the Database exist');
@@ -488,20 +934,15 @@ begin
             showmessage('Connect from database first');
             exit;
           end;
-          if POS(ScriptTableName.Text,ScriptSQLEdit.Text) = 0 then
-          begin
-            showmessage('Table name must be present in Query');
-            exit;
-          end;
           try
-            DataForm.FromQuery1.close;
-            with Dataform.FromQuery1.SQL do
+            DataForm.ScriptQuery1.close;
+            with Dataform.ScriptQuery1.SQL do
             begin
               Clear;
               Text := ScriptSQLEdit.Text;
             end;
-            Dataform.FromQuery1.Open;
-            RowsCountLabel.Caption := inttostr(countrows());
+            Dataform.ScriptQuery1.Open;
+            RowsCountLabel.Caption := InttoStr(Dataform.ScriptQuery1.RecordCount);
           except
           begin
             ShowMessage('Unable Execute query');
@@ -510,29 +951,99 @@ begin
           end;
 end;
 
+procedure TMainForm.LoadCSVBtnClick(Sender: TObject);
+var
+          i: Integer;
+begin
+          OpenDialog1.FilterIndex := 2;
+          Opendialog1.DefaultExt := '.csv';
+          if Opendialog1.Execute then
+          begin
+            Dataform.CSVDataset.Close;
+            If CSVFirstLineCheck.Checked then
+            begin
+                 Dataform.CSVDataset.FirstLineAsSchema := true;
+            end
+            else
+            begin
+                 Dataform.CSVDataset.FirstLineAsSchema := false;
+            end;
+            Dataform.CSVDataset.FileName := OpenDialog1.filename;
+            Dataform.CSVDataset.Open;
+            for i := 0 to Dataform.CSVDataset.Fields.Count - 1 do
+            begin
+                 FieldSelectList.Items.Add(Dataform.CSVDataset.Fields[i].FieldName);
+            end;
+            CSVSearchCombo.Items := FieldSelectList.Items;
+          end;
+end;
+
 procedure TMainForm.SaveSQLBtnClick(Sender: TObject);
 begin
+          SaveDialog1.FilterIndex := 1;
+          SaveDialog1.DefaultExt := '.txt';
           if Savedialog1.Execute then
           begin
             ScriptSQL.Lines.SaveToFile(SaveDialog1.FileName);
           end;
 end;
 
-function TMainForm.countrows(): Integer;
-var
-          I: Integer;
+procedure TMainForm.TestLinkedTableBtnClick(Sender: TObject);
 begin
-      I := 0;
-      Dataform.FromQuery1.First;
-      Dataform.FromQuery1.DisableControls;
-      while not Dataform.FromQuery1.EOF do
-      begin
-           Inc(I);
-           Dataform.FromQuery1.Next;
-      end;
-      Dataform.FromQuery1.EnableControls;
-      Dataform.FromQuery1.First;
-      countrows := I;
+          if Dataform.FromConnection.Connected = False then
+          begin
+            showmessage('Connect from database first');
+            exit;
+          end;
+          if Dataform.CSVDataSet.Active = False then
+          begin
+            showmessage('Load CSV File First first');
+            exit;
+          end;
+          if SetupGrid.Cells[0,SetupGridSelectedRow] <> 'Linked' then
+          begin
+            showmessage('Select Linked Row');
+            exit;
+          end;
+          Dataform.CSVDataset.First;
+          Dataform.CSVDataset.DisableControls;
+          ProgressBar1.Max := Dataform.CSVDataset.RecordCount;
+          ProgressBar1.Position := 0;
+          LogMemo.Clear;
+          while not Dataform.CSVDataset.EOF do
+          begin
+               ProgressBar1.StepIt;
+               Application.processMessages;
+               Dataform.FromQuery1.Close;
+               with Dataform.FromQuery1.SQL do
+               begin
+                 Clear;
+                 Add('select ' + SetupGrid.Cells[4,SetupGridSelectedRow] + ' from ' + SetupGrid.Cells[3,SetupGridSelectedRow]);
+                 Add('where ' + SetupGrid.Cells[4,SetupGridSelectedRow] + ' = ''' + Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,SetupGridSelectedRow]).asString + '''');
+               end;
+               try
+               Dataform.FromQuery1.Open;
+               except
+                     on E : Exception do
+                     begin
+                        ShowMessage(E.ClassName + ' ' + E.Message + ' Error in Test');
+                        exit;
+                     end;
+               end;
+               If Dataform.FromQuery1.RecordCount = 0 then
+               begin
+                    LogMemo.Lines.Add('"' + Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,SetupGridSelectedRow]).asString + '","Not Found"');
+               end
+               else
+               begin
+                 if Dataform.FromQuery1.RecordCount > 1 then
+                 begin
+                    LogMemo.Lines.Add('"' + Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,SetupGridSelectedRow]).asString + '","Multiple Found"');
+                 end;
+               end;
+               Dataform.CSVDataset.Next;
+          end;
+          Dataform.CSVDataset.EnableControls;
 end;
 
 end.

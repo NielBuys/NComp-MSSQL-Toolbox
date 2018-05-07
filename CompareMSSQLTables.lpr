@@ -10,9 +10,10 @@ uses
 {$R *.res}
 
 begin
+  Application.Scaled:=True;
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.Title := 'MSSQL Compare 2 Tables';
+  Application.Title := 'NComp MSSQL Toolbox';
   Application.CreateForm(TDataForm, DataForm);
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;

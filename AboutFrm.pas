@@ -3,10 +3,13 @@ unit AboutFrm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, Buttons, shellapi;
+  Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, lclintf;
 
 type
+
+  { TAboutForm }
+
   TAboutForm = class(TForm)
     Label1: TLabel;
     Label2: TLabel;
@@ -28,8 +31,10 @@ implementation
 
 procedure TAboutForm.Label1Click(Sender: TObject);
 begin
-    If ShellExecute (0, '', pchar('http://www.ncomp.co.za'), '', '', SW_NORMAL) <= 32 then
-      showmessage('The Link Failed to open');
+     OpenURL('http://www.ncomp.co.za');
+     //If ShellExecute (0, '', pchar('http://www.ncomp.co.za'), '', '', SW_NORMAL) <= 32 then
+     // showmessage('The Link Failed to open');
 end;
+
 
 end.

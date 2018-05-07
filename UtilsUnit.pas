@@ -3,8 +3,12 @@ unit UtilsUnit;
 {$MODE Delphi}
 
 interface
-  uses SysUtils, DateUtils, Dialogs, FileUtil, LCLIntf, LCLType, LMessages, Math, Registry, ShlObj,
-    ActiveX, db, Classes;
+  uses SysUtils, DateUtils, Dialogs, FileUtil, LCLIntf, LCLType, LMessages, Math, Registry,
+    {$IFDEF Windows}
+     ShlObj,
+     ActiveX,
+    {$ENDIF}
+     db, Classes;
 
   function ValidateID(ID: String): Boolean;
   function WorkoutAge(StoreDate: TDateTime): Integer;
@@ -33,7 +37,7 @@ interface
   function UpdateSwitchString(SwitchString,TestValue,Value: AnsiString): AnsiString;
   function CreateEasyPayNumber(GroupNo,MemNo,BranchNo:Integer):String;
   function replacedoublequotewithsinglequote(stemp: AnsiString): AnsiString;
-  function CreateGuid: string;
+  //function CreateGuid: string;
   function ConvertFieldtoSQLString(FieldStore: TField): String;
   function ConvertFieldtoMySQLString(FieldStore: TField): String;
   procedure Split(const Delimiter: Char; Input: string; const Strings: TStrings);
@@ -533,6 +537,7 @@ end;
 function GetSpecialFolder(const CSIDL : integer) : String;
 var RecPath : PChar;
 begin
+  {$IFDEF Windows}
 RecPath := StrAlloc(MAX_PATH);
 try
   FillChar(RecPath^,MAX_PATH,0);
@@ -542,6 +547,7 @@ try
 finally
   StrDispose(RecPath);
 end;
+  {$ENDIF}
 end;
 
 function AddCR(stemp: AnsiString): AnsiString;
@@ -730,14 +736,17 @@ begin
   end;
 end;
 
-function CreateGuid: string;
-var
-  ID: TGUID;
-begin
-  Result := '';
-  if CoCreateGuid(ID) = S_OK then
-    Result := GUIDToString(ID);
-end;
+//function CreateGuid: string;
+//var
+//  ID: TGUID;
+//begin
+//  Result := '';
+//  {$IFDEF Windows}
+//  if CoCreateGuid(ID) = S_OK then
+//    Result := GUIDToString(ID);
+//  {$ENDIF}
+//
+//end;
 
 Function ConvertFieldtoSQLString(FieldStore: TField):String;
 var
@@ -971,6 +980,7 @@ function FloatToLocaleIndependantString(const v: Extended): string;
 //var
 //   oldDecimalSeparator: Char;
 begin
+  {$IFDEF Windows}
   GetLocaleFormatSettings(0,myGlobalFormatSettings);
   myGlobalFormatSettings.DecimalSeparator := '.';
 //   oldDecimalSeparator := SysUtils.DecimalSeparator;
@@ -984,6 +994,7 @@ begin
    finally
 //      SysUtils.DecimalSeparator := oldDecimalSeparator;
    end;
+   {$ENDIF}
 end;
 
 function GetRegistryData(RootKey: HKEY; Key, Value: String): variant;
@@ -994,6 +1005,7 @@ var
   s: String;
 label cantread;
 begin
+  {$IFDEF Windows}
   Reg := nil;
   try
     Reg := TRegistry.Create(KEY_READ);
@@ -1030,6 +1042,10 @@ cantread:
     raise;
   end;
   Reg.Free;
+  {$ENDIF}
+  {$IFDEF Linux}
+    Result := '';
+  {$ENDIF}
 end;
 
 procedure SetRegistryData(RootKey: HKEY; Key, Value: String;

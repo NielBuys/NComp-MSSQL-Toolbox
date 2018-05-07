@@ -1,0 +1,98 @@
+object FixLinkedValuesForm: TFixLinkedValuesForm
+  Left = 2502
+  Height = 375
+  Top = 285
+  Width = 464
+  BorderStyle = bsDialog
+  Caption = 'Fix Linked Values'
+  ClientHeight = 375
+  ClientWidth = 464
+  OnShow = FormShow
+  Position = poMainFormCenter
+  LCLVersion = '1.8.2.0'
+  object CloseBtn: TBitBtn
+    Left = 380
+    Height = 28
+    Top = 344
+    Width = 76
+    DefaultCaption = True
+    Kind = bkClose
+    ModalResult = 11
+    TabOrder = 0
+  end
+  object LinkedTableEdt: TEdit
+    Left = 155
+    Height = 27
+    Top = 8
+    Width = 147
+    ReadOnly = True
+    TabOrder = 1
+    Text = 'Linked Table'
+  end
+  object LinkedColumnEdt: TEdit
+    Left = 309
+    Height = 27
+    Top = 8
+    Width = 147
+    ReadOnly = True
+    TabOrder = 2
+    Text = 'Linked Column'
+  end
+  object WrongValueEdt: TEdit
+    Left = 8
+    Height = 27
+    Top = 8
+    Width = 138
+    ReadOnly = True
+    TabOrder = 3
+    Text = 'Wrong Value'
+  end
+  object DBGrid1: TDBGrid
+    Left = 8
+    Height = 272
+    Top = 72
+    Width = 448
+    Color = clWindow
+    Columns = <>
+    DataSource = DataForm.FromQuerySource1
+    Options = [dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgAutoSizeColumns]
+    TabOrder = 4
+  end
+  object SaveNewValueBtn: TButton
+    Left = 248
+    Height = 28
+    Top = 344
+    Width = 131
+    Caption = 'Save new Value'
+    OnClick = SaveNewValueBtnClick
+    TabOrder = 5
+  end
+  object ReplaceAllValuesBtn: TButton
+    Left = 104
+    Height = 28
+    Top = 344
+    Width = 139
+    Caption = 'Replace All Values'
+    OnClick = ReplaceAllValuesBtnClick
+    TabOrder = 6
+  end
+  object SearchEdt: TEdit
+    Left = 8
+    Height = 27
+    Top = 38
+    Width = 136
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 7
+    TextHint = 'Type here to search'
+  end
+  object SearchBtn: TButton
+    Left = 144
+    Height = 27
+    Top = 38
+    Width = 75
+    Caption = 'Search'
+    OnClick = SearchBtnClick
+    TabOrder = 8
+  end
+end

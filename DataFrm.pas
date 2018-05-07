@@ -3,15 +3,25 @@ unit DataFrm;
 interface
 
 uses
-  SysUtils, Classes, DB, sqldb, mssqlconn;
+  SysUtils, Classes, DB, sqldb, SdfData, mssqlconn;
 
 type
 
   { TDataForm }
 
   TDataForm = class(TDataModule)
+    ColumnsQuery2: TSQLQuery;
+    ColumnsSource2: TDataSource;
+    CSVSource: TDataSource;
+    ColumnsQuery1: TSQLQuery;
+    TablesSource1: TDataSource;
+    ScriptQuery1: TSQLQuery;
+    ScriptQuerySource1: TDataSource;
     FromConnection: TMSSQLConnection;
     FromTransaction: TSQLTransaction;
+    CSVDataset: TSdfDataSet;
+    TablesQuery1: TSQLQuery;
+    ColumnsSource1: TDataSource;
     ToTransaction: TSQLTransaction;
     ToConnection: TMSSQLConnection;
     FromQuery1: TSQLQuery;
