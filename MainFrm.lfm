@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 2582
+  Left = 2324
   Height = 650
-  Top = 149
+  Top = 173
   Width = 1024
   Caption = 'NComp MSSQL Toolbox'
   ClientHeight = 650
@@ -136,37 +136,37 @@ object MainForm: TMainForm
       ClientWidth = 1020
       object Label6: TLabel
         Left = 32
-        Height = 12
+        Height = 11
         Top = 10
-        Width = 59
+        Width = 63
         Caption = 'To Database:'
         ParentColor = False
       end
       object ToDatabase: TEdit
         Left = 128
-        Height = 20
+        Height = 21
         Top = 8
         Width = 127
         TabOrder = 0
       end
       object Label7: TLabel
         Left = 272
-        Height = 12
+        Height = 11
         Top = 10
-        Width = 64
+        Width = 67
         Caption = 'To UserName:'
         ParentColor = False
       end
       object ToUserName: TEdit
         Left = 368
-        Height = 20
+        Height = 21
         Top = 8
         Width = 127
         TabOrder = 1
       end
       object Label8: TLabel
         Left = 520
-        Height = 12
+        Height = 11
         Top = 10
         Width = 62
         Caption = 'To Password:'
@@ -174,7 +174,7 @@ object MainForm: TMainForm
       end
       object ToPassword: TEdit
         Left = 616
-        Height = 20
+        Height = 21
         Top = 8
         Width = 127
         EchoMode = emPassword
@@ -183,54 +183,54 @@ object MainForm: TMainForm
       end
       object Label9: TLabel
         Left = 768
-        Height = 12
+        Height = 11
         Top = 10
-        Width = 77
+        Width = 80
         Caption = 'To Server Name:'
         ParentColor = False
       end
       object ToServerName: TEdit
         Left = 864
-        Height = 20
+        Height = 21
         Top = 8
         Width = 127
         TabOrder = 3
       end
       object Label5: TLabel
         Left = 152
-        Height = 12
+        Height = 11
         Top = 40
-        Width = 56
+        Width = 60
         Caption = 'Table Name:'
         ParentColor = False
       end
       object FromTable: TEdit
         Left = 236
-        Height = 20
+        Height = 21
         Top = 40
         Width = 127
         TabOrder = 4
       end
       object Label11: TLabel
         Left = 415
-        Height = 12
+        Height = 11
         Top = 40
-        Width = 60
+        Width = 63
         Caption = 'Unique Field:'
         ParentColor = False
       end
       object FromUniqueField: TEdit
         Left = 490
-        Height = 20
+        Height = 21
         Top = 40
         Width = 127
         TabOrder = 5
       end
       object Label10: TLabel
         Left = 8
-        Height = 12
+        Height = 11
         Top = 46
-        Width = 83
+        Width = 92
         Caption = 'SQL for from table'
         ParentColor = False
       end
@@ -360,9 +360,9 @@ object MainForm: TMainForm
       end
       object FromRowsCountLabel: TLabel
         Left = 8
-        Height = 12
+        Height = 11
         Top = 165
-        Width = 5
+        Width = 6
         Caption = '0'
         ParentColor = False
       end
@@ -397,7 +397,7 @@ object MainForm: TMainForm
         TabOrder = 0
       end
       object CSVFirstLineCheck: TCheckBox
-        Left = 136
+        Left = 176
         Height = 24
         Top = 3
         Width = 138
@@ -511,13 +511,14 @@ object MainForm: TMainForm
             Width = 100
           end>
         FixedCols = 0
-        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing, goSmoothScroll]
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing, goRowSelect, goSmoothScroll]
         RowCount = 1
         TabOrder = 13
         TitleFont.Color = clWindowText
         TitleFont.Height = -10
         TitleFont.Name = 'Tahoma'
         OnClick = SetupGridClick
+        OnDrawCell = SetupGridDrawCell
       end
       object AddLinkedColumnBtn: TButton
         Left = 456
@@ -694,6 +695,7 @@ object MainForm: TMainForm
         Anchors = [akRight, akBottom]
         Caption = 'Generate Insert'
         OnClick = GenerateInsertBtnClick
+        PopupMenu = CreateInsertPopup
         TabOrder = 24
       end
       object AddValueBtn: TButton
@@ -714,6 +716,27 @@ object MainForm: TMainForm
         ShowHint = True
         TabOrder = 26
         TextHint = 'Value'
+      end
+      object XMLToCSVConvertBtn: TButton
+        Left = 83
+        Height = 25
+        Top = 2
+        Width = 75
+        Caption = 'XML -> CSV'
+        OnClick = XMLToCSVConvertBtnClick
+        TabOrder = 27
+      end
+      object ImportSaveLogMemoBtn: TButton
+        AnchorSideLeft.Control = LogMemo
+        AnchorSideLeft.Side = asrBottom
+        Left = 592
+        Height = 25
+        Top = 527
+        Width = 57
+        Anchors = [akLeft, akBottom]
+        Caption = 'Save log'
+        OnClick = ImportSaveLogMemoBtnClick
+        TabOrder = 28
       end
     end
   end
@@ -834,17 +857,29 @@ object MainForm: TMainForm
   object OpenDialog1: TOpenDialog
     Title = 'Open file'
     DefaultExt = '.csv'
-    Filter = 'txt|*.txt|csv|*.csv|All Files|*.*'
+    Filter = 'txt|*.txt|csv|*.csv|xml|*.xml|All Files|*.*'
     FilterIndex = 2
     left = 376
     top = 248
   end
   object CSVGridMenu: TPopupMenu
-    left = 232
+    left = 264
     top = 248
     object FixLinkedValueMenuBtn: TMenuItem
       Caption = 'Fix Linked Value'
       OnClick = FixLinkedValueMenuBtnClick
+    end
+  end
+  object CreateInsertPopup: TPopupMenu
+    left = 896
+    top = 456
+    object GenerateInsertsFromAllCSVRecordsMNU: TMenuItem
+      Caption = 'Generate Inserts from all CSV records'
+      OnClick = GenerateInsertsFromAllCSVRecordsMNUClick
+    end
+    object GenerateInsertsfromPrimaryCSVFieldNotFoundMNU: TMenuItem
+      Caption = 'Generate Inserts from Primary CSV Field Not Found'
+      OnClick = GenerateInsertsfromPrimaryCSVFieldNotFoundMNUClick
     end
   end
 end

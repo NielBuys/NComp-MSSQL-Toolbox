@@ -1,7 +1,7 @@
 object FixLinkedValuesForm: TFixLinkedValuesForm
-  Left = 2502
+  Left = 2531
   Height = 375
-  Top = 285
+  Top = 333
   Width = 464
   BorderStyle = bsDialog
   Caption = 'Fix Linked Values'
