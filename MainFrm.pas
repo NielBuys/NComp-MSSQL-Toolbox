@@ -6,7 +6,7 @@ uses
   Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Grids, DBGrids, StdCtrls, Buttons, Menus, ComCtrls, DbCtrls,
   UtilsUnit, Registry, Types, IniFiles, DB, sqldb, BufDataset, laz2_DOM,
-  laz2_XMLRead;
+  laz2_XMLRead,Base64;
 
 type
 
@@ -233,6 +233,7 @@ begin
         INI.WriteString('DB','FromUserName',FromUserName.Text);
         INI.WriteString('DB','FromPassword',encrypt(FromPassword.Text));
         INI.WriteString('DB','FromServerName',FromServerName.Text);
+        INI.WriteString('SCRIPTS','ScriptSQLEdit',EncodeStringBase64(ScriptSQLEdit.Text));
       finally
         INI.Free;
       end;
@@ -911,6 +912,8 @@ begin
         FromUserName.Text := INI.ReadString('DB','FromUserName','');
         FromPassword.Text := Decrypt(INI.ReadString('DB','FromPassword',''));
         FromServerName.Text := INI.ReadString('DB','FromServerName','');
+        If INI.ReadString('SCRIPTS','ScriptSQLEdit','') <> '' then
+           ScriptSQLEdit.Text := DecodeStringBase64(INI.ReadString('SCRIPTS','ScriptSQLEdit',''));
       finally
         INI.Free;
       end;
@@ -1125,6 +1128,8 @@ end;
 
 
 procedure TMainForm.ExecuteQueryBtnClick(Sender: TObject);
+var
+          SQLString: String;
 begin
           if Dataform.FromConnection.Connected = False then
           begin
@@ -1133,12 +1138,23 @@ begin
           end;
           try
             DataForm.ScriptQuery1.close;
+            if copy(ScriptSQLEdit.Text,ScriptSQLEdit.SelStart+1,ScriptSQLEdit.SelLength) = '' then
+                SQLString := ScriptSQLEdit.Text
+            else
+                SQLString := copy(ScriptSQLEdit.Text,ScriptSQLEdit.SelStart+1,ScriptSQLEdit.SelLength);
             with Dataform.ScriptQuery1.SQL do
             begin
               Clear;
-              Text := ScriptSQLEdit.Text;
+              Text := SQLString;
             end;
-            Dataform.ScriptQuery1.Open;
+            Dataform.ScriptQuery1.Prepare;
+            If (Dataform.ScriptQuery1.StatementType = stSelect) then
+               Dataform.ScriptQuery1.Open
+            else
+            begin
+                Dataform.ScriptQuery1.ExecSQL;
+                showmessage('Query executed');
+            end;
             RowsCountLabel.Caption := InttoStr(Dataform.ScriptQuery1.RecordCount);
           except
                 on E : Exception do

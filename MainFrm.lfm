@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 2324
+  Left = 2319
   Height = 650
-  Top = 173
+  Top = 154
   Width = 1024
   Caption = 'NComp MSSQL Toolbox'
   ClientHeight = 650
@@ -20,26 +20,26 @@ object MainForm: TMainForm
     Height = 578
     Top = 40
     Width = 1024
-    ActivePage = TabSheet3
+    ActivePage = TabSheet2
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 5
     object TabSheet2: TTabSheet
       Caption = 'Querys / Export'
       ClientHeight = 553
       ClientWidth = 1020
       object Label16: TLabel
-        Left = 147
+        Left = 144
         Height = 11
-        Top = 15
-        Width = 60
-        Caption = 'Table Name:'
+        Top = 16
+        Width = 135
+        Caption = 'Table Name for SQL Export:'
         ParentColor = False
       end
       object ScriptTableName: TEdit
-        Left = 231
+        Left = 288
         Height = 21
-        Top = 15
+        Top = 8
         Width = 127
         TabOrder = 0
       end
@@ -53,7 +53,7 @@ object MainForm: TMainForm
       end
       object ScriptSQLEdit: TMemo
         Left = 8
-        Height = 128
+        Height = 160
         Hint = 'SQL for from table the fields in the output must be identicle as the Table.'
         Top = 48
         Width = 999
@@ -78,13 +78,13 @@ object MainForm: TMainForm
         Left = 8
         Height = 233
         Hint = 'From Table'
-        Top = 184
+        Top = 208
         Width = 999
         Anchors = [akTop, akLeft, akRight, akBottom]
         Color = clWindow
         Columns = <>
         DataSource = DataForm.ScriptQuerySource1
-        Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgAutoSizeColumns]
+        Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgAutoSizeColumns, dgDblClickAutoSize]
         ReadOnly = True
         ShowHint = True
         TabOrder = 3
@@ -95,7 +95,7 @@ object MainForm: TMainForm
       object ScriptSQL: TMemo
         Left = 8
         Height = 104
-        Top = 425
+        Top = 448
         Width = 892
         Anchors = [akLeft, akRight, akBottom]
         ScrollBars = ssVertical
@@ -104,7 +104,7 @@ object MainForm: TMainForm
       object ExportSQLBtn: TButton
         Left = 908
         Height = 25
-        Top = 425
+        Top = 448
         Width = 99
         Anchors = [akRight, akBottom]
         Caption = 'Export SQL'
@@ -122,7 +122,7 @@ object MainForm: TMainForm
       object SaveSQLBtn: TButton
         Left = 908
         Height = 25
-        Top = 504
+        Top = 527
         Width = 99
         Anchors = [akRight, akBottom]
         Caption = 'Save SQL'
@@ -871,8 +871,8 @@ object MainForm: TMainForm
     end
   end
   object CreateInsertPopup: TPopupMenu
-    left = 896
-    top = 456
+    left = 904
+    top = 416
     object GenerateInsertsFromAllCSVRecordsMNU: TMenuItem
       Caption = 'Generate Inserts from all CSV records'
       OnClick = GenerateInsertsFromAllCSVRecordsMNUClick
