@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 2354
+  Left = 2440
   Height = 650
-  Top = 151
+  Top = 221
   Width = 1024
   Caption = 'NComp MSSQL Toolbox'
   ClientHeight = 650
@@ -14,6 +14,7 @@ object MainForm: TMainForm
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
+  Position = poScreenCenter
   LCLVersion = '1.8.2.0'
   object PageControl1: TPageControl
     Left = 0
@@ -652,7 +653,7 @@ object MainForm: TMainForm
       end
       object CSVSearchCombo: TComboBox
         Left = 456
-        Height = 27
+        Height = 20
         Top = 2
         Width = 112
         ItemHeight = 0

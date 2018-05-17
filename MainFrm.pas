@@ -3,9 +3,9 @@ unit MainFrm;
 interface
 
 uses
-  Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Grids, DBGrids, StdCtrls, Buttons, Menus, ComCtrls, DbCtrls,
-  UtilsUnit, Registry, Types, IniFiles, DB, sqldb, BufDataset, laz2_DOM,
+  UtilsUnit, Types, IniFiles, DB, sqldb, BufDataset, laz2_DOM,
   laz2_XMLRead,Base64;
 
 type
@@ -816,11 +816,13 @@ var
           s: string;
 begin
           try
+            LastFromDB := FromDBCombo.ItemIndex;
             s := FromDBCombo.Items[FromDBCombo.ItemIndex];
             Dataform.FromConnection.Close;
             Dataform.FromConnection.DatabaseName := s;
             Dataform.FromConnection.Open;
             Dataform.DBQuery1.Open;
+            FromDBCombo.ItemIndex := LastFromDB;
           except
           begin
             ShowMessage('Unable to select DB , make sure the DB exist');
