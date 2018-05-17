@@ -14,6 +14,7 @@ type
     ColumnsSource2: TDataSource;
     CSVSource: TDataSource;
     ColumnsQuery1: TSQLQuery;
+    DBQuery1: TSQLQuery;
     TablesSource1: TDataSource;
     ScriptQuery1: TSQLQuery;
     ScriptQuerySource1: TDataSource;
@@ -22,6 +23,7 @@ type
     CSVDataset: TSdfDataSet;
     TablesQuery1: TSQLQuery;
     ColumnsSource1: TDataSource;
+    DBSource1: TDataSource;
     ToTransaction: TSQLTransaction;
     ToConnection: TMSSQLConnection;
     FromQuery1: TSQLQuery;

@@ -8,7 +8,6 @@ object DataForm: TDataForm
   object FromConnection: TMSSQLConnection
     Connected = False
     LoginPrompt = False
-    DatabaseName = 'WineMS_Global'
     KeepConnection = False
     Params.Strings = (
       'DriverID=MSSQL2005'
@@ -122,6 +121,7 @@ object DataForm: TDataForm
   end
   object TablesQuery1: TSQLQuery
     PacketRecords = -1
+    IndexName = 'DEFAULT_ORDER'
     FieldDefs = <    
       item
         Name = 'name'
@@ -186,5 +186,28 @@ object DataForm: TDataForm
     DataSet = ColumnsQuery2
     left = 152
     top = 384
+  end
+  object DBQuery1: TSQLQuery
+    PacketRecords = -1
+    FieldDefs = <    
+      item
+        Name = 'name'
+        DataType = ftString
+        Precision = -1
+        Size = 512
+      end>
+    Database = FromConnection
+    Transaction = FromTransaction
+    SQL.Strings = (
+      ' SELECT name FROM sys.databases order by name'
+    )
+    Params = <>
+    left = 304
+    top = 355
+  end
+  object DBSource1: TDataSource
+    DataSet = DBQuery1
+    left = 392
+    top = 355
   end
 end

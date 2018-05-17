@@ -19,6 +19,7 @@ type
     Button3: TButton;
     AddColumnBtn: TButton;
     AddValueBtn: TButton;
+    FromDBCombo: TDBLookupComboBox;
     ImportSaveLogMemoBtn: TButton;
     CreateInsertPopup: TPopupMenu;
     GenerateInsertsFromAllCSVRecordsMNU: TMenuItem;
@@ -57,7 +58,6 @@ type
     SaveSQLBtn: TButton;
     ExportSQLBtn: TButton;
     CloseBtn: TBitBtn;
-    FromDatabase: TEdit;
     FromPassword: TEdit;
     FromServerName: TEdit;
     FromUserName: TEdit;
@@ -107,6 +107,7 @@ type
     procedure AddColumnBtnClick(Sender: TObject);
     procedure AddValueBtnClick(Sender: TObject);
     procedure CSVSearchBtnClick(Sender: TObject);
+    procedure FromDBComboChange(Sender: TObject);
     procedure DeleteSelectedRowBtnClick(Sender: TObject);
     procedure FixLinkedValueMenuBtnClick(Sender: TObject);
     procedure AddLinkedColumnBtnClick(Sender: TObject);
@@ -155,6 +156,7 @@ var
   MainForm: TMainForm;
   FieldsString, ValuesString: String;
   RecordGuid: TGUID;
+  LastFromDB: Integer;
 
 implementation
       uses datafrm, AboutFrm, FixLinkedValuesFrm;
@@ -229,7 +231,7 @@ begin
       ConfigFilePath := GetAppConfigFile(False);
       INI := TINIFile.Create(ConfigFilePath + 'DB.ini');
       try
-        INI.WriteString('DB','FromDatabase',FromDatabase.Text);
+        INI.WriteInteger('DB','FromDatabase',FromDBCombo.ItemIndex);
         INI.WriteString('DB','FromUserName',FromUserName.Text);
         INI.WriteString('DB','FromPassword',encrypt(FromPassword.Text));
         INI.WriteString('DB','FromServerName',FromServerName.Text);
@@ -335,6 +337,8 @@ begin
 end;
 
 procedure TMainForm.ConnecttoServerBtnClick(Sender: TObject);
+var
+          s: String;
 begin
       If ConnecttoServerBtn.Caption = 'Disconnect server' then
       begin
@@ -347,12 +351,21 @@ begin
             Dataform.FromConnection.Close;
             Dataform.FromConnection.Params.Clear;
        //     Dataform.FromConnection.Params.Add('DriverID=MSSQL');
-
-            Dataform.FromConnection.DatabaseName := FromDatabase.Text;
             Dataform.FromConnection.UserName := FromUserName.Text;
             Dataform.FromConnection.Password := FromPassword.Text;
             Dataform.FromConnection.HostName := FromServerName.Text;
             Dataform.FromConnection.Open;
+            Dataform.DBQuery1.Open;
+            FromDBCombo.ItemIndex := LastFromDB;
+            if FromDBCombo.ItemIndex <> -1 then
+            begin
+              s := FromDBCombo.Items[FromDBCombo.ItemIndex];
+              Dataform.FromConnection.Close;
+              Dataform.FromConnection.DatabaseName := s;
+              Dataform.FromConnection.Open;
+              Dataform.DBQuery1.Open;
+              FromDBCombo.ItemIndex := LastFromDB;
+            end;
             ConnecttoServerBtn.Caption := 'Disconnect server';
           except
           begin
@@ -798,6 +811,27 @@ begin
       Dataform.CSVDataset.EnableControls;
 end;
 
+procedure TMainForm.FromDBComboChange(Sender: TObject);
+var
+          s: string;
+begin
+          try
+            s := FromDBCombo.Items[FromDBCombo.ItemIndex];
+            Dataform.FromConnection.Close;
+            Dataform.FromConnection.DatabaseName := s;
+            Dataform.FromConnection.Open;
+            Dataform.DBQuery1.Open;
+          except
+          begin
+            ShowMessage('Unable to select DB , make sure the DB exist');
+            Dataform.FromConnection.Close;
+            ConnecttoServerBtn.Caption := 'Connect to server';
+          end;
+          raise;
+          end;
+
+end;
+
 procedure TMainForm.AddColumnBtnClick(Sender: TObject);
 begin
       if FieldSelectList.ItemIndex = -1 then
@@ -908,7 +942,7 @@ begin
       ConfigFilePath := GetAppConfigFile(False);
       INI := TINIFile.Create(ConfigFilePath + 'DB.ini');
       try
-        FromDatabase.Text := INI.ReadString('DB','FromDatabase','');
+        LastFromDB := INI.ReadInteger('DB','FromDatabase',-1);
         FromUserName.Text := INI.ReadString('DB','FromUserName','');
         FromPassword.Text := Decrypt(INI.ReadString('DB','FromPassword',''));
         FromServerName.Text := INI.ReadString('DB','FromServerName','');
