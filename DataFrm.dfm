@@ -99,6 +99,7 @@ object DataForm: TDataForm
     SQL.Strings = (
       'select * from tblBatch'
     )
+    Options = [sqoKeepOpenOnCommit, sqoAutoApplyUpdates, sqoAutoCommit]
     Params = <>
     left = 56
     top = 176
@@ -121,7 +122,6 @@ object DataForm: TDataForm
   end
   object TablesQuery1: TSQLQuery
     PacketRecords = -1
-    IndexName = 'DEFAULT_ORDER'
     FieldDefs = <    
       item
         Name = 'name'
