@@ -75,7 +75,6 @@ object MainForm: TMainForm
         TabOrder = 2
       end
       object ScriptGrid: TDBGrid
-        AnchorSideRight.Control = BtnCompareRight
         Left = 8
         Height = 195
         Hint = 'From Table'
