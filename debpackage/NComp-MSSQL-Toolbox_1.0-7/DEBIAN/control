@@ -1,5 +1,5 @@
 Package: NComp-MSSQL-Toolbox 
-Version: 1.0-6
+Version: 1.0-7
 Section: base
 Priority: optional
 Architecture: amd64

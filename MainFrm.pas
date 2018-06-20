@@ -23,17 +23,18 @@ type
     DBNavigator2: TDBNavigator;
     FromDBCombo: TDBLookupComboBox;
     ImportSaveLogMemoBtn: TButton;
-    CreateInsertPopup: TPopupMenu;
+    CreateQueriesPopup: TPopupMenu;
     GenerateInsertsFromAllCSVRecordsMNU: TMenuItem;
     GenerateInsertsfromPrimaryCSVFieldNotFoundMNU: TMenuItem;
     EditMnu: TMenuItem;
     ExportSQLPopup: TPopupMenu;
     GenerateInsertfromResultsetMNU: TMenuItem;
     GenerateUpdatesfromResultsetMNU: TMenuItem;
+    GenerateUpdatesfromallCSVrecordsMNU: TMenuItem;
     ResultsetEditableMnu: TMenuItem;
     XMLToCSVConvertBtn: TButton;
     ValueEdt: TEdit;
-    GenerateInsertBtn: TButton;
+    GenerateQueriesBtn: TButton;
     CSVSearchNextBtn: TButton;
     CSVSearchBtn: TButton;
     CSVSearchCombo: TComboBox;
@@ -121,11 +122,12 @@ type
     procedure DeleteSelectedRowBtnClick(Sender: TObject);
     procedure FixLinkedValueMenuBtnClick(Sender: TObject);
     procedure AddLinkedColumnBtnClick(Sender: TObject);
-    procedure GenerateInsertBtnClick(Sender: TObject);
+    procedure GenerateQueriesBtnClick(Sender: TObject);
     procedure GenerateInsertfromResultsetMNUClick(Sender: TObject);
     procedure GenerateInsertsFromAllCSVRecordsMNUClick(Sender: TObject);
     procedure GenerateInsertsfromPrimaryCSVFieldNotFoundMNUClick(Sender: TObject
       );
+    procedure GenerateUpdatesfromallCSVrecordsMNUClick(Sender: TObject);
     procedure GenerateUpdatesfromResultsetMNUClick(Sender: TObject);
     procedure ImportSaveLogMemoBtnClick(Sender: TObject);
     procedure LoadTablesBtnClick(Sender: TObject);
@@ -154,7 +156,7 @@ type
     procedure TestLinkedTableBtnClick(Sender: TObject);
     procedure SetupGridClick(Sender: TObject);
   private
-    procedure GenerateInsertLine();
+    function GenerateQueryLine(typestr: String): String;
     function getTablePrimaryKey(TableName: String): String;
     function LoadPrimaryTable(): Boolean;
     { Private declarations }
@@ -561,7 +563,7 @@ begin
       SetupGrid.Cells[4,SetupGrid.RowCount - 1] := ColumnsList.Items[ColumnsList.ItemIndex];
 end;
 
-procedure TMainForm.GenerateInsertBtnClick(Sender: TObject);
+procedure TMainForm.GenerateQueriesBtnClick(Sender: TObject);
 var
          button: TControl;
          lowerLeft: TPoint;
@@ -571,7 +573,7 @@ begin
         button := TControl(Sender);
         lowerLeft := Point(0, button.Height);
         lowerLeft := button.ClientToScreen(lowerLeft);
-        CreateInsertPopup.Popup(lowerLeft.X, lowerLeft.Y);
+        CreateQueriesPopup.Popup(lowerLeft.X, lowerLeft.Y);
       end;
 end;
 
@@ -653,8 +655,7 @@ begin
            Application.processMessages;
            FieldsString := '';
            ValuesString := '';
-           GenerateInsertLine();
-           QueryString := 'insert into ' + PrimaryTableNameEdt.Text + ' (' + FieldsString + ') Values (' + ValuesString + ');';
+           QueryString := GenerateQueryLine('Insert');
            LogMemo.Lines.Add(QueryString);
            Dataform.CSVDataset.Next;
       end;
@@ -726,13 +727,46 @@ begin
            begin
                 FieldsString := '';
                 ValuesString := '';
-                GenerateInsertLine();
-                QueryString := 'insert into ' + PrimaryTableNameEdt.Text + ' (' + FieldsString + ') Values (' + ValuesString + ');';
+                QueryString := GenerateQueryLine('Insert');
                 LogMemo.Lines.Add(QueryString);
            end;
            Dataform.CSVDataset.Next;
       end;
       Dataform.CSVDataset.EnableControls;
+end;
+
+procedure TMainForm.GenerateUpdatesfromallCSVrecordsMNUClick(Sender: TObject);
+var
+          QueryString: String;
+          I: integer;
+begin
+      if Dataform.FromConnection.Connected = False then
+      begin
+        showmessage('Connect from database first');
+        exit;
+      end;
+      if Dataform.CSVDataSet.Active = False then
+      begin
+        showmessage('Load CSV File First first');
+        exit;
+      end;
+      Dataform.CSVDataset.First;
+      Dataform.CSVDataset.DisableControls;
+      ProgressBar1.Max := Dataform.CSVDataset.RecordCount;
+      ProgressBar1.Position := 0;
+      LogMemo.Clear;
+      while not Dataform.CSVDataset.EOF do
+      begin
+           ProgressBar1.StepIt;
+           Application.processMessages;
+           FieldsString := '';
+           ValuesString := '';
+           QueryString := GenerateQueryLine('Update');
+           LogMemo.Lines.Add(QueryString);
+           Dataform.CSVDataset.Next;
+      end;
+      Dataform.CSVDataset.EnableControls;
+      Dataform.FromQuery1.Close;
 end;
 
 procedure TMainForm.GenerateUpdatesfromResultsetMNUClick(Sender: TObject);
@@ -795,7 +829,7 @@ begin
       showmessage('Finished');
 end;
 
-procedure TMainForm.GenerateInsertLine();
+function TMainForm.GenerateQueryLine(typestr: String): String;
 var
           I: integer;
           KeyColumnName, TempValue: String;
@@ -804,29 +838,54 @@ begin
       begin
            if SetupGrid.Cells[0,I] = 'Column' then
            begin
-                if FieldsString = '' then
+                if typestr = 'Insert' then
                 begin
-                     FieldsString := SetupGrid.Cells[2,I];
-                     ValuesString := ConvertFieldtoSQLString(Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,I]));
+                     if FieldsString = '' then
+                     begin
+                          FieldsString := SetupGrid.Cells[2,I];
+                          ValuesString := ConvertFieldtoSQLString(Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,I]));
+                     end
+                     else
+                     begin
+                          FieldsString := FieldsString + ',' + SetupGrid.Cells[2,I];
+                          ValuesString := ValuesString + ',' + ConvertFieldtoSQLString(Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,I]));
+                     end;
                 end
                 else
                 begin
-                     FieldsString := FieldsString + ',' + SetupGrid.Cells[2,I];
-                     ValuesString := ValuesString + ',' + ConvertFieldtoSQLString(Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,I]));
+                     if FieldsString = '' then
+                       FieldsString := SetupGrid.Cells[2,I] + ' = ' +  ConvertFieldtoSQLString(Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,I]))
+                     else
+                       FieldsString := FieldsString + ', ' + SetupGrid.Cells[2,I] + ' = ' + ConvertFieldtoSQLString(Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,I]));
                 end;
            end;
            if SetupGrid.Cells[0,I] = 'Primary' then
            begin
-                CreateGUID(RecordGuid);
-                if FieldsString = '' then
+                if typestr = 'Insert' then
                 begin
-                     FieldsString := SetupGrid.Cells[2,I];
-                     ValuesString := '''' + GuidtoString(RecordGuid) + '''';
+                     CreateGUID(RecordGuid);
+                     if FieldsString = '' then
+                     begin
+                          FieldsString := SetupGrid.Cells[2,I];
+                          ValuesString := '''' + GuidtoString(RecordGuid) + '''';
+                     end
+                     else
+                     begin
+                          FieldsString := FieldsString + ',' + SetupGrid.Cells[2,I];
+                          ValuesString := ValuesString + ',' + '''' + GuidtoString(RecordGuid) + '''';
+                     end;
                 end
                 else
                 begin
-                     FieldsString := FieldsString + ',' + SetupGrid.Cells[2,I];
-                     ValuesString := ValuesString + ',' + '''' + GuidtoString(RecordGuid) + '''';
+                     KeyColumnName := getTablePrimaryKey(SetupGrid.Cells[3,I]);
+                     If KeyColumnName = 'Failed' then
+                     begin
+                          showmessage('Primary Key not found for Primary table ' + SetupGrid.Cells[3,I]);
+                          exit;
+                     end;
+                     TempValue := 'select ' + KeyColumnName + ' from ' + SetupGrid.Cells[3,I] +
+                     ' where ' + SetupGrid.Cells[4,I] + ' = ''' + Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,I]).asString + '''';
+                     ValuesString := ' where ' + KeyColumnName + ' = (' + TempValue + ');'
                 end;
            end;
            if SetupGrid.Cells[0,I] = 'Linked' then
@@ -840,15 +899,25 @@ begin
                 TempValue := 'select ' + KeyColumnName + ' from ' + SetupGrid.Cells[3,I] +
                 ' where ' + SetupGrid.Cells[4,I] + ' = ''' + Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,I]).asString + '''';
 
-                if FieldsString = '' then
+                if typestr = 'Insert' then
                 begin
-                     FieldsString := SetupGrid.Cells[2,I];
-                     ValuesString := '(' + TempValue + ')';
+                     if FieldsString = '' then
+                     begin
+                          FieldsString := SetupGrid.Cells[2,I];
+                          ValuesString := '(' + TempValue + ')';
+                     end
+                     else
+                     begin
+                          FieldsString := FieldsString + ',' + SetupGrid.Cells[2,I];
+                          ValuesString := ValuesString + ',' + '(' + TempValue + ')';
+                     end;
                 end
                 else
                 begin
-                     FieldsString := FieldsString + ',' + SetupGrid.Cells[2,I];
-                     ValuesString := ValuesString + ',' + '(' + TempValue + ')';
+                     if FieldsString = '' then
+                       FieldsString := SetupGrid.Cells[2,I] + ' = ' +  '(' + TempValue + ')'
+                     else
+                       FieldsString := FieldsString + ', ' + SetupGrid.Cells[2,I] + ' = ' + '(' + TempValue + ')';
                 end;
            end;
            if SetupGrid.Cells[0,I] = 'Value' then
@@ -861,17 +930,35 @@ begin
                 begin
                      TempValue := '''' + SetupGrid.Cells[1,I] + '''';
                 end;
-                if FieldsString = '' then
+                if typestr = 'Insert' then
                 begin
-                     FieldsString := SetupGrid.Cells[2,I];
-                     ValuesString := TempValue;
+                     if FieldsString = '' then
+                     begin
+                          FieldsString := SetupGrid.Cells[2,I];
+                          ValuesString := TempValue;
+                     end
+                     else
+                     begin
+                          FieldsString := FieldsString + ',' + SetupGrid.Cells[2,I];
+                          ValuesString := ValuesString + ',' + TempValue;
+                     end;
                 end
                 else
                 begin
-                     FieldsString := FieldsString + ',' + SetupGrid.Cells[2,I];
-                     ValuesString := ValuesString + ',' + TempValue;
+                     if FieldsString = '' then
+                       FieldsString := SetupGrid.Cells[2,I] + ' = ' + TempValue
+                     else
+                       FieldsString := FieldsString + ', ' + SetupGrid.Cells[2,I] + ' = ' + TempValue;
                 end;
            end;
+      end;
+      if typestr = 'Insert' then
+      begin
+           GenerateQueryLine := 'insert into ' + PrimaryTableNameEdt.Text + ' (' + FieldsString + ') Values (' + ValuesString + ');';
+      end
+      else
+      begin
+           GenerateQueryLine := 'update ' + PrimaryTableNameEdt.Text + ' set ' + FieldsString + ValuesString;
       end;
 end;
 

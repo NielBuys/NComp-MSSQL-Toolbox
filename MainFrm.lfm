@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 2355
+  Left = 799
   Height = 650
-  Top = 137
+  Top = 136
   Width = 1024
   Caption = 'NComp MSSQL Toolbox'
   ClientHeight = 650
@@ -21,9 +21,9 @@ object MainForm: TMainForm
     Height = 581
     Top = 33
     Width = 1024
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 5
     object TabSheet2: TTabSheet
       Caption = 'Querys / Export'
@@ -420,7 +420,7 @@ object MainForm: TMainForm
         Left = 176
         Height = 24
         Top = 3
-        Width = 138
+        Width = 180
         Caption = 'Use first line as header'
         Checked = True
         State = cbChecked
@@ -707,15 +707,15 @@ object MainForm: TMainForm
         OnClick = AddColumnBtnClick
         TabOrder = 24
       end
-      object GenerateInsertBtn: TButton
+      object GenerateQueriesBtn: TButton
         Left = 912
         Height = 25
         Top = 496
         Width = 104
         Anchors = [akRight, akBottom]
-        Caption = 'Generate Insert'
-        OnClick = GenerateInsertBtnClick
-        PopupMenu = CreateInsertPopup
+        Caption = 'Generate Queries'
+        OnClick = GenerateQueriesBtnClick
+        PopupMenu = CreateQueriesPopup
         TabOrder = 25
       end
       object AddValueBtn: TButton
@@ -919,7 +919,7 @@ object MainForm: TMainForm
       OnClick = FixLinkedValueMenuBtnClick
     end
   end
-  object CreateInsertPopup: TPopupMenu
+  object CreateQueriesPopup: TPopupMenu
     left = 904
     top = 360
     object GenerateInsertsFromAllCSVRecordsMNU: TMenuItem
@@ -929,6 +929,10 @@ object MainForm: TMainForm
     object GenerateInsertsfromPrimaryCSVFieldNotFoundMNU: TMenuItem
       Caption = 'Generate Inserts from Primary CSV Field Not Found'
       OnClick = GenerateInsertsfromPrimaryCSVFieldNotFoundMNUClick
+    end
+    object GenerateUpdatesfromallCSVrecordsMNU: TMenuItem
+      Caption = 'Generate Updates from all CSV records'
+      OnClick = GenerateUpdatesfromallCSVrecordsMNUClick
     end
   end
   object ExportSQLPopup: TPopupMenu
