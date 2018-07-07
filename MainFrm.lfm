@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 799
+  Left = 461
   Height = 650
-  Top = 136
+  Top = 201
   Width = 1024
   Caption = 'NComp MSSQL Toolbox'
   ClientHeight = 650
@@ -21,9 +21,9 @@ object MainForm: TMainForm
     Height = 581
     Top = 33
     Width = 1024
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 5
     object TabSheet2: TTabSheet
       Caption = 'Querys / Export'
@@ -155,37 +155,37 @@ object MainForm: TMainForm
       ClientWidth = 1020
       object Label6: TLabel
         Left = 32
-        Height = 11
+        Height = 12
         Top = 10
-        Width = 63
+        Width = 59
         Caption = 'To Database:'
         ParentColor = False
       end
       object ToDatabase: TEdit
         Left = 128
-        Height = 21
+        Height = 20
         Top = 8
         Width = 127
         TabOrder = 0
       end
       object Label7: TLabel
         Left = 272
-        Height = 11
+        Height = 12
         Top = 10
-        Width = 67
+        Width = 64
         Caption = 'To UserName:'
         ParentColor = False
       end
       object ToUserName: TEdit
         Left = 368
-        Height = 21
+        Height = 20
         Top = 8
         Width = 127
         TabOrder = 1
       end
       object Label8: TLabel
         Left = 520
-        Height = 11
+        Height = 12
         Top = 10
         Width = 62
         Caption = 'To Password:'
@@ -193,7 +193,7 @@ object MainForm: TMainForm
       end
       object ToPassword: TEdit
         Left = 616
-        Height = 21
+        Height = 20
         Top = 8
         Width = 127
         EchoMode = emPassword
@@ -202,59 +202,59 @@ object MainForm: TMainForm
       end
       object Label9: TLabel
         Left = 768
-        Height = 11
+        Height = 12
         Top = 10
-        Width = 80
+        Width = 77
         Caption = 'To Server Name:'
         ParentColor = False
       end
       object ToServerName: TEdit
         Left = 864
-        Height = 21
+        Height = 20
         Top = 8
         Width = 127
         TabOrder = 3
       end
       object Label5: TLabel
         Left = 152
-        Height = 11
+        Height = 12
         Top = 40
-        Width = 60
+        Width = 56
         Caption = 'Table Name:'
         ParentColor = False
       end
       object FromTable: TEdit
         Left = 236
-        Height = 21
+        Height = 20
         Top = 40
         Width = 127
         TabOrder = 4
       end
       object Label11: TLabel
         Left = 415
-        Height = 11
+        Height = 12
         Top = 40
-        Width = 63
+        Width = 60
         Caption = 'Unique Field:'
         ParentColor = False
       end
       object FromUniqueField: TEdit
         Left = 490
-        Height = 21
+        Height = 20
         Top = 40
         Width = 127
         TabOrder = 5
       end
       object Label10: TLabel
         Left = 8
-        Height = 11
+        Height = 12
         Top = 46
-        Width = 92
+        Width = 83
         Caption = 'SQL for from table'
         ParentColor = False
       end
       object JvBitBtn1: TBitBtn
-        Left = 872
+        Left = 868
         Height = 27
         Top = 151
         Width = 122
@@ -277,7 +277,7 @@ object MainForm: TMainForm
       object FromGrid: TDBGrid
         AnchorSideRight.Control = BtnCompareRight
         Left = 10
-        Height = 192
+        Height = 172
         Hint = 'From Table'
         Top = 183
         Width = 352
@@ -309,10 +309,10 @@ object MainForm: TMainForm
         AnchorSideLeft.Control = BtnCompareRight
         AnchorSideLeft.Side = asrBottom
         Left = 392
-        Height = 192
+        Height = 172
         Hint = 'To Table'
         Top = 184
-        Width = 616
+        Width = 612
         Anchors = [akTop, akLeft, akRight, akBottom]
         Color = clWindow
         Columns = <>
@@ -328,8 +328,8 @@ object MainForm: TMainForm
       object OutputLog: TMemo
         Left = 6
         Height = 64
-        Top = 385
-        Width = 951
+        Top = 365
+        Width = 947
         Anchors = [akLeft, akRight, akBottom]
         Lines.Strings = (
           ''
@@ -341,16 +341,16 @@ object MainForm: TMainForm
       object SQL: TMemo
         Left = 6
         Height = 75
-        Top = 454
-        Width = 951
+        Top = 434
+        Width = 947
         Anchors = [akLeft, akRight, akBottom]
         ScrollBars = ssVertical
         TabOrder = 12
       end
       object Button2: TButton
-        Left = 959
+        Left = 955
         Height = 25
-        Top = 399
+        Top = 379
         Width = 57
         Anchors = [akRight, akBottom]
         Caption = 'Save log'
@@ -358,9 +358,9 @@ object MainForm: TMainForm
         TabOrder = 13
       end
       object Button1: TButton
-        Left = 959
+        Left = 955
         Height = 25
-        Top = 435
+        Top = 415
         Width = 57
         Anchors = [akRight, akBottom]
         Caption = 'Save SQL'
@@ -368,9 +368,9 @@ object MainForm: TMainForm
         TabOrder = 14
       end
       object Button3: TButton
-        Left = 959
+        Left = 955
         Height = 25
-        Top = 459
+        Top = 439
         Width = 57
         Anchors = [akRight, akBottom]
         Caption = 'Run SQL'
@@ -379,9 +379,9 @@ object MainForm: TMainForm
       end
       object FromRowsCountLabel: TLabel
         Left = 8
-        Height = 11
+        Height = 12
         Top = 165
-        Width = 6
+        Width = 5
         Caption = '0'
         ParentColor = False
       end
@@ -881,18 +881,18 @@ object MainForm: TMainForm
   object MainMenu1: TMainMenu
     left = 576
     top = 248
-    object File1: TMenuItem
-      Caption = 'Help'
-      object About1: TMenuItem
-        Caption = 'About'
-        OnClick = About1Click
-      end
-    end
     object EditMnu: TMenuItem
       Caption = 'Edit'
       object ResultsetEditableMnu: TMenuItem
         AutoCheck = True
         Caption = 'Resultset Editable'
+      end
+    end
+    object File1: TMenuItem
+      Caption = 'Help'
+      object About1: TMenuItem
+        Caption = 'About'
+        OnClick = About1Click
       end
     end
   end
