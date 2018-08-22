@@ -32,6 +32,8 @@ interface
   function GetSpecialFolder(const CSIDL : integer) : String;
   function AddCR(stemp: AnsiString): AnsiString;
   function RemoveLF(stemp: String): String;
+  function SwapLF(stemp: String): String;
+  function SwapCR(stemp: String): String;
   function IsInteger(S: AnsiString): Boolean;
   function TestSwitchString(SwitchString,TestValue: AnsiString): AnsiString;
   function UpdateSwitchString(SwitchString,TestValue,Value: AnsiString): AnsiString;
@@ -46,6 +48,7 @@ interface
   function GetRegistryData(RootKey: HKEY; Key, Value: String): variant;
   procedure SetRegistryData(RootKey: HKEY; Key, Value: String;
     RegDataType: TRegDataType; Data: variant);
+
 
   const
   // Sets UnixStartDate to TDateTime of 01/01/1970
@@ -570,6 +573,30 @@ var
   i: integer;
 begin
   result := '';
+  for i := 1 to length(stemp) do begin
+    if not (stemp[i] in FindStr) then
+      result := result+stemp[i];
+  end;
+end;
+
+function SwapLF(stemp: String): String;
+const FindStr = [#10];
+var
+  i: integer;
+begin
+  result := '\n';
+  for i := 1 to length(stemp) do begin
+    if not (stemp[i] in FindStr) then
+      result := result+stemp[i];
+  end;
+end;
+
+function SwapCR(stemp: String): String;
+const FindStr = [#13];
+var
+  i: integer;
+begin
+  result := '\r';
   for i := 1 to length(stemp) do begin
     if not (stemp[i] in FindStr) then
       result := result+stemp[i];

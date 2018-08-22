@@ -427,9 +427,9 @@ begin
                          for j2 := 0 to (Count - 1) do
                          begin
                               If S = '' then
-                                 S := '"' + Item[j2].NodeName + '"'
+                                 S := '"' + SwapLF(SwapCR(Item[j2].NodeName)) + '"'
                               else
-                                S := S + ',"' + Item[j2].NodeName + '"'
+                                S := S + ',"' + SwapLF(SwapCR(Item[j2].NodeName)) + '"'
                          end;
                     end;
                 end;
@@ -446,9 +446,9 @@ begin
                          for j2 := 0 to (Count - 1) do
                          begin
                               If S = '' then
-                                 S := '"' + Item[j2].TextContent + '"'
+                                 S := '"' + SwapLF(SwapCR(Item[j2].TextContent)) + '"'
                               else
-                                S := S + ',"' + Item[j2].TextContent + '"'
+                                S := S + ',"' + SwapLF(SwapCR(Item[j2].TextContent)) + '"'
 //                                LogMemo.Lines.Add(Item[j2].NodeName + ': ' + Item[j2].TextContent);
                          end;
                          LogMemo.Lines.Add(S);
