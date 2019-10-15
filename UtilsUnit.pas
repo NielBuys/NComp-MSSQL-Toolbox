@@ -32,8 +32,7 @@ interface
   function GetSpecialFolder(const CSIDL : integer) : String;
   function AddCR(stemp: AnsiString): AnsiString;
   function RemoveLF(stemp: String): String;
-  function SwapLF(stemp: String): String;
-  function SwapCR(stemp: String): String;
+  function RemoveCRLF(stemp: String): String;
   function IsInteger(S: AnsiString): Boolean;
   function TestSwitchString(SwitchString,TestValue: AnsiString): AnsiString;
   function UpdateSwitchString(SwitchString,TestValue,Value: AnsiString): AnsiString;
@@ -563,7 +562,7 @@ begin
     if not (stemp[i] in FindStr) then
       result := result+stemp[i]
     else
-      result := result+#13+stemp[i];
+       result := result+#13+stemp[i];
   end;
 end;
 
@@ -579,27 +578,17 @@ begin
   end;
 end;
 
-function SwapLF(stemp: String): String;
-const FindStr = [#10];
+function RemoveCRLF(stemp: String): String;
+const FindStr = [#10,#13];
 var
   i: integer;
 begin
-  result := '\n';
+  result := '';
   for i := 1 to length(stemp) do begin
     if not (stemp[i] in FindStr) then
-      result := result+stemp[i];
-  end;
-end;
-
-function SwapCR(stemp: String): String;
-const FindStr = [#13];
-var
-  i: integer;
-begin
-  result := '\r';
-  for i := 1 to length(stemp) do begin
-    if not (stemp[i] in FindStr) then
-      result := result+stemp[i];
+      result := result+stemp[i]
+    else
+        result := result+' ';
   end;
 end;
 
@@ -787,7 +776,7 @@ begin
                temp :='null'  //Put a default string
             else
             begin
-                 temp := '''' + FixSQLString(FieldStore.AsString) + '''';
+                 temp := '''' + trim(FixSQLString(FieldStore.AsString)) + '''';
             end;
           end;
 
@@ -805,7 +794,7 @@ begin
           end;
           ftFloat, ftCurrency, ftBCD:
           begin
-  //          Showmessage(FloattoStr(FieldStore.AsFloat) + '==' + FloatToLocaleIndependantString(FieldStore.AsFloat));
+//            Showmessage(FloattoStr(FieldStore.AsFloat) + '==' + FloatToLocaleIndependantString(FieldStore.AsFloat));
             if FieldStore.AsFloat <> 0 then
               temp := FloatToLocaleIndependantString(FieldStore.AsFloat)
             else
@@ -1008,19 +997,27 @@ function FloatToLocaleIndependantString(const v: Extended): string;
 //   oldDecimalSeparator: Char;
 begin
   {$IFDEF Windows}
-  GetLocaleFormatSettings(0,myGlobalFormatSettings);
-  myGlobalFormatSettings.DecimalSeparator := '.';
-//   oldDecimalSeparator := SysUtils.DecimalSeparator;
-//   SysUtils.DecimalSeparator := '.'; //Windows formatting functions assume single decimal point
-   try
-      Result := FloatToStrF(v, ffFixed,
-            18, //Precision: "should be 18 or less for values of type Extended"
-            9, //Scale 0..18.   Sure...9 digits before decimal mark, 9 digits after. Why not
-            myGlobalFormatSettings
-      );
-   finally
-//      SysUtils.DecimalSeparator := oldDecimalSeparator;
-   end;
+      GetLocaleFormatSettings(0,myGlobalFormatSettings);
+      myGlobalFormatSettings.DecimalSeparator := '.';
+    //   oldDecimalSeparator := SysUtils.DecimalSeparator;
+    //   SysUtils.DecimalSeparator := '.'; //Windows formatting functions assume single decimal point
+       try
+          Result := FloatToStrF(v, ffFixed,
+                18, //Precision: "should be 18 or less for values of type Extended"
+                9, //Scale 0..18.   Sure...9 digits before decimal mark, 9 digits after. Why not
+                myGlobalFormatSettings
+          );
+       finally
+    //      SysUtils.DecimalSeparator := oldDecimalSeparator;
+       end;
+   {$ELSE}
+       try
+         Result := FloatToStrF(v, ffFixed,
+                 18,
+                 9
+           );
+        finally
+        end;
    {$ENDIF}
 end;
 

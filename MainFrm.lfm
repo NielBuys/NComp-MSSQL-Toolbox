@@ -1,10 +1,10 @@
 object MainForm: TMainForm
-  Left = 461
+  Left = 405
   Height = 650
-  Top = 201
+  Top = 142
   Width = 1024
   Caption = 'NComp MSSQL Toolbox'
-  ClientHeight = 650
+  ClientHeight = 630
   ClientWidth = 1024
   Color = clBtnFace
   DefaultMonitor = dmMainForm
@@ -15,32 +15,32 @@ object MainForm: TMainForm
   OnClose = FormClose
   OnCreate = FormCreate
   Position = poScreenCenter
-  LCLVersion = '1.8.2.0'
+  LCLVersion = '2.0.4.0'
   object PageControl1: TPageControl
     Left = 0
-    Height = 581
+    Height = 561
     Top = 33
     Width = 1024
-    ActivePage = TabSheet3
+    ActivePage = TabSheet2
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 2
+    TabIndex = 0
     TabOrder = 5
     object TabSheet2: TTabSheet
       Caption = 'Querys / Export'
-      ClientHeight = 556
-      ClientWidth = 1020
+      ClientHeight = 536
+      ClientWidth = 1016
       object Label16: TLabel
-        Left = 736
-        Height = 11
+        Left = 740
+        Height = 12
         Top = 24
-        Width = 135
+        Width = 127
         Anchors = [akTop, akRight]
         Caption = 'Table Name for SQL Export:'
         ParentColor = False
       end
       object ScriptTableName: TEdit
-        Left = 880
-        Height = 21
+        Left = 876
+        Height = 20
         Top = 16
         Width = 127
         Anchors = [akTop, akRight]
@@ -48,9 +48,9 @@ object MainForm: TMainForm
       end
       object RowsCountLabel: TLabel
         Left = 48
-        Height = 11
+        Height = 12
         Top = 232
-        Width = 6
+        Width = 5
         Caption = '0'
         ParentColor = False
       end
@@ -59,7 +59,7 @@ object MainForm: TMainForm
         Height = 184
         Hint = 'SQL for from table the fields in the output must be identicle as the Table.'
         Top = 40
-        Width = 999
+        Width = 995
         Anchors = [akTop, akLeft, akRight]
         ParentShowHint = False
         ScrollBars = ssVertical
@@ -76,10 +76,10 @@ object MainForm: TMainForm
       end
       object ScriptGrid: TDBGrid
         Left = 8
-        Height = 195
+        Height = 200
         Hint = 'From Table'
         Top = 249
-        Width = 999
+        Width = 995
         Anchors = [akTop, akLeft, akRight, akBottom]
         Color = clWindow
         Columns = <>
@@ -95,16 +95,16 @@ object MainForm: TMainForm
       object ScriptSQL: TMemo
         Left = 8
         Height = 104
-        Top = 451
-        Width = 892
+        Top = 456
+        Width = 888
         Anchors = [akLeft, akRight, akBottom]
         ScrollBars = ssVertical
         TabOrder = 4
       end
       object ExportSQLBtn: TButton
-        Left = 908
+        Left = 904
         Height = 25
-        Top = 451
+        Top = 456
         Width = 99
         Anchors = [akRight, akBottom]
         Caption = 'Export SQL'
@@ -113,16 +113,16 @@ object MainForm: TMainForm
       end
       object Label12: TLabel
         Left = 8
-        Height = 11
+        Height = 12
         Top = 232
-        Width = 20
+        Width = 19
         Caption = 'SQL'
         ParentColor = False
       end
       object SaveSQLBtn: TButton
-        Left = 908
+        Left = 904
         Height = 25
-        Top = 530
+        Top = 535
         Width = 99
         Anchors = [akRight, akBottom]
         Caption = 'Save SQL'
@@ -130,7 +130,7 @@ object MainForm: TMainForm
         TabOrder = 6
       end
       object DBNavigator2: TDBNavigator
-        Left = 766
+        Left = 762
         Height = 25
         Top = 224
         Width = 241
@@ -151,10 +151,10 @@ object MainForm: TMainForm
     end
     object TabSheet1: TTabSheet
       Caption = 'Compare'
-      ClientHeight = 556
-      ClientWidth = 1020
+      ClientHeight = 536
+      ClientWidth = 1016
       object Label6: TLabel
-        Left = 32
+        Left = 767
         Height = 12
         Top = 10
         Width = 59
@@ -162,7 +162,7 @@ object MainForm: TMainForm
         ParentColor = False
       end
       object ToDatabase: TEdit
-        Left = 128
+        Left = 863
         Height = 20
         Top = 8
         Width = 127
@@ -201,7 +201,7 @@ object MainForm: TMainForm
         TabOrder = 2
       end
       object Label9: TLabel
-        Left = 768
+        Left = 24
         Height = 12
         Top = 10
         Width = 77
@@ -209,7 +209,7 @@ object MainForm: TMainForm
         ParentColor = False
       end
       object ToServerName: TEdit
-        Left = 864
+        Left = 120
         Height = 20
         Top = 8
         Width = 127
@@ -254,12 +254,12 @@ object MainForm: TMainForm
         ParentColor = False
       end
       object JvBitBtn1: TBitBtn
-        Left = 868
+        Left = 844
         Height = 27
         Top = 151
-        Width = 122
+        Width = 142
         Anchors = [akTop, akRight]
-        Caption = 'Connect to servers'
+        Caption = 'Load From and To data'
         OnClick = JvBitBtn1Click
         TabOrder = 6
       end
@@ -277,7 +277,7 @@ object MainForm: TMainForm
       object FromGrid: TDBGrid
         AnchorSideRight.Control = BtnCompareRight
         Left = 10
-        Height = 172
+        Height = 177
         Hint = 'From Table'
         Top = 183
         Width = 352
@@ -309,10 +309,10 @@ object MainForm: TMainForm
         AnchorSideLeft.Control = BtnCompareRight
         AnchorSideLeft.Side = asrBottom
         Left = 392
-        Height = 172
+        Height = 177
         Hint = 'To Table'
         Top = 184
-        Width = 612
+        Width = 608
         Anchors = [akTop, akLeft, akRight, akBottom]
         Color = clWindow
         Columns = <>
@@ -328,8 +328,8 @@ object MainForm: TMainForm
       object OutputLog: TMemo
         Left = 6
         Height = 64
-        Top = 365
-        Width = 947
+        Top = 370
+        Width = 943
         Anchors = [akLeft, akRight, akBottom]
         Lines.Strings = (
           ''
@@ -341,16 +341,16 @@ object MainForm: TMainForm
       object SQL: TMemo
         Left = 6
         Height = 75
-        Top = 434
-        Width = 947
+        Top = 439
+        Width = 943
         Anchors = [akLeft, akRight, akBottom]
         ScrollBars = ssVertical
         TabOrder = 12
       end
       object Button2: TButton
-        Left = 955
+        Left = 951
         Height = 25
-        Top = 379
+        Top = 384
         Width = 57
         Anchors = [akRight, akBottom]
         Caption = 'Save log'
@@ -358,9 +358,9 @@ object MainForm: TMainForm
         TabOrder = 13
       end
       object Button1: TButton
-        Left = 955
+        Left = 951
         Height = 25
-        Top = 415
+        Top = 420
         Width = 57
         Anchors = [akRight, akBottom]
         Caption = 'Save SQL'
@@ -368,9 +368,9 @@ object MainForm: TMainForm
         TabOrder = 14
       end
       object Button3: TButton
-        Left = 955
+        Left = 951
         Height = 25
-        Top = 439
+        Top = 444
         Width = 57
         Anchors = [akRight, akBottom]
         Caption = 'Run SQL'
@@ -385,10 +385,23 @@ object MainForm: TMainForm
         Caption = '0'
         ParentColor = False
       end
+      object CompareStopRunBtn: TBitBtn
+        Left = 362
+        Height = 22
+        Hint = 'Stop Run'
+        Top = 272
+        Width = 30
+        Caption = 'X'
+        OnClick = CompareStopRunBtnClick
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 16
+        Visible = False
+      end
     end
     object TabSheet3: TTabSheet
       Caption = 'Import'
-      ClientHeight = 556
+      ClientHeight = 531
       ClientWidth = 1020
       object CSVGrid: TDBGrid
         Left = 8
@@ -420,7 +433,7 @@ object MainForm: TMainForm
         Left = 176
         Height = 24
         Top = 3
-        Width = 180
+        Width = 138
         Caption = 'Use first line as header'
         Checked = True
         State = cbChecked
@@ -437,7 +450,7 @@ object MainForm: TMainForm
       end
       object TableList: TDBLookupListBox
         Left = 232
-        Height = 128
+        Height = 103
         Top = 288
         Width = 112
         Anchors = [akTop, akLeft, akBottom]
@@ -448,7 +461,6 @@ object MainForm: TMainForm
         LookupCache = False
         OnClick = TableListClick
         TabOrder = 7
-        TopIndex = -1
       end
       object AddPrimaryTableDetailBtn: TButton
         Left = 456
@@ -461,7 +473,7 @@ object MainForm: TMainForm
       end
       object ColumnsList: TDBLookupListBox
         Left = 344
-        Height = 128
+        Height = 103
         Top = 288
         Width = 112
         Anchors = [akTop, akLeft, akBottom]
@@ -471,11 +483,10 @@ object MainForm: TMainForm
         ListSource = DataForm.ColumnsSource1
         LookupCache = False
         TabOrder = 8
-        TopIndex = -1
       end
       object PrimaryTableNameEdt: TEdit
         Left = 592
-        Height = 21
+        Height = 23
         Top = 264
         Width = 112
         TabOrder = 11
@@ -483,7 +494,7 @@ object MainForm: TMainForm
       end
       object PrimaryColumnEdt: TEdit
         Left = 712
-        Height = 21
+        Height = 23
         Top = 264
         Width = 112
         TabOrder = 12
@@ -491,18 +502,17 @@ object MainForm: TMainForm
       end
       object FieldSelectList: TListBox
         Left = 8
-        Height = 128
+        Height = 103
         Top = 288
         Width = 112
         Anchors = [akTop, akLeft, akBottom]
         ItemHeight = 0
         ScrollWidth = 110
         TabOrder = 4
-        TopIndex = -1
       end
       object SetupGrid: TStringGrid
         Left = 592
-        Height = 184
+        Height = 159
         Top = 288
         Width = 424
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -551,7 +561,7 @@ object MainForm: TMainForm
       end
       object Label13: TLabel
         Left = 8
-        Height = 11
+        Height = 13
         Top = 274
         Width = 66
         Caption = 'CSV Columns'
@@ -559,7 +569,7 @@ object MainForm: TMainForm
       end
       object Label14: TLabel
         Left = 352
-        Height = 11
+        Height = 13
         Top = 274
         Width = 95
         Caption = 'Link Table Columns'
@@ -567,7 +577,7 @@ object MainForm: TMainForm
       end
       object PrimaryColumnsList: TDBLookupListBox
         Left = 120
-        Height = 128
+        Height = 103
         Top = 288
         Width = 112
         Anchors = [akTop, akLeft, akBottom]
@@ -577,11 +587,10 @@ object MainForm: TMainForm
         ListSource = DataForm.ColumnsSource2
         LookupCache = False
         TabOrder = 5
-        TopIndex = -1
       end
       object Label15: TLabel
         Left = 120
-        Height = 11
+        Height = 13
         Top = 274
         Width = 85
         Caption = 'Primary Columns'
@@ -611,7 +620,7 @@ object MainForm: TMainForm
         AnchorSideRight.Control = SetupGrid
         Left = 8
         Height = 136
-        Top = 416
+        Top = 391
         Width = 584
         Anchors = [akLeft, akRight, akBottom]
         ScrollBars = ssAutoBoth
@@ -620,7 +629,7 @@ object MainForm: TMainForm
       object TestLinkedTableBtn: TButton
         Left = 912
         Height = 25
-        Top = 472
+        Top = 447
         Width = 104
         Anchors = [akRight, akBottom]
         Caption = 'Test Linked Table'
@@ -631,7 +640,7 @@ object MainForm: TMainForm
         AnchorSideLeft.Control = SaveProjectBtn
         Left = 592
         Height = 25
-        Top = 496
+        Top = 471
         Width = 115
         Anchors = [akLeft, akBottom]
         Caption = 'Delete Selected Row'
@@ -642,7 +651,7 @@ object MainForm: TMainForm
         AnchorSideLeft.Control = SetupGrid
         Left = 592
         Height = 25
-        Top = 472
+        Top = 447
         Width = 88
         Anchors = [akLeft, akBottom]
         Caption = 'Save Project'
@@ -654,7 +663,7 @@ object MainForm: TMainForm
         AnchorSideLeft.Side = asrBottom
         Left = 680
         Height = 25
-        Top = 472
+        Top = 447
         Width = 88
         Anchors = [akLeft, akBottom]
         Caption = 'Open Project'
@@ -663,7 +672,7 @@ object MainForm: TMainForm
       end
       object CSVSearchEdt: TEdit
         Left = 320
-        Height = 21
+        Height = 23
         Top = 2
         Width = 127
         ParentShowHint = False
@@ -673,10 +682,10 @@ object MainForm: TMainForm
       end
       object CSVSearchCombo: TComboBox
         Left = 456
-        Height = 27
+        Height = 20
         Top = 2
         Width = 112
-        ItemHeight = 0
+        ItemHeight = 12
         TabOrder = 21
         Text = 'Choose Column'
       end
@@ -710,7 +719,7 @@ object MainForm: TMainForm
       object GenerateQueriesBtn: TButton
         Left = 912
         Height = 25
-        Top = 496
+        Top = 471
         Width = 104
         Anchors = [akRight, akBottom]
         Caption = 'Generate Queries'
@@ -729,7 +738,7 @@ object MainForm: TMainForm
       end
       object ValueEdt: TEdit
         Left = 528
-        Height = 21
+        Height = 23
         Top = 364
         Width = 64
         ParentShowHint = False
@@ -751,7 +760,7 @@ object MainForm: TMainForm
         AnchorSideLeft.Side = asrBottom
         Left = 592
         Height = 25
-        Top = 527
+        Top = 502
         Width = 57
         Anchors = [akLeft, akBottom]
         Caption = 'Save log'
@@ -763,7 +772,7 @@ object MainForm: TMainForm
         AnchorSideLeft.Side = asrBottom
         Left = 768
         Height = 25
-        Top = 472
+        Top = 447
         Width = 75
         Anchors = [akLeft, akBottom]
         Caption = 'Clear Project'
@@ -776,7 +785,7 @@ object MainForm: TMainForm
     Left = 944
     Height = 25
     Hint = 'Close Application'
-    Top = 620
+    Top = 600
     Width = 73
     Anchors = [akRight, akBottom]
     DefaultCaption = True
@@ -787,40 +796,40 @@ object MainForm: TMainForm
     TabOrder = 7
   end
   object Label1: TLabel
-    Left = 784
-    Height = 11
+    Left = 790
+    Height = 12
     Top = 8
-    Width = 50
+    Width = 44
     Anchors = [akTop, akRight]
     Caption = 'Database:'
     ParentColor = False
   end
   object Label2: TLabel
     Left = 216
-    Height = 11
+    Height = 12
     Top = 8
-    Width = 54
+    Width = 49
     Caption = 'UserName:'
     ParentColor = False
   end
   object FromUserName: TEdit
     Left = 280
-    Height = 21
+    Height = 20
     Top = 5
     Width = 127
     TabOrder = 1
   end
   object Label3: TLabel
     Left = 424
-    Height = 11
+    Height = 12
     Top = 8
-    Width = 49
+    Width = 47
     Caption = 'Password:'
     ParentColor = False
   end
   object FromPassword: TEdit
     Left = 480
-    Height = 21
+    Height = 20
     Top = 5
     Width = 127
     EchoMode = emPassword
@@ -829,15 +838,15 @@ object MainForm: TMainForm
   end
   object Label4: TLabel
     Left = 8
-    Height = 11
+    Height = 12
     Top = 8
-    Width = 67
+    Width = 62
     Caption = 'Server Name:'
     ParentColor = False
   end
   object FromServerName: TEdit
     Left = 80
-    Height = 21
+    Height = 20
     Top = 5
     Width = 127
     TabOrder = 0
@@ -854,7 +863,7 @@ object MainForm: TMainForm
   object ProgressBar1: TProgressBar
     Left = 8
     Height = 25
-    Top = 620
+    Top = 600
     Width = 320
     Anchors = [akLeft, akBottom]
     Smooth = True
@@ -863,7 +872,7 @@ object MainForm: TMainForm
   end
   object FromDBCombo: TDBLookupComboBox
     Left = 848
-    Height = 27
+    Height = 20
     Hint = 'Choose DB'
     Top = 0
     Width = 160
@@ -879,8 +888,8 @@ object MainForm: TMainForm
     TabOrder = 4
   end
   object MainMenu1: TMainMenu
-    left = 576
-    top = 248
+    left = 528
+    top = 344
     object EditMnu: TMenuItem
       Caption = 'Edit'
       object ResultsetEditableMnu: TMenuItem
@@ -900,28 +909,28 @@ object MainForm: TMainForm
     DefaultExt = '.txt'
     Filter = 'txt|*.txt|csv|*.csv|All Files|*.*'
     Options = [ofOverwritePrompt, ofEnableSizing, ofViewDetail]
-    left = 480
-    top = 248
+    left = 432
+    top = 344
   end
   object OpenDialog1: TOpenDialog
     Title = 'Open file'
     DefaultExt = '.csv'
     Filter = 'txt|*.txt|csv|*.csv|xml|*.xml|All Files|*.*'
     FilterIndex = 2
-    left = 376
-    top = 248
+    left = 176
+    top = 344
   end
   object CSVGridMenu: TPopupMenu
-    left = 264
-    top = 248
+    left = 72
+    top = 344
     object FixLinkedValueMenuBtn: TMenuItem
       Caption = 'Fix Linked Value'
       OnClick = FixLinkedValueMenuBtnClick
     end
   end
   object CreateQueriesPopup: TPopupMenu
-    left = 904
-    top = 360
+    left = 744
+    top = 344
     object GenerateInsertsFromAllCSVRecordsMNU: TMenuItem
       Caption = 'Generate Inserts from all CSV records'
       OnClick = GenerateInsertsFromAllCSVRecordsMNUClick
@@ -934,10 +943,14 @@ object MainForm: TMainForm
       Caption = 'Generate Updates from all CSV records'
       OnClick = GenerateUpdatesfromallCSVrecordsMNUClick
     end
+    object GenerateUpdatesfromFoundMNU: TMenuItem
+      Caption = 'Generate Updates from Found records'
+      OnClick = GenerateUpdatesfromFoundMNUClick
+    end
   end
   object ExportSQLPopup: TPopupMenu
-    left = 904
-    top = 424
+    left = 896
+    top = 344
     object GenerateInsertfromResultsetMNU: TMenuItem
       Caption = 'Generate Inserts from Resultset'
       OnClick = GenerateInsertfromResultsetMNUClick

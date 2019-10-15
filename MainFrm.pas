@@ -13,6 +13,7 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    CompareStopRunBtn: TBitBtn;
     BtnCompareRight: TBitBtn;
     Button1: TButton;
     Button2: TButton;
@@ -31,6 +32,7 @@ type
     GenerateInsertfromResultsetMNU: TMenuItem;
     GenerateUpdatesfromResultsetMNU: TMenuItem;
     GenerateUpdatesfromallCSVrecordsMNU: TMenuItem;
+    GenerateUpdatesfromFoundMNU: TMenuItem;
     ResultsetEditableMnu: TMenuItem;
     XMLToCSVConvertBtn: TButton;
     ValueEdt: TEdit;
@@ -116,6 +118,7 @@ type
     procedure AddValueBtnClick(Sender: TObject);
     procedure ClearProjectBtnClick(Sender: TObject);
     procedure CommitResultsetBtnClick(Sender: TObject);
+    procedure CompareStopRunBtnClick(Sender: TObject);
     procedure CSVGridEnter(Sender: TObject);
     procedure CSVSearchBtnClick(Sender: TObject);
     procedure FromDBComboChange(Sender: TObject);
@@ -128,6 +131,7 @@ type
     procedure GenerateInsertsfromPrimaryCSVFieldNotFoundMNUClick(Sender: TObject
       );
     procedure GenerateUpdatesfromallCSVrecordsMNUClick(Sender: TObject);
+    procedure GenerateUpdatesfromFoundMNUClick(Sender: TObject);
     procedure GenerateUpdatesfromResultsetMNUClick(Sender: TObject);
     procedure ImportSaveLogMemoBtnClick(Sender: TObject);
     procedure LoadTablesBtnClick(Sender: TObject);
@@ -172,6 +176,7 @@ var
   FieldsString, ValuesString: String;
   RecordGuid: TGUID;
   LastFromDB: Integer;
+  StopRunBool: Boolean;
 
 implementation
       uses datafrm, AboutFrm, FixLinkedValuesFrm;
@@ -251,6 +256,10 @@ begin
         INI.WriteString('DB','FromUserName',FromUserName.Text);
         INI.WriteString('DB','FromPassword',encrypt(FromPassword.Text));
         INI.WriteString('DB','FromServerName',FromServerName.Text);
+        INI.WriteString('DB','ToUserName',ToUserName.Text);
+        INI.WriteString('DB','ToPassword',encrypt(ToPassword.Text));
+        INI.WriteString('DB','ToServerName',ToServerName.Text);
+        INI.WriteString('DB','ToDatabase',ToDatabase.Text);
         INI.WriteString('SCRIPTS','ScriptSQLEdit',EncodeStringBase64(ScriptSQLEdit.Text));
         INI.WriteInteger('FORM','PageControl1',Pagecontrol1.TabIndex);
       finally
@@ -427,9 +436,9 @@ begin
                          for j2 := 0 to (Count - 1) do
                          begin
                               If S = '' then
-                                 S := '"' + SwapLF(SwapCR(Item[j2].NodeName)) + '"'
+                                 S := '"' + Item[j2].NodeName + '"'
                               else
-                                S := S + ',"' + SwapLF(SwapCR(Item[j2].NodeName)) + '"'
+                                S := S + ',"' + Item[j2].NodeName + '"'
                          end;
                     end;
                 end;
@@ -446,9 +455,9 @@ begin
                          for j2 := 0 to (Count - 1) do
                          begin
                               If S = '' then
-                                 S := '"' + SwapLF(SwapCR(Item[j2].TextContent)) + '"'
+                                 S := '"' + RemoveCRLF(Item[j2].TextContent) + '"'
                               else
-                                S := S + ',"' + SwapLF(SwapCR(Item[j2].TextContent)) + '"'
+                                S := S + ',"' + RemoveCRLF(Item[j2].TextContent) + '"'
 //                                LogMemo.Lines.Add(Item[j2].NodeName + ': ' + Item[j2].TextContent);
                          end;
                          LogMemo.Lines.Add(S);
@@ -769,6 +778,78 @@ begin
       Dataform.FromQuery1.Close;
 end;
 
+procedure TMainForm.GenerateUpdatesfromFoundMNUClick(Sender: TObject);
+var
+          QueryString: String;
+          PrimaryCSVColumnStr, PrimaryKeyStr, PrimaryTableNameStr, PrimaryColumnStr: String;
+          Found: boolean;
+          I: integer;
+begin
+      if Dataform.FromConnection.Connected = False then
+      begin
+        showmessage('Connect from database first');
+        exit;
+      end;
+      if Dataform.CSVDataSet.Active = False then
+      begin
+        showmessage('Load CSV File First first');
+        exit;
+      end;
+      Found := false;
+      for I := 0 to SetupGrid.RowCount - 1 do
+      begin
+           If SetupGrid.Cells[0,I] = 'Primary' then
+           begin
+             PrimaryCSVColumnStr := SetupGrid.Cells[1,I];
+             PrimaryKeyStr := SetupGrid.Cells[2,I];
+             PrimaryTableNameStr := SetupGrid.Cells[3,I];
+             PrimaryColumnStr := SetupGrid.Cells[4,I];
+             Found := true;
+           end;
+      end;
+      If Found = false then
+      begin
+        showmessage('Primary setup entry not found');
+        exit;
+      end;
+      Dataform.CSVDataset.First;
+      Dataform.CSVDataset.DisableControls;
+      ProgressBar1.Max := Dataform.CSVDataset.RecordCount;
+      ProgressBar1.Position := 0;
+      LogMemo.Clear;
+      while not Dataform.CSVDataset.EOF do
+      begin
+           ProgressBar1.StepIt;
+           Application.processMessages;
+           Dataform.FromQuery1.Close;
+           with Dataform.FromQuery1.SQL do
+           begin
+             Clear;
+             Add('select ' + PrimaryColumnStr + ' from ' + PrimaryTableNameStr);
+             Add('where ' + PrimaryColumnStr + ' = ''' + FixSQLString(Dataform.CSVDataset.FieldByName(PrimaryCSVColumnStr).asString) + '''');
+           end;
+           try
+           Dataform.FromQuery1.Open;
+           except
+                 on E : Exception do
+                 begin
+                    ShowMessage(E.ClassName + ' ' + E.Message + ' Error in Test');
+                    exit;
+                 end;
+           end;
+           If Dataform.FromQuery1.RecordCount = 1 then
+           begin
+                FieldsString := '';
+                ValuesString := '';
+                QueryString := GenerateQueryLine('Update');
+                LogMemo.Lines.Add(QueryString);
+           end;
+           Dataform.CSVDataset.Next;
+      end;
+      Dataform.CSVDataset.EnableControls;
+      Dataform.FromQuery1.Close;
+end;
+
 procedure TMainForm.GenerateUpdatesfromResultsetMNUClick(Sender: TObject);
 var
           I,ProgressI:Integer;
@@ -1071,6 +1152,11 @@ begin
 
 end;
 
+procedure TMainForm.CompareStopRunBtnClick(Sender: TObject);
+begin
+     StopRunBool := true;
+end;
+
 procedure TMainForm.CSVGridEnter(Sender: TObject);
 begin
       If ResultsetEditableMnu.Checked = true then
@@ -1166,6 +1252,10 @@ begin
         FromUserName.Text := INI.ReadString('DB','FromUserName','');
         FromPassword.Text := Decrypt(INI.ReadString('DB','FromPassword',''));
         FromServerName.Text := INI.ReadString('DB','FromServerName','');
+        ToUserName.Text := INI.ReadString('DB','ToUserName','');
+        ToPassword.Text := Decrypt(INI.ReadString('DB','ToPassword',''));
+        ToServerName.Text := INI.ReadString('DB','ToServerName','');
+        ToDatabase.Text := INI.ReadString('DB','ToDatabase','');
         If INI.ReadString('SCRIPTS','ScriptSQLEdit','') <> '' then
            ScriptSQLEdit.Text := DecodeStringBase64(INI.ReadString('SCRIPTS','ScriptSQLEdit',''));
         Pagecontrol1.TabIndex := INI.ReadInteger('FORM','PageControl1',0);
@@ -1265,7 +1355,7 @@ begin
             Dataform.FromQuery1.Open;
           except
           begin
-            ShowMessage('Unable to connect to MSSQL From Server, make sure the Database exist');
+            ShowMessage('Unable to run query on From Server');
           end;
           raise;
           end;
@@ -1314,11 +1404,17 @@ begin
           OutputLog.Lines.Clear;
           ProgressBar1.Max := Dataform.FromQuery1.RecordCount;
           ProgressBar1.Position := 0;
+          StopRunBool := false;
+          CompareStopRunBtn.Visible := true;
           Dataform.FromQuery1.First;
           Dataform.FromQuery1.DisableControls;
           while not Dataform.FromQuery1.EOF do
           begin
             ProgressBar1.StepIt;
+            if StopRunBool then
+            begin
+              break;
+            end;
             Application.processMessages;
             DataForm.ToQuery2.close;
             with Dataform.ToQuery2.SQL do
@@ -1356,7 +1452,7 @@ begin
               RecordChanged := False;
               for I := 0 to Dataform.FromQuery1.Fields.Count - 1 do
               begin
-                if Dataform.ToQuery2.Fields[I].Value <> Dataform.FromQuery1.Fields[I].Value then
+                if ConvertFieldtoSQLString(Dataform.ToQuery2.Fields[I]) <> ConvertFieldtoSQLString(Dataform.FromQuery1.Fields[I]) then
                 begin
                   RecordChanged := True;
                   if FieldsString = '' then
@@ -1375,6 +1471,7 @@ begin
             end;
             Dataform.FromQuery1.Next;
           end;
+          CompareStopRunBtn.Visible := false;
           Dataform.FromQuery1.EnableControls;
           dataform.ToQuery2.close;
           showmessage('Finished');

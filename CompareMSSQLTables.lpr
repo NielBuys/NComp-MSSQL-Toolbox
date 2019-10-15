@@ -13,7 +13,6 @@ begin
   Application.Scaled:=True;
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.Title := 'NComp MSSQL Toolbox';
   Application.CreateForm(TDataForm, DataForm);
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;

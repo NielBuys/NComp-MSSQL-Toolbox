@@ -28,14 +28,14 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "e:\Development\MSSQL-Compare-Tool\CompareMSSQLTables64bit.exe"; DestName: "CompareMSSQLTables.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "e:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\dblib.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "e:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\dblib_2008.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "e:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\libiconv.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "e:\Development\MSSQL-Compare-Tool\CompareMSSQLTables32bit.exe"; DestName: "CompareMSSQLTables.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "e:\Development\MSSQL-Compare-Tool\MSSQL 32bit dblib\dblib.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "e:\Development\MSSQL-Compare-Tool\MSSQL 32bit dblib\dblib_2000.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "e:\Development\MSSQL-Compare-Tool\MSSQL 32bit dblib\libiconv2.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "Z:\Development\MSSQL-Compare-Tool\CompareMSSQLTables64bit.exe"; DestName: "CompareMSSQLTables.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "Z:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\dblib.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "Z:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\dblib_2008.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "Z:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\libiconv.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "Z:\Development\MSSQL-Compare-Tool\CompareMSSQLTables32bit.exe"; DestName: "CompareMSSQLTables.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "Z:\Development\MSSQL-Compare-Tool\MSSQL 32bit dblib\dblib.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "Z:\Development\MSSQL-Compare-Tool\MSSQL 32bit dblib\dblib_2000.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "Z:\Development\MSSQL-Compare-Tool\MSSQL 32bit dblib\libiconv2.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
