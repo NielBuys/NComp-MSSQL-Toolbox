@@ -1,1 +1,4 @@
-dpkg-deb --build NComp-MSSQL-Toolbox_1.0-7
+Verander version no met 'n text editor in "debpackage/NComp-MSSQL-Toolbox_1.0-10/DEBIAN/control"
+Verander version no met 'n text editor in "debpackage/NComp-MSSQL-Toolbox_1.0-10/usr/share/applications/NComp-MSSQL-Toolbox.desktop"
+
+dpkg-deb --build NComp-MSSQL-Toolbox_1.0-10

@@ -3,128 +3,131 @@ unit MainFrm;
 interface
 
 uses
-  SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Grids, DBGrids, StdCtrls, Buttons, Menus, ComCtrls, DbCtrls,
-  UtilsUnit, Types, IniFiles, DB, sqldb, BufDataset, laz2_DOM,
-  laz2_XMLRead,Base64;
+  SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, Grids,
+  DBGrids, StdCtrls, Buttons, Menus, ComCtrls, DbCtrls, ExtCtrls, ActnList,
+  UtilsUnit, Types, IniFiles, DB, sqldb, BufDataset, laz2_DOM, laz2_XMLRead,
+  Base64;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
-    CompareStopRunBtn: TBitBtn;
+    AddColumnBtn: TButton;
+    AddLinkedColumnBtn: TButton;
+    AddPrimaryTableDetailBtn: TButton;
+    AddValueBtn: TButton;
     BtnCompareRight: TBitBtn;
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
-    AddColumnBtn: TButton;
-    AddValueBtn: TButton;
+    Button4: TButton;
     ClearProjectBtn: TButton;
+    ColumnsList: TDBLookupListBox;
+    CompareStopRunBtn: TBitBtn;
+    CSVFirstLineCheck: TCheckBox;
+    CSVGrid: TDBGrid;
+    CSVSearchBtn: TButton;
+    CSVSearchCombo: TComboBox;
+    CSVSearchEdt: TEdit;
+    CSVSearchNextBtn: TButton;
+    DBNavigator1: TDBNavigator;
     DBNavigator2: TDBNavigator;
+    DeleteSelectedRowBtn: TButton;
+    ExecuteQueryBtn: TBitBtn;
+    ExportSQLBtn: TButton;
+    FieldSelectList: TListBox;
     FromDBCombo: TDBLookupComboBox;
-    ImportSaveLogMemoBtn: TButton;
     CreateQueriesPopup: TPopupMenu;
+    FromGrid: TDBGrid;
+    FromRowsCountLabel: TLabel;
+    FromTable: TEdit;
+    FromUniqueField: TEdit;
     GenerateInsertsFromAllCSVRecordsMNU: TMenuItem;
     GenerateInsertsfromPrimaryCSVFieldNotFoundMNU: TMenuItem;
     EditMnu: TMenuItem;
     ExportSQLPopup: TPopupMenu;
     GenerateInsertfromResultsetMNU: TMenuItem;
+    GenerateQueriesBtn: TButton;
     GenerateUpdatesfromResultsetMNU: TMenuItem;
     GenerateUpdatesfromallCSVrecordsMNU: TMenuItem;
     GenerateUpdatesfromFoundMNU: TMenuItem;
-    ResultsetEditableMnu: TMenuItem;
-    XMLToCSVConvertBtn: TButton;
-    ValueEdt: TEdit;
-    GenerateQueriesBtn: TButton;
-    CSVSearchNextBtn: TButton;
-    CSVSearchBtn: TButton;
-    CSVSearchCombo: TComboBox;
-    CSVSearchEdt: TEdit;
-    FixLinkedValueMenuBtn: TMenuItem;
-    OpenProjectBtn: TButton;
-    CSVGridMenu: TPopupMenu;
-    SaveProjectBtn: TButton;
-    DeleteSelectedRowBtn: TButton;
-    TestLinkedTableBtn: TButton;
-    DBNavigator1: TDBNavigator;
-    Label15: TLabel;
-    LogMemo: TMemo;
-    PrimaryColumnsList: TDBLookupListBox;
-    Label13: TLabel;
-    Label14: TLabel;
-    AddLinkedColumnBtn: TButton;
-    FieldSelectList: TListBox;
-    PrimaryColumnEdt: TEdit;
-    PrimaryTableNameEdt: TEdit;
-    LoadTablesBtn: TButton;
-    AddPrimaryTableDetailBtn: TButton;
-    TableList: TDBLookupListBox;
-    ColumnsList: TDBLookupListBox;
-    CSVFirstLineCheck: TCheckBox;
-    LoadCSVBtn: TButton;
-    FromRowsCountLabel: TLabel;
-    OpenDialog1: TOpenDialog;
-    SaveSQLBtn: TButton;
-    ExportSQLBtn: TButton;
-    CloseBtn: TBitBtn;
-    FromPassword: TEdit;
-    FromServerName: TEdit;
-    FromUserName: TEdit;
-    ConnecttoServerBtn: TBitBtn;
-    ScriptGrid: TDBGrid;
-    Label1: TLabel;
-    Label12: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    ExecuteQueryBtn: TBitBtn;
-    ProgressBar1: TProgressBar;
-    ScriptTableName: TEdit;
-    Label16: TLabel;
-    RowsCountLabel: TLabel;
-    FromTable: TEdit;
-    FromUniqueField: TEdit;
+    ImportSaveLogMemoBtn: TButton;
     JvBitBtn1: TBitBtn;
-    FromGrid: TDBGrid;
     JvDBGrid2: TDBGrid;
     Label10: TLabel;
     Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    Label14: TLabel;
+    Label15: TLabel;
+    Label16: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
-    MainMenu1: TMainMenu;
-    File1: TMenuItem;
+    LoadCSVBtn: TButton;
+    LoadTablesBtn: TButton;
+    LogMemo: TMemo;
+    OpenProjectBtn: TButton;
     OutputLog: TMemo;
     PageControl1: TPageControl;
-    SQL: TMemo;
+    PrimaryColumnEdt: TEdit;
+    PrimaryColumnsList: TDBLookupListBox;
+    PrimaryTableNameEdt: TEdit;
+    ResultsetEditableMnu: TMenuItem;
+    FixLinkedValueMenuBtn: TMenuItem;
+    CSVGridMenu: TPopupMenu;
+    OpenDialog1: TOpenDialog;
+    CloseBtn: TBitBtn;
+    FromPassword: TEdit;
+    FromServerName: TEdit;
+    FromUserName: TEdit;
+    ConnecttoServerBtn: TBitBtn;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    ProgressBar1: TProgressBar;
+    MainMenu1: TMainMenu;
+    File1: TMenuItem;
+    RowsCountLabel: TLabel;
+    SaveDialog1: TSaveDialog;
+    About1: TMenuItem;
+    SaveProjectBtn: TButton;
+    SaveSQLBtn: TButton;
+    ScriptGrid: TDBGrid;
     ScriptSQL: TMemo;
-    SQLEdit: TMemo;
     ScriptSQLEdit: TMemo;
+    ScriptTableName: TEdit;
+    SetupGrid: TStringGrid;
+    SQL: TMemo;
+    SQLEdit: TMemo;
+    TabControl1: TTabControl;
+    TableList: TDBLookupListBox;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
+    TestLinkedTableBtn: TButton;
     ToDatabase: TEdit;
     ToPassword: TEdit;
-    SaveDialog1: TSaveDialog;
-    About1: TMenuItem;
     ToServerName: TEdit;
     ToUserName: TEdit;
-    SetupGrid: TStringGrid;
-    CSVGrid: TDBGrid;
+    ValueEdt: TEdit;
+    XMLToCSVConvertBtn: TButton;
     procedure AddColumnBtnClick(Sender: TObject);
     procedure AddValueBtnClick(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
     procedure ClearProjectBtnClick(Sender: TObject);
     procedure CommitResultsetBtnClick(Sender: TObject);
     procedure CompareStopRunBtnClick(Sender: TObject);
     procedure CSVGridEnter(Sender: TObject);
     procedure CSVSearchBtnClick(Sender: TObject);
-    procedure FromDBComboChange(Sender: TObject);
     procedure DeleteSelectedRowBtnClick(Sender: TObject);
     procedure FixLinkedValueMenuBtnClick(Sender: TObject);
     procedure AddLinkedColumnBtnClick(Sender: TObject);
+    procedure FromDBComboSelect(Sender: TObject);
     procedure GenerateQueriesBtnClick(Sender: TObject);
     procedure GenerateInsertfromResultsetMNUClick(Sender: TObject);
     procedure GenerateInsertsFromAllCSVRecordsMNUClick(Sender: TObject);
@@ -140,6 +143,7 @@ type
     procedure ScriptGridEnter(Sender: TObject);
     procedure SetupGridDrawCell(Sender: TObject; aCol, aRow: Integer;
       aRect: TRect; aState: TGridDrawState);
+    procedure TabControl1Change(Sender: TObject);
     procedure XMLToCSVConvertBtnClick(Sender: TObject);
     procedure OpenProjectBtnClick(Sender: TObject);
     procedure SaveProjectBtnClick(Sender: TObject);
@@ -177,6 +181,7 @@ var
   RecordGuid: TGUID;
   LastFromDB: Integer;
   StopRunBool: Boolean;
+  PreviousScriptsTab: Integer;
 
 implementation
       uses datafrm, AboutFrm, FixLinkedValuesFrm;
@@ -260,7 +265,7 @@ begin
         INI.WriteString('DB','ToPassword',encrypt(ToPassword.Text));
         INI.WriteString('DB','ToServerName',ToServerName.Text);
         INI.WriteString('DB','ToDatabase',ToDatabase.Text);
-        INI.WriteString('SCRIPTS','ScriptSQLEdit',EncodeStringBase64(ScriptSQLEdit.Text));
+        INI.WriteString('SCRIPTS','SQL' + InttoStr(TabControl1.TabIndex),EncodeStringBase64(ScriptSQLEdit.Text));
         INI.WriteInteger('FORM','PageControl1',Pagecontrol1.TabIndex);
       finally
         INI.Free;
@@ -330,8 +335,11 @@ var
 begin
       If ConnecttoServerBtn.Caption = 'Disconnect server' then
       begin
+           Dataform.DBQuery1.Close;
            Dataform.FromConnection.Close;
            ConnecttoServerBtn.Caption := 'Connect to server';
+           Dataform.FromConnection.DatabaseName := '';
+           FromDBCombo.Clear;
       end
       else
       begin
@@ -344,20 +352,15 @@ begin
             Dataform.FromConnection.HostName := FromServerName.Text;
             Dataform.FromConnection.Open;
             Dataform.DBQuery1.Open;
-            FromDBCombo.ItemIndex := LastFromDB;
-            if FromDBCombo.ItemIndex <> -1 then
+            If LastFromDB <  FromDBCombo.Items.Count then
             begin
-              s := FromDBCombo.Items[FromDBCombo.ItemIndex];
-              Dataform.FromConnection.Close;
-              Dataform.FromConnection.DatabaseName := s;
-              Dataform.FromConnection.Open;
-              Dataform.DBQuery1.Open;
-              FromDBCombo.ItemIndex := LastFromDB;
+                 FromDBCombo.ItemIndex := LastFromDB;
+                 FromDBComboSelect(FromDBCombo);
             end;
             ConnecttoServerBtn.Caption := 'Disconnect server';
           except
           begin
-            ShowMessage('Unable to connect to MSSQL From Server, make sure the Database exist');
+            ShowMessage('Unable to connect to MSSQL From Server!');
             Dataform.FromConnection.Close;
           end;
           raise;
@@ -405,6 +408,50 @@ begin
    end;
 
 end;
+
+procedure TMainForm.TabControl1Change(Sender: TObject);
+var
+  TabName, PreviousTabName: String;
+  TabIndex: Integer;
+  ConfigFilePath :String;
+  INI: TINIFile;
+begin
+      ConfigFilePath := GetAppConfigFile(False);
+      INI := TINIFile.Create(ConfigFilePath + 'DB.ini');
+      try
+        TabIndex := TabControl1.TabIndex;
+        TabName := 'SQL' + InttoStr(TabIndex);
+        PreviousTabName := 'SQL' + InttoStr(PreviousScriptsTab);
+        INI.WriteString('SCRIPTS',PreviousTabName,EncodeStringBase64(ScriptSQLEdit.Text));
+        If INI.ReadString('SCRIPTS',TabName,'') <> '' then
+        begin
+           ScriptSQLEdit.Text := DecodeStringBase64(INI.ReadString('SCRIPTS',TabName,''));
+        end
+        else
+        begin
+            ScriptSQLEdit.Text := '';
+        end;
+        case TabControl1.TabIndex of
+             0 :
+               begin
+                 ScriptGrid.DataSource := Dataform.ScriptQuerySource0;
+                 DBNavigator2.Datasource := Dataform.ScriptQuerySource0;
+                 RowsCountLabel.Caption := InttoStr(Dataform.ScriptQuery0.RecordCount);
+
+               end;
+             1 :
+               begin
+                 ScriptGrid.DataSource := Dataform.ScriptQuerySource1;
+                 DBNavigator2.Datasource := Dataform.ScriptQuerySource1;
+                 RowsCountLabel.Caption := InttoStr(Dataform.ScriptQuery1.RecordCount);
+               end;
+        end;
+        PreviousScriptsTab := TabIndex;
+      finally
+        INI.Free;
+      end;
+end;
+
 
 procedure TMainForm.XMLToCSVConvertBtnClick(Sender: TObject);
 var
@@ -572,6 +619,30 @@ begin
       SetupGrid.Cells[4,SetupGrid.RowCount - 1] := ColumnsList.Items[ColumnsList.ItemIndex];
 end;
 
+procedure TMainForm.FromDBComboSelect(Sender: TObject);
+var
+          s: string;
+begin
+          try
+            LastFromDB := FromDBCombo.ItemIndex;
+            s := FromDBCombo.Items[FromDBCombo.ItemIndex];
+            Dataform.FromConnection.Close;
+            Dataform.FromConnection.DatabaseName := s;
+            Dataform.FromConnection.Open;
+            Dataform.DBQuery1.Open;
+            FromDBCombo.ItemIndex := LastFromDB;
+          except
+          begin
+            ShowMessage('Unable to select DB , make sure the DB exist');
+            Dataform.FromConnection.Close;
+            ConnecttoServerBtn.Caption := 'Connect to server';
+            Dataform.FromConnection.DatabaseName := '';
+          end;
+          raise;
+          end;
+
+end;
+
 procedure TMainForm.GenerateQueriesBtnClick(Sender: TObject);
 var
          button: TControl;
@@ -591,6 +662,7 @@ var
           I,ProgressI:Integer;
           FieldsString,ValuesString,QueryString:WideString;
           tempQueryString: WideString;
+          ScriptQuery: TSQLQuery;
 begin
       if Dataform.FromConnection.Connected = False then
       begin
@@ -605,36 +677,47 @@ begin
       ScriptSQL.Clear;
       FieldsString := '';
       ValuesString := '';
-      ProgressBar1.Max := Dataform.ScriptQuery1.RecordCount;
+      case TabControl1.TabIndex of
+       0 :
+         begin
+           ScriptQuery := DataForm.ScriptQuery0;
+         end;
+       1 :
+         begin
+           ScriptQuery := DataForm.ScriptQuery1;
+         end;
+      end;
+
+      ProgressBar1.Max := ScriptQuery.RecordCount;
       ProgressBar1.Position := 0;
-      Dataform.ScriptQuery1.First;
-      Dataform.ScriptQuery1.DisableControls;
-      while not Dataform.ScriptQuery1.EOF do
+      ScriptQuery.First;
+      ScriptQuery.DisableControls;
+      while not ScriptQuery.EOF do
       begin
            ProgressBar1.StepIt;
            Application.processMessages;
-           for I := 0 to Dataform.ScriptQuery1.Fields.Count - 1 do
+           for I := 0 to ScriptQuery.Fields.Count - 1 do
           begin
             if FieldsString = '' then
             begin
-              FieldsString := DataForm.ScriptQuery1.Fields[I].FieldName;
-              ValuesString := ConvertFieldtoSQLString(DataForm.ScriptQuery1.Fields[I]);
+              FieldsString := ScriptQuery.Fields[I].FieldName;
+              ValuesString := ConvertFieldtoSQLString(ScriptQuery.Fields[I]);
             end
             else
             begin
-              FieldsString := FieldsString + ',' + DataForm.ScriptQuery1.Fields[I].FieldName;
-              ValuesString := ValuesString + ',' + ConvertFieldtoSQLString(DataForm.ScriptQuery1.Fields[I]);
+              FieldsString := FieldsString + ',' + ScriptQuery.Fields[I].FieldName;
+              ValuesString := ValuesString + ',' + ConvertFieldtoSQLString(ScriptQuery.Fields[I]);
             end;
           end;
           QueryString := 'insert into ' + ScriptTableName.Text + ' (' + FieldsString + ') Values (' + ValuesString + ');' + #13#10;
           tempQueryString := tempQueryString + QueryString;
           FieldsString := '';
           ValuesString := '';
-          Dataform.ScriptQuery1.Next;
+          ScriptQuery.Next;
       end;
       ScriptSQL.Lines.Clear;
       ScriptSQL.Lines.Add(tempQueryString);
-      Dataform.ScriptQuery1.EnableControls;
+      ScriptQuery.EnableControls;
       showmessage('Finished');
 end;
 
@@ -855,6 +938,7 @@ var
           I,ProgressI:Integer;
           FieldsString,KeyColumnName, KeyColumnValue,QueryString:WideString;
           tempQueryString: WideString;
+          ScriptQuery: TSQLQuery;
 begin
       if Dataform.FromConnection.Connected = False then
       begin
@@ -870,43 +954,55 @@ begin
       FieldsString := '';
       KeyColumnName := getTablePrimaryKey(ScriptTableName.Text);
       KeyColumnValue := '';
-      ProgressBar1.Max := Dataform.ScriptQuery1.RecordCount;
+
+      case TabControl1.TabIndex of
+       0 :
+         begin
+           ScriptQuery := DataForm.ScriptQuery0;
+         end;
+       1 :
+         begin
+           ScriptQuery := DataForm.ScriptQuery1;
+         end;
+      end;
+
+      ProgressBar1.Max := ScriptQuery.RecordCount;
       ProgressBar1.Position := 0;
-      Dataform.ScriptQuery1.First;
-      Dataform.ScriptQuery1.DisableControls;
-      while not Dataform.ScriptQuery1.EOF do
+      ScriptQuery.First;
+      ScriptQuery.DisableControls;
+      while not ScriptQuery.EOF do
       begin
            ProgressBar1.StepIt;
            Application.processMessages;
-           for I := 0 to Dataform.ScriptQuery1.Fields.Count - 1 do
+           for I := 0 to ScriptQuery.Fields.Count - 1 do
            begin
-                If DataForm.ScriptQuery1.Fields[I].FieldName <> KeyColumnName then
+                If ScriptQuery.Fields[I].FieldName <> KeyColumnName then
                 begin
                      if FieldsString = '' then
-                        FieldsString := DataForm.ScriptQuery1.Fields[I].FieldName + ' = ' +  ConvertFieldtoSQLString(DataForm.ScriptQuery1.Fields[I])
+                        FieldsString := ScriptQuery.Fields[I].FieldName + ' = ' +  ConvertFieldtoSQLString(ScriptQuery.Fields[I])
                      else
-                         FieldsString := FieldsString + ',' + DataForm.ScriptQuery1.Fields[I].FieldName + ' = ' +  ConvertFieldtoSQLString(DataForm.ScriptQuery1.Fields[I]);
+                         FieldsString := FieldsString + ',' + ScriptQuery.Fields[I].FieldName + ' = ' +  ConvertFieldtoSQLString(ScriptQuery.Fields[I]);
                 end
                 else
                 begin
-                     KeyColumnValue := ConvertFieldtoSQLString(DataForm.ScriptQuery1.Fields[I]);
+                     KeyColumnValue := ConvertFieldtoSQLString(ScriptQuery.Fields[I]);
                 end;
            end;
            if KeyColumnValue = '' then
            begin
              showmessage('Key Column ' + KeyColumnName + ' not found');
-             Dataform.ScriptQuery1.EnableControls;
+             ScriptQuery.EnableControls;
              exit;
            end;
            QueryString := 'update ' + ScriptTableName.Text + ' set ' + FieldsString + ' where ' + KeyColumnName + ' = ' + KeyColumnValue + ';' + #13#10;
           tempQueryString := tempQueryString + QueryString;
           FieldsString := '';
           ValuesString := '';
-          Dataform.ScriptQuery1.Next;
+          ScriptQuery.Next;
       end;
       ScriptSQL.Lines.Clear;
       ScriptSQL.Lines.Add(tempQueryString);
-      Dataform.ScriptQuery1.EnableControls;
+      ScriptQuery.EnableControls;
       showmessage('Finished');
 end;
 
@@ -1084,29 +1180,6 @@ begin
       Dataform.CSVDataset.EnableControls;
 end;
 
-procedure TMainForm.FromDBComboChange(Sender: TObject);
-var
-          s: string;
-begin
-          try
-            LastFromDB := FromDBCombo.ItemIndex;
-            s := FromDBCombo.Items[FromDBCombo.ItemIndex];
-            Dataform.FromConnection.Close;
-            Dataform.FromConnection.DatabaseName := s;
-            Dataform.FromConnection.Open;
-            Dataform.DBQuery1.Open;
-            FromDBCombo.ItemIndex := LastFromDB;
-          except
-          begin
-            ShowMessage('Unable to select DB , make sure the DB exist');
-            Dataform.FromConnection.Close;
-            ConnecttoServerBtn.Caption := 'Connect to server';
-          end;
-          raise;
-          end;
-
-end;
-
 procedure TMainForm.AddColumnBtnClick(Sender: TObject);
 begin
       if FieldSelectList.ItemIndex = -1 then
@@ -1136,6 +1209,13 @@ begin
       SetupGrid.Cells[0,SetupGrid.RowCount - 1] := 'Value';
       SetupGrid.Cells[1,SetupGrid.RowCount - 1] := ValueEdt.Text;
       SetupGrid.Cells[2,SetupGrid.RowCount - 1] := PrimaryColumnsList.Items[PrimaryColumnsList.ItemIndex];
+end;
+
+procedure TMainForm.Button4Click(Sender: TObject);
+begin
+//     showmessage(inttostr(TabControl1.TabIndex));
+//     showmessage(Tabcontrol1.Tabs[TabControl1.TabIndex]);
+      showmessage(Dataform.FromConnection.DatabaseName);
 end;
 
 procedure TMainForm.ClearProjectBtnClick(Sender: TObject);
@@ -1256,81 +1336,12 @@ begin
         ToPassword.Text := Decrypt(INI.ReadString('DB','ToPassword',''));
         ToServerName.Text := INI.ReadString('DB','ToServerName','');
         ToDatabase.Text := INI.ReadString('DB','ToDatabase','');
-        If INI.ReadString('SCRIPTS','ScriptSQLEdit','') <> '' then
-           ScriptSQLEdit.Text := DecodeStringBase64(INI.ReadString('SCRIPTS','ScriptSQLEdit',''));
+        If INI.ReadString('SCRIPTS','SQL0','') <> '' then
+           ScriptSQLEdit.Text := DecodeStringBase64(INI.ReadString('SCRIPTS','SQL0',''));
         Pagecontrol1.TabIndex := INI.ReadInteger('FORM','PageControl1',0);
       finally
         INI.Free;
       end;
-
-
-      //try
-      //        FromDatabase.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromDatabase');
-      //      except
-      //        FromDatabase.Text := '';
-      //      end;
-      //      try
-      //        FromUserName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromUserName');
-      //      except
-      //        FromUserName.Text := '';
-      //      end;
-      //      try
-      //        FromPassword.Text := Decrypt(GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromPassword'));
-      //      except
-      //        FromPassword.Text := '';
-      //      end;
-      //      try
-      //        FromServerName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromServerName');
-      //      except
-      //        FromServerName.Text := '';
-      //      end;
-      //      try
-      //        FromTable.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromTable');
-      //      except
-      //        FromTable.Text := '';
-      //      end;
-      //      try
-      //        FromUniqueField.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','FromUniqueField');
-      //      except
-      //        FromUniqueField.Text := '';
-      //      end;
-      //      try
-      //        ToDatabase.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ToDatabase');
-      //      except
-      //        ToDatabase.Text := '';
-      //      end;
-      //      try
-      //        ToUserName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ToUserName');
-      //      except
-      //        ToUserName.Text := '';
-      //      end;
-      //      try
-      //        ToPassword.Text := Decrypt(GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ToPassword'));
-      //      except
-      //        ToPassword.Text := '';
-      //      end;
-      //      try
-      //        ToServerName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ToServerName');
-      //      except
-      //        ToServerName.Text := '';
-      //      end;
-      //      try
-      //        SQLEdit.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','SQLEdit');
-      //      except
-      //        SQLEdit.Text := '';
-      //      end;
-      //
-      //      try
-      //        ScriptSQLEdit.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ScriptSQLEdit');
-      //      except
-      //        ScriptSQLEdit.Text := '';
-      //      end;
-      //
-      //      try
-      //        ScriptTableName.Text := GetRegistryData(HKEY_CURRENT_USER,'\Software\CompareMSSQLTables\','ScriptTableName');
-      //      except
-      //        ScriptTableName.Text := '';
-      //      end;
 end;
 
 procedure TMainForm.JvBitBtn1Click(Sender: TObject);
@@ -1488,25 +1499,57 @@ begin
             exit;
           end;
           try
-            DataForm.ScriptQuery1.close;
             if copy(ScriptSQLEdit.Text,ScriptSQLEdit.SelStart+1,ScriptSQLEdit.SelLength) = '' then
                 SQLString := ScriptSQLEdit.Text
             else
                 SQLString := copy(ScriptSQLEdit.Text,ScriptSQLEdit.SelStart+1,ScriptSQLEdit.SelLength);
-            with Dataform.ScriptQuery1.SQL do
-            begin
-              Clear;
-              Text := SQLString;
+            case TabControl1.TabIndex of
+                 0 :
+                   begin
+                        DataForm.ScriptQuery0.close;
+                        ScriptGrid.DataSource := Dataform.ScriptQuerySource0;
+                        DBNavigator2.Datasource := Dataform.ScriptQuerySource0;
+                        with Dataform.ScriptQuery0.SQL do
+                        begin
+                          Clear;
+                          Text := SQLString;
+                        end;
+                        Dataform.ScriptQuery0.Prepare;
+                        If (Dataform.ScriptQuery0.StatementType = stSelect) then
+                        begin
+                           Dataform.ScriptQuery0.Open;
+                           RowsCountLabel.Caption := InttoStr(Dataform.ScriptQuery0.RecordCount);
+                        end
+                        else
+                        begin
+                            Dataform.ScriptQuery0.ExecSQL;
+                            showmessage('Query executed');
+                        end;
+                   end;
+                 1 :
+                   begin
+                        DataForm.ScriptQuery1.close;
+                        ScriptGrid.DataSource := Dataform.ScriptQuerySource1;
+                        DBNavigator2.Datasource := Dataform.ScriptQuerySource1;
+                        with Dataform.ScriptQuery1.SQL do
+                        begin
+                          Clear;
+                          Text := SQLString;
+                        end;
+                        Dataform.ScriptQuery1.Prepare;
+                        If (Dataform.ScriptQuery1.StatementType = stSelect) then
+                        begin
+                           Dataform.ScriptQuery1.Open;
+                           RowsCountLabel.Caption := InttoStr(Dataform.ScriptQuery1.RecordCount);
+                        end
+                        else
+                        begin
+                            Dataform.ScriptQuery1.ExecSQL;
+                            showmessage('Query executed');
+                        end;
+                   end;
             end;
-            Dataform.ScriptQuery1.Prepare;
-            If (Dataform.ScriptQuery1.StatementType = stSelect) then
-               Dataform.ScriptQuery1.Open
-            else
-            begin
-                Dataform.ScriptQuery1.ExecSQL;
-                showmessage('Query executed');
-            end;
-            RowsCountLabel.Caption := InttoStr(Dataform.ScriptQuery1.RecordCount);
+
           except
                 on E : Exception do
                 begin

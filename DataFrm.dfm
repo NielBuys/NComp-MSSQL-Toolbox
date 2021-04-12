@@ -1,8 +1,8 @@
 object DataForm: TDataForm
   OldCreateOrder = False
-  Height = 470
-  HorizontalOffset = 557
-  VerticalOffset = 351
+  Height = 502
+  HorizontalOffset = 762
+  VerticalOffset = 249
   Width = 675
   PPI = 96
   object FromConnection: TMSSQLConnection
@@ -87,9 +87,8 @@ object DataForm: TDataForm
   end
   object ScriptQuerySource1: TDataSource
     DataSet = ScriptQuery1
-    Enabled = False
-    left = 152
-    top = 176
+    left = 456
+    top = 368
   end
   object ScriptQuery1: TSQLQuery
     PacketRecords = -1
@@ -101,8 +100,8 @@ object DataForm: TDataForm
     )
     Options = [sqoKeepOpenOnCommit, sqoAutoApplyUpdates, sqoAutoCommit]
     Params = <>
-    left = 56
-    top = 176
+    left = 328
+    top = 368
   end
   object CSVDataset: TSdfDataSet
     FileMustExist = True
@@ -112,13 +111,13 @@ object DataForm: TDataForm
     Delimiter = ','
     FirstLineAsSchema = False
     StripTrailingDelimiters = False
-    left = 384
-    top = 216
+    left = 400
+    top = 144
   end
   object CSVSource: TDataSource
     DataSet = CSVDataset
-    left = 384
-    top = 272
+    left = 400
+    top = 200
   end
   object TablesQuery1: TSQLQuery
     PacketRecords = -1
@@ -202,12 +201,30 @@ object DataForm: TDataForm
       ' SELECT name FROM sys.databases order by name'
     )
     Params = <>
-    left = 304
-    top = 355
+    left = 320
+    top = 283
   end
   object DBSource1: TDataSource
     DataSet = DBQuery1
-    left = 392
-    top = 355
+    left = 408
+    top = 283
+  end
+  object ScriptQuerySource0: TDataSource
+    DataSet = ScriptQuery0
+    left = 456
+    top = 432
+  end
+  object ScriptQuery0: TSQLQuery
+    PacketRecords = -1
+    FieldDefs = <>
+    Database = FromConnection
+    Transaction = FromTransaction
+    SQL.Strings = (
+      'select * from tblBatch'
+    )
+    Options = [sqoKeepOpenOnCommit, sqoAutoApplyUpdates, sqoAutoCommit]
+    Params = <>
+    left = 328
+    top = 432
   end
 end
