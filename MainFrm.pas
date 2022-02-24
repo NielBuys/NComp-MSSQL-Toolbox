@@ -39,7 +39,7 @@ type
     FieldSelectList: TListBox;
     FromDBCombo: TDBLookupComboBox;
     CreateQueriesPopup: TPopupMenu;
-    FromGrid: TDBGrid;
+    CompareFromGrid: TDBGrid;
     FromRowsCountLabel: TLabel;
     FromTable: TEdit;
     FromUniqueField: TEdit;
@@ -53,8 +53,8 @@ type
     GenerateUpdatesfromallCSVrecordsMNU: TMenuItem;
     GenerateUpdatesfromFoundMNU: TMenuItem;
     ImportSaveLogMemoBtn: TButton;
-    JvBitBtn1: TBitBtn;
-    JvDBGrid2: TDBGrid;
+    LoadFromandToDataBtn: TBitBtn;
+    CompareToGrid: TDBGrid;
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
@@ -156,7 +156,7 @@ type
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure About1Click(Sender: TObject);
-    procedure JvBitBtn1Click(Sender: TObject);
+    procedure LoadFromandToDataBtnClick(Sender: TObject);
     procedure BtnCompareRightClick(Sender: TObject);
     procedure ExecuteQueryBtnClick(Sender: TObject);
     procedure LoadCSVBtnClick(Sender: TObject);
@@ -198,7 +198,7 @@ end;
 procedure TMainForm.Button1Click(Sender: TObject);
 begin
           SaveDialog1.FilterIndex := 1;
-          SaveDialog1.DefaultExt := '.txt';
+          SaveDialog1.DefaultExt := '.sql';
           if Savedialog1.Execute then
           begin
               SQL.Lines.SaveToFile(SaveDialog1.FileName);
@@ -261,6 +261,9 @@ begin
         INI.WriteString('DB','FromUserName',FromUserName.Text);
         INI.WriteString('DB','FromPassword',encrypt(FromPassword.Text));
         INI.WriteString('DB','FromServerName',FromServerName.Text);
+        INI.WriteString('COMPARE','FromTable',FromTable.Text);
+        INI.WriteString('COMPARE','FromUniqueField',FromUniqueField.Text);
+        INI.WriteString('COMPARE','SQLEdit',EncodeStringBase64(SQLEdit.Text));
         INI.WriteString('DB','ToUserName',ToUserName.Text);
         INI.WriteString('DB','ToPassword',encrypt(ToPassword.Text));
         INI.WriteString('DB','ToServerName',ToServerName.Text);
@@ -1332,6 +1335,9 @@ begin
         FromUserName.Text := INI.ReadString('DB','FromUserName','');
         FromPassword.Text := Decrypt(INI.ReadString('DB','FromPassword',''));
         FromServerName.Text := INI.ReadString('DB','FromServerName','');
+        FromTable.Text := INI.ReadString('COMPARE','FromTable','');
+        FromUniqueField.Text := INI.ReadString('COMPARE','FromUniqueField','');
+        SQLEdit.Text := DecodeStringBase64(INI.ReadString('COMPARE','SQLEdit',''));
         ToUserName.Text := INI.ReadString('DB','ToUserName','');
         ToPassword.Text := Decrypt(INI.ReadString('DB','ToPassword',''));
         ToServerName.Text := INI.ReadString('DB','ToServerName','');
@@ -1344,7 +1350,7 @@ begin
       end;
 end;
 
-procedure TMainForm.JvBitBtn1Click(Sender: TObject);
+procedure TMainForm.LoadFromandToDataBtnClick(Sender: TObject);
 begin
           if Dataform.FromConnection.Connected = False then
           begin

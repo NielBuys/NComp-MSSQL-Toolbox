@@ -8,7 +8,7 @@ interface
      ShlObj,
      ActiveX,
     {$ENDIF}
-     db, Classes;
+     db, Classes, typinfo;
 
   function ValidateID(ID: String): Boolean;
   function WorkoutAge(StoreDate: TDateTime): Integer;
@@ -47,6 +47,9 @@ interface
   function GetRegistryData(RootKey: HKEY; Key, Value: String): variant;
   procedure SetRegistryData(RootKey: HKEY; Key, Value: String;
     RegDataType: TRegDataType; Data: variant);
+
+  function FieldTypeToString(AFieldType: TFieldType): String;
+  function StringToFieldType(Str: String): TFieldType;
 
 
   const
@@ -770,10 +773,10 @@ var
 begin
         temp := '';
         case TFieldType(Ord(FieldStore.DataType)) of
-          ftString, ftGuid, ftWideString:
+          ftString, ftGuid, ftWideString, ftMemo:
           begin
             if (FieldStore.AsString = '') or (FieldStore.IsNull) then
-               temp :='null'  //Put a default string
+               temp := 'null'  //Put a default string
             else
             begin
                  temp := '''' + trim(FixSQLString(FieldStore.AsString)) + '''';
@@ -859,6 +862,8 @@ begin
                 temp := 'convert(datetime, ''00:00:00'',8)'; //Put some valid default time
             end;
           end;
+        else
+          showmessage('Field not found' + FieldTypeToString(FieldStore.DataType));
         end;
         ConvertFieldtoSQLString := temp;
 end;
@@ -1108,6 +1113,14 @@ begin
   end;
 end;
 
+function FieldTypeToString(AFieldType: TFieldType): String;
+begin
+  Result := GetEnumName(Typeinfo(TFieldType), integer(AFieldType));
+end;
 
+function StringToFieldType(Str: String): TFieldType;
+begin
+  Result := TFieldType(GetEnumValue(TypeInfo(TFieldType), str));
+end;
 
 end.
