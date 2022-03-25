@@ -12,7 +12,6 @@ uses
 begin
   Application.Scaled:=True;
   Application.Initialize;
-  Application.MainFormOnTaskbar := True;
   Application.CreateForm(TDataForm, DataForm);
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;

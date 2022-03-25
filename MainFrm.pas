@@ -41,7 +41,7 @@ type
     CreateQueriesPopup: TPopupMenu;
     CompareFromGrid: TDBGrid;
     FromRowsCountLabel: TLabel;
-    FromTable: TEdit;
+    ToTableName: TEdit;
     FromUniqueField: TEdit;
     GenerateInsertsFromAllCSVRecordsMNU: TMenuItem;
     GenerateInsertsfromPrimaryCSVFieldNotFoundMNU: TMenuItem;
@@ -70,6 +70,7 @@ type
     LoadCSVBtn: TButton;
     LoadTablesBtn: TButton;
     LogMemo: TMemo;
+    ToSQLEdit: TMemo;
     OpenProjectBtn: TButton;
     OutputLog: TMemo;
     PageControl1: TPageControl;
@@ -103,7 +104,7 @@ type
     ScriptTableName: TEdit;
     SetupGrid: TStringGrid;
     SQL: TMemo;
-    SQLEdit: TMemo;
+    FromSQLEdit: TMemo;
     TabControl1: TTabControl;
     TableList: TDBLookupListBox;
     TabSheet1: TTabSheet;
@@ -254,67 +255,26 @@ begin
       Dataform.ToQuery2.Close;
 
       ConfigFilePath := GetAppConfigFile(False);
-      INI := TINIFile.Create(ConfigFilePath + 'DB.ini');
+      INI := TINIFile.Create(ConfigFilePath);
       try
         If FromDBCombo.ItemIndex <> -1 then
           INI.WriteInteger('DB','FromDatabase',FromDBCombo.ItemIndex);
         INI.WriteString('DB','FromUserName',FromUserName.Text);
         INI.WriteString('DB','FromPassword',encrypt(FromPassword.Text));
         INI.WriteString('DB','FromServerName',FromServerName.Text);
-        INI.WriteString('COMPARE','FromTable',FromTable.Text);
+        INI.WriteString('COMPARE','ToTableName',ToTableName.Text);
         INI.WriteString('COMPARE','FromUniqueField',FromUniqueField.Text);
-        INI.WriteString('COMPARE','SQLEdit',EncodeStringBase64(SQLEdit.Text));
-        INI.WriteString('DB','ToUserName',ToUserName.Text);
-        INI.WriteString('DB','ToPassword',encrypt(ToPassword.Text));
-        INI.WriteString('DB','ToServerName',ToServerName.Text);
-        INI.WriteString('DB','ToDatabase',ToDatabase.Text);
+        INI.WriteString('COMPARE','FromSQLEdit',EncodeStringBase64(FromSQLEdit.Text));
+        INI.WriteString('COMPARE','ToSQLEdit',EncodeStringBase64(ToSQLEdit.Text));
+        INI.WriteString('COMPARE','ToUserName',ToUserName.Text);
+        INI.WriteString('COMPARE','ToPassword',encrypt(ToPassword.Text));
+        INI.WriteString('COMPARE','ToServerName',ToServerName.Text);
+        INI.WriteString('COMPARE','ToDatabase',ToDatabase.Text);
         INI.WriteString('SCRIPTS','SQL' + InttoStr(TabControl1.TabIndex),EncodeStringBase64(ScriptSQLEdit.Text));
         INI.WriteInteger('FORM','PageControl1',Pagecontrol1.TabIndex);
       finally
         INI.Free;
       end;
-
-//
-//            SetRegistryData(HKEY_CURRENT_USER,
-//            '\Software\CompareMSSQLTables\',
-//            'FromDatabase', rdString, FromDatabase.Text);
-//            SetRegistryData(HKEY_CURRENT_USER,
-//            '\Software\CompareMSSQLTables\',
-//            'FromUserName', rdString, FromUserName.Text);
-//            SetRegistryData(HKEY_CURRENT_USER,
-//            '\Software\CompareMSSQLTables\',
-//            'FromPassword', rdString, encrypt(FromPassword.Text));
-//            SetRegistryData(HKEY_CURRENT_USER,
-//            '\Software\CompareMSSQLTables\',
-//            'FromServerName', rdString, FromServerName.Text);
-//            SetRegistryData(HKEY_CURRENT_USER,
-//            '\Software\CompareMSSQLTables\',
-//            'FromTable', rdString, FromTable.Text);
-//            SetRegistryData(HKEY_CURRENT_USER,
-//            '\Software\CompareMSSQLTables\',
-//            'FromUniqueField', rdString, FromUniqueField.Text);
-//            SetRegistryData(HKEY_CURRENT_USER,
-//            '\Software\CompareMSSQLTables\',
-//            'ToDatabase', rdString, ToDatabase.Text);
-//            SetRegistryData(HKEY_CURRENT_USER,
-//            '\Software\CompareMSSQLTables\',
-//            'ToUserName', rdString, ToUserName.Text);
-//            SetRegistryData(HKEY_CURRENT_USER,
-//            '\Software\CompareMSSQLTables\',
-//            'ToPassword', rdString, encrypt(ToPassword.Text));
-//            SetRegistryData(HKEY_CURRENT_USER,
-//            '\Software\CompareMSSQLTables\',
-//            'ToServerName', rdString, ToServerName.Text);
-//            SetRegistryData(HKEY_CURRENT_USER,
-//            '\Software\CompareMSSQLTables\',
-//            'SQLEdit', rdString, SQLEdit.Text);
-//
-//            SetRegistryData(HKEY_CURRENT_USER,
-//            '\Software\CompareMSSQLTables\',
-//            'ScriptSQLEdit', rdString, ScriptSQLEdit.Text);
-//            SetRegistryData(HKEY_CURRENT_USER,
-//            '\Software\CompareMSSQLTables\',
-//            'ScriptTableName', rdString, ScriptTableName.Text);
 
 end;
 
@@ -338,8 +298,8 @@ var
 begin
       If ConnecttoServerBtn.Caption = 'Disconnect server' then
       begin
-           Dataform.DBQuery1.Close;
            Dataform.FromConnection.Close;
+           Dataform.ToConnection.Close;
            ConnecttoServerBtn.Caption := 'Connect to server';
            Dataform.FromConnection.DatabaseName := '';
            FromDBCombo.Clear;
@@ -349,13 +309,13 @@ begin
           try
             Dataform.FromConnection.Close;
             Dataform.FromConnection.Params.Clear;
-       //     Dataform.FromConnection.Params.Add('DriverID=MSSQL');
+       //     Dataform.FromConnection.Params.Add('DriverID=MSSQL2005');
             Dataform.FromConnection.UserName := FromUserName.Text;
             Dataform.FromConnection.Password := FromPassword.Text;
             Dataform.FromConnection.HostName := FromServerName.Text;
             Dataform.FromConnection.Open;
             Dataform.DBQuery1.Open;
-            If LastFromDB <  FromDBCombo.Items.Count then
+            If (LastFromDB < FromDBCombo.Items.Count) and (LastFromDB >= 0) then
             begin
                  FromDBCombo.ItemIndex := LastFromDB;
                  FromDBComboSelect(FromDBCombo);
@@ -420,7 +380,7 @@ var
   INI: TINIFile;
 begin
       ConfigFilePath := GetAppConfigFile(False);
-      INI := TINIFile.Create(ConfigFilePath + 'DB.ini');
+      INI := TINIFile.Create(ConfigFilePath);
       try
         TabIndex := TabControl1.TabIndex;
         TabName := 'SQL' + InttoStr(TabIndex);
@@ -1329,19 +1289,20 @@ var
         INI: TINIFile;
 begin
       ConfigFilePath := GetAppConfigFile(False);
-      INI := TINIFile.Create(ConfigFilePath + 'DB.ini');
+      INI := TINIFile.Create(ConfigFilePath);
       try
         LastFromDB := INI.ReadInteger('DB','FromDatabase',-1);
         FromUserName.Text := INI.ReadString('DB','FromUserName','');
         FromPassword.Text := Decrypt(INI.ReadString('DB','FromPassword',''));
         FromServerName.Text := INI.ReadString('DB','FromServerName','');
-        FromTable.Text := INI.ReadString('COMPARE','FromTable','');
+        ToTableName.Text := INI.ReadString('COMPARE','ToTableName','');
         FromUniqueField.Text := INI.ReadString('COMPARE','FromUniqueField','');
-        SQLEdit.Text := DecodeStringBase64(INI.ReadString('COMPARE','SQLEdit',''));
-        ToUserName.Text := INI.ReadString('DB','ToUserName','');
-        ToPassword.Text := Decrypt(INI.ReadString('DB','ToPassword',''));
-        ToServerName.Text := INI.ReadString('DB','ToServerName','');
-        ToDatabase.Text := INI.ReadString('DB','ToDatabase','');
+        FromSQLEdit.Text := DecodeStringBase64(INI.ReadString('COMPARE','FromSQLEdit',''));
+        ToSQLEdit.Text := DecodeStringBase64(INI.ReadString('COMPARE','ToSQLEdit',''));
+        ToUserName.Text := INI.ReadString('COMPARE','ToUserName','');
+        ToPassword.Text := Decrypt(INI.ReadString('COMPARE','ToPassword',''));
+        ToServerName.Text := INI.ReadString('COMPARE','ToServerName','');
+        ToDatabase.Text := INI.ReadString('COMPARE','ToDatabase','');
         If INI.ReadString('SCRIPTS','SQL0','') <> '' then
            ScriptSQLEdit.Text := DecodeStringBase64(INI.ReadString('SCRIPTS','SQL0',''));
         Pagecontrol1.TabIndex := INI.ReadInteger('FORM','PageControl1',0);
@@ -1351,15 +1312,21 @@ begin
 end;
 
 procedure TMainForm.LoadFromandToDataBtnClick(Sender: TObject);
+var
+          ToSQLtext:string;
 begin
           if Dataform.FromConnection.Connected = False then
           begin
-            showmessage('Connect from database first');
+            showmessage('Connect from database first!');
             exit;
           end;
-          if POS(FromTable.Text,SQLEdit.Text) = 0 then
+          If (ToSQLEdit.Text <> '') then
+            ToSQLtext := ToSQLEdit.Text
+          else
+            ToSQLtext := FromSQLEdit.Text;
+          if (POS(ToTableName.Text,ToSQLtext) = 0) then
           begin
-            showmessage('Table name must be present in Query');
+            showmessage('Table name must be present in To Query!');
             exit;
           end;
           try
@@ -1367,7 +1334,7 @@ begin
             with Dataform.FromQuery1.SQL do
             begin
               Clear;
-              Text := SQLEdit.Text;
+              Text := FromSQLEdit.Text;
             end;
             Dataform.FromQuery1.Open;
           except
@@ -1388,7 +1355,10 @@ begin
             with Dataform.ToQuery1.SQL do
             begin
               Clear;
-              Text := SQLEdit.Text;
+              If ToSQLEdit.Text <> '' then
+                Text := ToSQLEdit.Text
+              else
+                Text := FromSQLEdit.Text;
             end;
             Dataform.ToQuery1.Open;
             FromRowsCountLabel.Caption := InttoStr(DataForm.FromQuery1.RecordCount);
@@ -1437,7 +1407,7 @@ begin
             with Dataform.ToQuery2.SQL do
             begin
               Clear;
-              Add('select * from ' + FromTable.Text);
+              Add('select * from ' + ToTableName.Text);
               Add('where ' + FROMUniquefield.Text + ' = ' + ConvertFieldtoSQLString(Dataform.FromQuery1.FieldByName(FromUniquefield.Text)));
             end;
             Dataform.ToQuery2.Open;
@@ -1458,7 +1428,7 @@ begin
                   ValuesString := ValuesString + ',' + ConvertFieldtoSQLString(DataForm.FromQuery1.Fields[I]);
                 end;
               end;
-              QueryString := 'insert into ' + FromTable.Text + ' (' + FieldsString + ') Values (' + ValuesString + ');';
+              QueryString := 'insert into ' + ToTableName.Text + ' (' + FieldsString + ') Values (' + ValuesString + ');';
               SQL.Lines.Add(QueryString);
               FieldsString := '';
               ValuesString := '';
@@ -1480,7 +1450,7 @@ begin
               end;
               if RecordChanged = true then
               begin
-                QueryString := 'update ' + FromTable.Text + ' set ' + FieldsString + ' where ' + FromUniqueField.Text + ' = ' + ConvertFieldtoSQLString(Dataform.FromQuery1.FieldByName(FromUniquefield.Text)) + ';';
+                QueryString := 'update ' + ToTableName.Text + ' set ' + FieldsString + ' where ' + FromUniqueField.Text + ' = ' + ConvertFieldtoSQLString(Dataform.FromQuery1.FieldByName(FromUniquefield.Text)) + ';';
                 SQL.Lines.Add(QueryString);
                 FieldsString := '';
                 OutputLog.Lines.Add(s);

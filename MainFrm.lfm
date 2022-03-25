@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 642
+  Left = 513
   Height = 650
-  Top = 232
+  Top = 160
   Width = 1024
   Caption = 'NComp MSSQL Toolbox'
   ClientHeight = 625
@@ -123,9 +123,9 @@ object MainForm: TMainForm
     Height = 559
     Top = 34
     Width = 1024
-    ActivePage = TabSheet3
+    ActivePage = TabSheet1
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 7
     object TabSheet2: TTabSheet
       Caption = 'Querys / Export'
@@ -343,7 +343,7 @@ object MainForm: TMainForm
         Width = 60
         Caption = 'Table Name:'
       end
-      object FromTable: TEdit
+      object ToTableName: TEdit
         Left = 236
         Height = 29
         Top = 40
@@ -365,28 +365,30 @@ object MainForm: TMainForm
         TabOrder = 5
       end
       object Label10: TLabel
-        Left = 8
+        Left = 10
         Height = 13
         Top = 45
         Width = 92
         Caption = 'SQL for from table'
       end
       object LoadFromandToDataBtn: TBitBtn
-        Left = 838
+        Left = 859
         Height = 27
-        Top = 151
+        Top = 156
         Width = 142
         Anchors = [akTop, akRight]
         Caption = 'Load From and To data'
         OnClick = LoadFromandToDataBtnClick
         TabOrder = 7
       end
-      object SQLEdit: TMemo
-        Left = 8
+      object FromSQLEdit: TMemo
+        AnchorSideRight.Control = ToSQLEdit
+        Left = 10
         Height = 82
-        Hint = 'SQL for from table the fields in the output must be identicle as the Table.'
+        Hint = 'From table SQL. The fields in the output must be identical as the actual Table.'
         Top = 72
-        Width = 614
+        Width = 615
+        Anchors = [akTop, akLeft, akRight]
         ParentShowHint = False
         ScrollBars = ssVertical
         ShowHint = True
@@ -430,7 +432,7 @@ object MainForm: TMainForm
         Height = 178
         Hint = 'To Table'
         Top = 184
-        Width = 602
+        Width = 610
         Anchors = [akTop, akLeft, akRight, akBottom]
         Color = clWindow
         Columns = <>
@@ -496,9 +498,9 @@ object MainForm: TMainForm
         TabOrder = 15
       end
       object FromRowsCountLabel: TLabel
-        Left = 8
+        Left = 10
         Height = 13
-        Top = 165
+        Top = 164
         Width = 6
         Caption = '0'
       end
@@ -514,6 +516,18 @@ object MainForm: TMainForm
         ShowHint = True
         TabOrder = 16
         Visible = False
+      end
+      object ToSQLEdit: TMemo
+        Left = 625
+        Height = 82
+        Hint = 'To Table SQL. If empty the FROM table SQL is used.'
+        Top = 72
+        Width = 377
+        Anchors = [akTop, akRight]
+        ParentShowHint = False
+        ScrollBars = ssVertical
+        ShowHint = True
+        TabOrder = 17
       end
     end
     object TabSheet3: TTabSheet
@@ -550,7 +564,7 @@ object MainForm: TMainForm
         Left = 176
         Height = 23
         Top = 3
-        Width = 138
+        Width = 177
         Caption = 'Use first line as header'
         Checked = True
         State = cbChecked

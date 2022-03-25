@@ -1,15 +1,15 @@
 object DataForm: TDataForm
   OldCreateOrder = False
   Height = 502
-  HorizontalOffset = 2685
-  VerticalOffset = 157
+  HorizontalOffset = 1106
+  VerticalOffset = 166
   Width = 675
   object FromConnection: TMSSQLConnection
     Connected = False
     LoginPrompt = False
     KeepConnection = False
     Params.Strings = (
-      'DriverID=MSSQL2005'
+      ''
     )
     Password = 'h0enderm1s'
     Transaction = FromTransaction
@@ -24,7 +24,7 @@ object DataForm: TDataForm
     LoginPrompt = False
     KeepConnection = False
     Params.Strings = (
-      'DriverID=MSSQL2005'
+      ''
     )
     Transaction = ToTransaction
     LogEvents = []
