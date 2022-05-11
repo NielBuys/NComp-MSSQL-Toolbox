@@ -17,11 +17,14 @@ type
     AddLinkedColumnBtn: TButton;
     AddPrimaryTableDetailBtn: TButton;
     AddValueBtn: TButton;
+    AddPrimaryDetailHelpBtn: TBitBtn;
     BtnCompareRight: TBitBtn;
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    RefreshCSVColumnsBtn: TButton;
+    LoadPrimaryColumnsBtn: TButton;
     ClearProjectBtn: TButton;
     ColumnsList: TDBLookupListBox;
     CompareStopRunBtn: TBitBtn;
@@ -58,9 +61,7 @@ type
     Label10: TLabel;
     Label11: TLabel;
     Label12: TLabel;
-    Label13: TLabel;
     Label14: TLabel;
-    Label15: TLabel;
     Label16: TLabel;
     Label5: TLabel;
     Label6: TLabel;
@@ -118,6 +119,7 @@ type
     ValueEdt: TEdit;
     XMLToCSVConvertBtn: TButton;
     procedure AddColumnBtnClick(Sender: TObject);
+    procedure AddPrimaryDetailHelpBtnClick(Sender: TObject);
     procedure AddValueBtnClick(Sender: TObject);
     procedure Button4Click(Sender: TObject);
     procedure ClearProjectBtnClick(Sender: TObject);
@@ -138,9 +140,11 @@ type
     procedure GenerateUpdatesfromFoundMNUClick(Sender: TObject);
     procedure GenerateUpdatesfromResultsetMNUClick(Sender: TObject);
     procedure ImportSaveLogMemoBtnClick(Sender: TObject);
+    procedure LoadPrimaryColumnsBtnClick(Sender: TObject);
     procedure LoadTablesBtnClick(Sender: TObject);
     procedure AddPrimaryTableDetailBtnClick(Sender: TObject);
     procedure ConnecttoServerBtnClick(Sender: TObject);
+    procedure RefreshCSVColumnsBtnClick(Sender: TObject);
     procedure ScriptGridEnter(Sender: TObject);
     procedure SetupGridDrawCell(Sender: TObject; aCol, aRow: Integer;
       aRect: TRect; aState: TGridDrawState);
@@ -331,6 +335,17 @@ begin
       end;
 end;
 
+procedure TMainForm.RefreshCSVColumnsBtnClick(Sender: TObject);
+var
+   i:integer;
+begin
+      FieldSelectList.Clear;
+      for i := 0 to Dataform.CSVDataset.Fields.Count - 1 do
+      begin
+           FieldSelectList.Items.Add(Dataform.CSVDataset.Fields[i].FieldName);
+      end;
+end;
+
 procedure TMainForm.ScriptGridEnter(Sender: TObject);
 begin
      If ResultsetEditableMnu.Checked = true then
@@ -497,6 +512,8 @@ begin
       if Opendialog1.Execute then
       begin
            SetupGrid.LoadFromCSVFile(OpenDialog1.FileName);
+           OpenProjectBtn.Hint := OpenDialog1.FileName;
+           OpenProjectBtn.ShowHint := True;
            if LoadPrimaryTable = false then
            begin
              showmessage('No primary row found.');
@@ -529,6 +546,7 @@ procedure TMainForm.SaveProjectBtnClick(Sender: TObject);
 begin
      SaveDialog1.FilterIndex := 2;
      SaveDialog1.DefaultExt := '.csv';
+     SaveDialog1.FileName := OpenProjectBtn.Hint;
      if Savedialog1.Execute then
      begin
           SetupGrid.SaveToCSVFile(SaveDialog1.FileName);
@@ -1062,9 +1080,9 @@ begin
            end;
            if SetupGrid.Cells[0,I] = 'Value' then
            begin
-                if pos('()',SetupGrid.Cells[1,I]) > 0 then
+                if pos('[NUM]',SetupGrid.Cells[1,I]) > 0 then
                 begin
-                     TempValue := SetupGrid.Cells[1,I];
+                     TempValue := stringReplace(SetupGrid.Cells[1,I],'[NUM]','',[rfReplaceAll, rfIgnoreCase]);
                 end
                 else
                 begin
@@ -1110,6 +1128,18 @@ begin
           begin
               LogMemo.Lines.SaveToFile(SaveDialog1.FileName);
           end;
+end;
+
+procedure TMainForm.LoadPrimaryColumnsBtnClick(Sender: TObject);
+begin
+      if PrimaryTableNameEdt.Text = '' then
+      begin
+        showmessage('Add primary table name');
+        exit;
+      end;
+      Dataform.ColumnsQuery2.Close;
+      Dataform.ColumnsQuery2.ParamByName('tablename').Value := PrimaryTableNameEdt.Text;
+      Dataform.ColumnsQuery2.Open;
 end;
 
 procedure TMainForm.DeleteSelectedRowBtnClick(Sender: TObject);
@@ -1159,6 +1189,11 @@ begin
       SetupGrid.Cells[0,SetupGrid.RowCount - 1] := 'Column';
       SetupGrid.Cells[1,SetupGrid.RowCount - 1] := FieldSelectList.Items[FieldSelectList.ItemIndex];
       SetupGrid.Cells[2,SetupGrid.RowCount - 1] := PrimaryColumnsList.Items[PrimaryColumnsList.ItemIndex];
+end;
+
+procedure TMainForm.AddPrimaryDetailHelpBtnClick(Sender: TObject);
+begin
+     showmessage('Each project needs an primary detail record. Usage instuctions: Select the CSV Column that will be used to search if the imported record exist. Then choose the linked table the same as the primary table. Next select the link table column that will be used to search if the record exist.');
 end;
 
 procedure TMainForm.AddValueBtnClick(Sender: TObject);
@@ -1211,6 +1246,7 @@ begin
         CSVGrid.ReadOnly := True;
       end;
 end;
+
 
 procedure TMainForm.CSVSearchNextBtnClick(Sender: TObject);
 begin
@@ -1268,6 +1304,11 @@ begin
       if ColumnsList.ItemIndex = -1 then
       begin
         showmessage('Select Link Table Column');
+        exit;
+      end;
+      If TableList.Items[TableList.ItemIndex] <> PrimaryTableNameEdt.Text then
+      begin
+        showmessage('Link Table Must be the same as Primary table');
         exit;
       end;
       SetupGrid.RowCount := SetupGrid.RowCount + 1;
@@ -1552,6 +1593,8 @@ begin
                  Dataform.CSVDataset.FirstLineAsSchema := false;
             end;
             Dataform.CSVDataset.FileName := OpenDialog1.filename;
+            LoadCSVBtn.Hint := OpenDialog1.filename;
+            LoadCSVBtn.ShowHint := True;
             Dataform.CSVDataset.Open;
             CSVGrid.DataSource := Dataform.CSVSource;
             for i := 0 to Dataform.CSVDataset.Fields.Count - 1 do

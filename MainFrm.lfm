@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 513
+  Left = 532
   Height = 650
-  Top = 160
+  Top = 179
   Width = 1024
   Caption = 'NComp MSSQL Toolbox'
   ClientHeight = 625
@@ -123,9 +123,9 @@ object MainForm: TMainForm
     Height = 559
     Top = 34
     Width = 1024
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 7
     object TabSheet2: TTabSheet
       Caption = 'Querys / Export'
@@ -534,6 +534,10 @@ object MainForm: TMainForm
       Caption = 'Import'
       ClientHeight = 532
       ClientWidth = 1014
+      Font.Color = clWindowText
+      Font.Height = -10
+      Font.Name = 'Tahoma'
+      ParentFont = False
       object CSVGrid: TDBGrid
         Left = 8
         Height = 228
@@ -561,10 +565,10 @@ object MainForm: TMainForm
         TabOrder = 0
       end
       object CSVFirstLineCheck: TCheckBox
-        Left = 176
+        Left = 181
         Height = 23
         Top = 3
-        Width = 177
+        Width = 138
         Caption = 'Use first line as header'
         Checked = True
         State = cbChecked
@@ -577,7 +581,7 @@ object MainForm: TMainForm
         Width = 104
         Caption = 'Load Link Tables'
         OnClick = LoadTablesBtnClick
-        TabOrder = 6
+        TabOrder = 8
       end
       object TableList: TDBLookupListBox
         Left = 232
@@ -591,17 +595,17 @@ object MainForm: TMainForm
         ListSource = DataForm.TablesSource1
         LookupCache = False
         OnClick = TableListClick
-        TabOrder = 7
+        TabOrder = 11
         TopIndex = -1
       end
       object AddPrimaryTableDetailBtn: TButton
         Left = 456
         Height = 25
         Top = 288
-        Width = 136
-        Caption = 'Add Primary Table Detail'
+        Width = 112
+        Caption = 'Add Primary Detail'
         OnClick = AddPrimaryTableDetailBtnClick
-        TabOrder = 9
+        TabOrder = 13
       end
       object ColumnsList: TDBLookupListBox
         Left = 344
@@ -614,24 +618,26 @@ object MainForm: TMainForm
         ListFieldIndex = 0
         ListSource = DataForm.ColumnsSource1
         LookupCache = False
-        TabOrder = 8
+        TabOrder = 12
         TopIndex = -1
       end
       object PrimaryTableNameEdt: TEdit
         Left = 592
-        Height = 29
-        Top = 264
+        Height = 25
+        Top = 260
         Width = 120
-        TabOrder = 11
-        Text = 'Primary Table Name'
+        AutoSize = False
+        TabOrder = 4
+        TextHint = 'Primary Table Name'
       end
       object PrimaryColumnEdt: TEdit
         Left = 712
-        Height = 29
-        Top = 264
+        Height = 25
+        Top = 260
         Width = 112
-        TabOrder = 12
-        Text = 'Primary Column'
+        AutoSize = False
+        TabOrder = 5
+        TextHint = 'Primary Column'
       end
       object FieldSelectList: TListBox
         Left = 8
@@ -641,13 +647,13 @@ object MainForm: TMainForm
         Anchors = [akTop, akLeft, akBottom]
         ItemHeight = 0
         ScrollWidth = 110
-        TabOrder = 4
+        TabOrder = 9
         TopIndex = -1
       end
       object SetupGrid: TStringGrid
         Left = 592
         Height = 155
-        Top = 294
+        Top = 288
         Width = 414
         Anchors = [akTop, akLeft, akRight, akBottom]
         Columns = <        
@@ -677,7 +683,7 @@ object MainForm: TMainForm
         FixedCols = 0
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goEditing, goRowSelect, goSmoothScroll]
         RowCount = 1
-        TabOrder = 13
+        TabOrder = 19
         TitleFont.Color = clWindowText
         TitleFont.Height = -10
         TitleFont.Name = 'Tahoma'
@@ -691,14 +697,7 @@ object MainForm: TMainForm
         Width = 136
         Caption = 'Add Linked Column'
         OnClick = AddLinkedColumnBtnClick
-        TabOrder = 10
-      end
-      object Label13: TLabel
-        Left = 8
-        Height = 13
-        Top = 274
-        Width = 66
-        Caption = 'CSV Columns'
+        TabOrder = 16
       end
       object Label14: TLabel
         Left = 352
@@ -718,15 +717,8 @@ object MainForm: TMainForm
         ListFieldIndex = 0
         ListSource = DataForm.ColumnsSource2
         LookupCache = False
-        TabOrder = 5
+        TabOrder = 10
         TopIndex = -1
-      end
-      object Label15: TLabel
-        Left = 120
-        Height = 13
-        Top = 274
-        Width = 85
-        Caption = 'Primary Columns'
       end
       object DBNavigator1: TDBNavigator
         Left = 765
@@ -756,7 +748,7 @@ object MainForm: TMainForm
         Width = 584
         Anchors = [akLeft, akRight, akBottom]
         ScrollBars = ssAutoBoth
-        TabOrder = 14
+        TabOrder = 20
       end
       object TestLinkedTableBtn: TButton
         Left = 902
@@ -766,7 +758,7 @@ object MainForm: TMainForm
         Anchors = [akRight, akBottom]
         Caption = 'Test Linked Table'
         OnClick = TestLinkedTableBtnClick
-        TabOrder = 15
+        TabOrder = 21
       end
       object DeleteSelectedRowBtn: TButton
         AnchorSideLeft.Control = SaveProjectBtn
@@ -777,7 +769,7 @@ object MainForm: TMainForm
         Anchors = [akLeft, akBottom]
         Caption = 'Delete Selected Row'
         OnClick = DeleteSelectedRowBtnClick
-        TabOrder = 16
+        TabOrder = 22
       end
       object SaveProjectBtn: TButton
         AnchorSideLeft.Control = SetupGrid
@@ -788,7 +780,7 @@ object MainForm: TMainForm
         Anchors = [akLeft, akBottom]
         Caption = 'Save Project'
         OnClick = SaveProjectBtnClick
-        TabOrder = 17
+        TabOrder = 23
       end
       object OpenProjectBtn: TButton
         AnchorSideLeft.Control = SaveProjectBtn
@@ -800,44 +792,49 @@ object MainForm: TMainForm
         Anchors = [akLeft, akBottom]
         Caption = 'Open Project'
         OnClick = OpenProjectBtnClick
-        TabOrder = 18
+        TabOrder = 24
       end
       object CSVSearchEdt: TEdit
-        Left = 320
-        Height = 29
+        Left = 325
+        Height = 25
         Top = 2
         Width = 127
+        AutoSize = False
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 20
+        TabOrder = 26
         TextHint = 'Search Text'
       end
       object CSVSearchCombo: TComboBox
-        Left = 456
-        Height = 29
+        Left = 451
+        Height = 25
         Top = 2
         Width = 112
+        AutoSize = False
         ItemHeight = 0
-        TabOrder = 21
-        Text = 'Choose Column'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 27
+        Text = 'Choose Col''s'
+        TextHint = 'Choose Column to search'
       end
       object CSVSearchBtn: TButton
-        Left = 576
+        Left = 563
         Height = 25
         Top = 2
         Width = 48
         Caption = 'Search'
         OnClick = CSVSearchBtnClick
-        TabOrder = 22
+        TabOrder = 28
       end
       object CSVSearchNextBtn: TButton
-        Left = 624
+        Left = 611
         Height = 25
         Top = 2
         Width = 75
         Caption = 'Search Next'
         OnClick = CSVSearchNextBtnClick
-        TabOrder = 23
+        TabOrder = 29
       end
       object AddColumnBtn: TButton
         Left = 456
@@ -846,7 +843,7 @@ object MainForm: TMainForm
         Width = 136
         Caption = 'Add Column'
         OnClick = AddColumnBtnClick
-        TabOrder = 24
+        TabOrder = 15
       end
       object GenerateQueriesBtn: TButton
         Left = 902
@@ -857,7 +854,7 @@ object MainForm: TMainForm
         Caption = 'Generate Queries'
         OnClick = GenerateQueriesBtnClick
         PopupMenu = CreateQueriesPopup
-        TabOrder = 25
+        TabOrder = 30
       end
       object AddValueBtn: TButton
         Left = 456
@@ -866,26 +863,28 @@ object MainForm: TMainForm
         Width = 72
         Caption = 'Add Value'
         OnClick = AddValueBtnClick
-        TabOrder = 26
+        TabOrder = 17
       end
       object ValueEdt: TEdit
         Left = 528
-        Height = 29
-        Top = 364
+        Height = 25
+        Hint = 'For Numeric values Add [NUM] to the value'
+        Top = 360
         Width = 64
+        AutoSize = False
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 27
+        TabOrder = 18
         TextHint = 'Value'
       end
       object XMLToCSVConvertBtn: TButton
-        Left = 83
+        Left = 88
         Height = 25
         Top = 2
         Width = 75
         Caption = 'XML -> CSV'
         OnClick = XMLToCSVConvertBtnClick
-        TabOrder = 28
+        TabOrder = 31
       end
       object ImportSaveLogMemoBtn: TButton
         AnchorSideLeft.Control = LogMemo
@@ -897,7 +896,7 @@ object MainForm: TMainForm
         Anchors = [akLeft, akBottom]
         Caption = 'Save log'
         OnClick = ImportSaveLogMemoBtnClick
-        TabOrder = 29
+        TabOrder = 32
       end
       object ClearProjectBtn: TButton
         AnchorSideLeft.Control = OpenProjectBtn
@@ -909,13 +908,44 @@ object MainForm: TMainForm
         Anchors = [akLeft, akBottom]
         Caption = 'Clear Project'
         OnClick = ClearProjectBtnClick
-        TabOrder = 19
+        TabOrder = 25
+      end
+      object LoadPrimaryColumnsBtn: TButton
+        Left = 120
+        Height = 25
+        Top = 260
+        Width = 112
+        Caption = 'Load Primary Col''s'
+        OnClick = LoadPrimaryColumnsBtnClick
+        TabOrder = 7
+      end
+      object RefreshCSVColumnsBtn: TButton
+        Left = 8
+        Height = 25
+        Top = 260
+        Width = 112
+        Caption = 'Refresh CSV Col''s'
+        OnClick = RefreshCSVColumnsBtnClick
+        TabOrder = 6
+      end
+      object AddPrimaryDetailHelpBtn: TBitBtn
+        Left = 567
+        Height = 25
+        Top = 288
+        Width = 25
+        Font.Color = clWindowText
+        Font.Height = -10
+        Font.Name = 'Tahoma'
+        Kind = bkHelp
+        OnClick = AddPrimaryDetailHelpBtnClick
+        ParentFont = False
+        TabOrder = 14
       end
     end
   end
   object MainMenu1: TMainMenu
-    Left = 528
-    Top = 344
+    Left = 176
+    Top = 408
     object EditMnu: TMenuItem
       Caption = 'Edit'
       object ResultsetEditableMnu: TMenuItem
@@ -935,8 +965,8 @@ object MainForm: TMainForm
     DefaultExt = '.txt'
     Filter = 'txt|*.txt|csv|*.csv|All Files|*.*'
     Options = [ofOverwritePrompt, ofEnableSizing, ofViewDetail]
-    Left = 432
-    Top = 344
+    Left = 72
+    Top = 408
   end
   object OpenDialog1: TOpenDialog
     Title = 'Open file'
@@ -955,8 +985,8 @@ object MainForm: TMainForm
     end
   end
   object CreateQueriesPopup: TPopupMenu
-    Left = 744
-    Top = 344
+    Left = 688
+    Top = 408
     object GenerateInsertsFromAllCSVRecordsMNU: TMenuItem
       Caption = 'Generate Inserts from all CSV records'
       OnClick = GenerateInsertsFromAllCSVRecordsMNUClick
@@ -975,8 +1005,8 @@ object MainForm: TMainForm
     end
   end
   object ExportSQLPopup: TPopupMenu
-    Left = 896
-    Top = 344
+    Left = 832
+    Top = 408
     object GenerateInsertfromResultsetMNU: TMenuItem
       Caption = 'Generate Inserts from Resultset'
       OnClick = GenerateInsertfromResultsetMNUClick
