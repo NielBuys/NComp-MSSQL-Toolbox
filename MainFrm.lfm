@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 509
+  Left = 680
   Height = 650
-  Top = 188
+  Top = 81
   Width = 1024
   Caption = 'NComp MSSQL Toolbox'
   ClientHeight = 625
@@ -201,8 +201,8 @@ object MainForm: TMainForm
           ChildSizing.ShrinkVertical = crsScaleChilds
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 100
-          ClientHeight = 25
-          ClientWidth = 241
+          ClientHeight = 21
+          ClientWidth = 237
           DataSource = DataForm.ScriptQuerySource1
           Options = []
           TabOrder = 4
@@ -264,9 +264,12 @@ object MainForm: TMainForm
           ParentFont = False
           ReadOnly = True
           TabOrder = 8
+          TitleFont.CharSet = ANSI_CHARSET
           TitleFont.Color = clWindowText
           TitleFont.Height = -10
           TitleFont.Name = 'Tahoma'
+          TitleFont.Pitch = fpVariable
+          TitleFont.Quality = fqDraft
           OnEnter = ScriptGridEnter
         end
         object Label12: TLabel
@@ -437,9 +440,12 @@ object MainForm: TMainForm
         ReadOnly = True
         ShowHint = True
         TabOrder = 11
+        TitleFont.CharSet = ANSI_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -10
         TitleFont.Name = 'Tahoma'
+        TitleFont.Pitch = fpVariable
+        TitleFont.Quality = fqDraft
       end
       object BtnCompareRight: TBitBtn
         Left = 362
@@ -476,9 +482,12 @@ object MainForm: TMainForm
         ReadOnly = True
         ShowHint = True
         TabOrder = 14
+        TitleFont.CharSet = ANSI_CHARSET
         TitleFont.Color = clWindowText
         TitleFont.Height = -10
         TitleFont.Name = 'Tahoma'
+        TitleFont.Pitch = fpVariable
+        TitleFont.Quality = fqDraft
       end
       object OutputLog: TMemo
         Left = 6
@@ -676,7 +685,7 @@ object MainForm: TMainForm
         Left = 181
         Height = 23
         Top = 3
-        Width = 147
+        Width = 177
         Caption = 'Use first line as header'
         Checked = True
         State = cbChecked

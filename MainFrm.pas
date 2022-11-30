@@ -1388,6 +1388,10 @@ begin
           if  ToFieldsEdit.Text <> '' then
           begin
                ToSQLtext := StringReplace(ToSQLtext,'[@FIELDS]', ToFieldsEdit.Text , [rfReplaceAll, rfIgnoreCase]);
+          end
+          else if FromFieldsEdit.Text <> '' then
+          begin
+               ToSQLtext := StringReplace(ToSQLtext,'[@FIELDS]', FromFieldsEdit.Text , [rfReplaceAll, rfIgnoreCase]);
           end;
           if (POS(ToTableName.Text,ToSQLtext) = 0) then
           begin
