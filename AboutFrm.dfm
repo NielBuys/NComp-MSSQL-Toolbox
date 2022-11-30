@@ -1,7 +1,7 @@
 object AboutForm: TAboutForm
-  Left = 789
+  Left = 673
   Height = 302
-  Top = 236
+  Top = 165
   Width = 410
   BorderStyle = bsDialog
   Caption = 'About'
@@ -12,25 +12,27 @@ object AboutForm: TAboutForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Position = poMainFormCenter
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.2.4.0'
   object Label1: TLabel
     Left = 0
-    Height = 14
+    Height = 13
     Top = 283
-    Width = 297
+    Width = 265
     Caption = 'Link to http://www.ncomp.co.za. Click here for support'
+    ParentColor = False
     OnClick = Label1Click
   end
   object Label2: TLabel
     Left = 0
-    Height = 14
+    Height = 13
     Top = 8
-    Width = 143
+    Width = 128
     Caption = 'NComp MSSQL Toolbox'
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentColor = False
     ParentFont = False
   end
   object Memo1: TMemo

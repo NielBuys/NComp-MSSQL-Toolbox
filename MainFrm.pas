@@ -23,6 +23,11 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    SpeedButton1: TSpeedButton;
+    ToFieldsEdit: TEdit;
+    FromFieldsEdit: TEdit;
+    FromFieldsLbl: TLabel;
+    ToFieldsLbl: TLabel;
     RefreshCSVColumnsBtn: TButton;
     LoadPrimaryColumnsBtn: TButton;
     ClearProjectBtn: TButton;
@@ -58,16 +63,16 @@ type
     ImportSaveLogMemoBtn: TButton;
     LoadFromandToDataBtn: TBitBtn;
     CompareToGrid: TDBGrid;
-    Label10: TLabel;
-    Label11: TLabel;
+    FromSQLLbl: TLabel;
+    FromUniqueFieldLbl: TLabel;
     Label12: TLabel;
     Label14: TLabel;
     Label16: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
+    ToTableNameLbl: TLabel;
+    ToDatabaseLbl: TLabel;
+    ToUserNameLbl: TLabel;
+    ToPasswordLbl: TLabel;
+    ToServerNameLbl: TLabel;
     LoadCSVBtn: TButton;
     LoadTablesBtn: TButton;
     LogMemo: TMemo;
@@ -148,6 +153,7 @@ type
     procedure ScriptGridEnter(Sender: TObject);
     procedure SetupGridDrawCell(Sender: TObject; aCol, aRow: Integer;
       aRect: TRect; aState: TGridDrawState);
+    procedure SpeedButton1Click(Sender: TObject);
     procedure TabControl1Change(Sender: TObject);
     procedure XMLToCSVConvertBtnClick(Sender: TObject);
     procedure OpenProjectBtnClick(Sender: TObject);
@@ -270,6 +276,8 @@ begin
         INI.WriteString('COMPARE','FromUniqueField',FromUniqueField.Text);
         INI.WriteString('COMPARE','FromSQLEdit',EncodeStringBase64(FromSQLEdit.Text));
         INI.WriteString('COMPARE','ToSQLEdit',EncodeStringBase64(ToSQLEdit.Text));
+        INI.WriteString('COMPARE','FromFieldsEdit',FromFieldsEdit.Text);
+        INI.WriteString('COMPARE','ToFieldsEdit',ToFieldsEdit.Text);
         INI.WriteString('COMPARE','ToUserName',ToUserName.Text);
         INI.WriteString('COMPARE','ToPassword',encrypt(ToPassword.Text));
         INI.WriteString('COMPARE','ToServerName',ToServerName.Text);
@@ -385,6 +393,11 @@ begin
      AGrid.Canvas.TextOut(aRect.Left + 2, aRect.Top + 2, AGrid.Cells[ACol, ARow]);
    end;
 
+end;
+
+procedure TMainForm.SpeedButton1Click(Sender: TObject);
+begin
+  showmessage('Use in SQL [@FIELDS] as placeholder for fields. Use these fields if you are not comparing "*" in your SQL.');
 end;
 
 procedure TMainForm.TabControl1Change(Sender: TObject);
@@ -1340,6 +1353,8 @@ begin
         FromUniqueField.Text := INI.ReadString('COMPARE','FromUniqueField','');
         FromSQLEdit.Text := DecodeStringBase64(INI.ReadString('COMPARE','FromSQLEdit',''));
         ToSQLEdit.Text := DecodeStringBase64(INI.ReadString('COMPARE','ToSQLEdit',''));
+        FromFieldsEdit.Text := INI.ReadString('COMPARE','FromFieldsEdit','');
+        ToFieldsEdit.Text := INI.ReadString('COMPARE','ToFieldsEdit','');
         ToUserName.Text := INI.ReadString('COMPARE','ToUserName','');
         ToPassword.Text := Decrypt(INI.ReadString('COMPARE','ToPassword',''));
         ToServerName.Text := INI.ReadString('COMPARE','ToServerName','');
@@ -1354,17 +1369,26 @@ end;
 
 procedure TMainForm.LoadFromandToDataBtnClick(Sender: TObject);
 var
-          ToSQLtext:string;
+          ToSQLtext,FromSQLtext:string;
 begin
           if Dataform.FromConnection.Connected = False then
           begin
             showmessage('Connect from database first!');
             exit;
           end;
+          FromSQLtext := FromSQLEdit.Text;
+          if  FromFieldsEdit.Text <> '' then
+          begin
+               FromSQLtext := StringReplace(FromSQLtext,'[@FIELDS]', FromFieldsEdit.Text , [rfReplaceAll, rfIgnoreCase]);
+          end;
           If (ToSQLEdit.Text <> '') then
             ToSQLtext := ToSQLEdit.Text
           else
-            ToSQLtext := FromSQLEdit.Text;
+            ToSQLtext := FromSQLtext;
+          if  ToFieldsEdit.Text <> '' then
+          begin
+               ToSQLtext := StringReplace(ToSQLtext,'[@FIELDS]', ToFieldsEdit.Text , [rfReplaceAll, rfIgnoreCase]);
+          end;
           if (POS(ToTableName.Text,ToSQLtext) = 0) then
           begin
             showmessage('Table name must be present in To Query!');
@@ -1372,11 +1396,7 @@ begin
           end;
           try
             DataForm.FromQuery1.close;
-            with Dataform.FromQuery1.SQL do
-            begin
-              Clear;
-              Text := FromSQLEdit.Text;
-            end;
+            Dataform.FromQuery1.SQL.Text := FromSQLtext;
             Dataform.FromQuery1.Open;
           except
           begin
@@ -1393,19 +1413,12 @@ begin
             Dataform.ToConnection.HostName := ToServerName.Text;
             Dataform.ToConnection.Open;
             DataForm.ToQuery1.close;
-            with Dataform.ToQuery1.SQL do
-            begin
-              Clear;
-              If ToSQLEdit.Text <> '' then
-                Text := ToSQLEdit.Text
-              else
-                Text := FromSQLEdit.Text;
-            end;
+            Dataform.ToQuery1.SQL.Text := ToSQLtext;
             Dataform.ToQuery1.Open;
             FromRowsCountLabel.Caption := InttoStr(DataForm.FromQuery1.RecordCount);
           except
           begin
-            ShowMessage('Unable to connect to MSSQL To Server, make sure the Database exist');
+            ShowMessage('Unable to run query on To Server');
             Dataform.ToConnection.Close;
           end;
           raise;
@@ -1416,7 +1429,7 @@ end;
 procedure TMainForm.BtnCompareRightClick(Sender: TObject);
 var
           I:Integer;
-          s: String;
+          s,ToSQL,ToFields: String;
           RecordChanged: Boolean;
           FieldsString,ValuesString,QueryString:WideString;
 begin
@@ -1429,6 +1442,20 @@ begin
           SQL.Clear;
           FieldsString := '';
           ValuesString := '';
+
+          If ToFieldsEdit.Text <> '' then
+          begin
+            ToFields := ToFieldsEdit.Text;
+          end
+          else if FromFieldsEdit.Text <> '' then
+          begin
+            ToFields := FromFieldsEdit.Text;
+          end
+          else
+          begin
+            ToFields := '*';
+          end;
+
           OutputLog.Lines.Clear;
           ProgressBar1.Max := Dataform.FromQuery1.RecordCount;
           ProgressBar1.Position := 0;
@@ -1444,13 +1471,12 @@ begin
               break;
             end;
             Application.processMessages;
+
+            ToSQL := 'select ' + ToFields + ' from ' + ToTableName.Text;
+            ToSQL := ToSQL + ' where ' + FROMUniquefield.Text + ' = ' + ConvertFieldtoSQLString(Dataform.FromQuery1.FieldByName(FromUniquefield.Text));
+
             DataForm.ToQuery2.close;
-            with Dataform.ToQuery2.SQL do
-            begin
-              Clear;
-              Add('select * from ' + ToTableName.Text);
-              Add('where ' + FROMUniquefield.Text + ' = ' + ConvertFieldtoSQLString(Dataform.FromQuery1.FieldByName(FromUniquefield.Text)));
-            end;
+            Dataform.ToQuery2.SQL.Text := ToSQL;
             Dataform.ToQuery2.Open;
             Dataform.ToQuery2.Prepare;
             if Dataform.ToQuery2.RecordCount = 0 then

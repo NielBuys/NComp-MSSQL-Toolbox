@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Version=1.0-13
+Version=1.0-14
 Type=Application
 Terminal=false
 Exec=/usr/local/bin/CompareMSSQLTables
