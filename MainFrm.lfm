@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 680
+  Left = 642
   Height = 650
-  Top = 81
+  Top = 197
   Width = 1024
   Caption = 'NComp MSSQL Toolbox'
   ClientHeight = 625
@@ -18,7 +18,7 @@ object MainForm: TMainForm
   OnClose = FormClose
   OnCreate = FormCreate
   Position = poScreenCenter
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.2.6.0'
   object CloseBtn: TBitBtn
     Left = 944
     Height = 25
@@ -40,6 +40,7 @@ object MainForm: TMainForm
     Width = 53
     Anchors = [akTop, akRight]
     Caption = 'Database:'
+    ParentColor = False
   end
   object Label2: TLabel
     Left = 216
@@ -47,6 +48,7 @@ object MainForm: TMainForm
     Top = 7
     Width = 59
     Caption = 'UserName:'
+    ParentColor = False
   end
   object FromUserName: TEdit
     Left = 280
@@ -62,6 +64,7 @@ object MainForm: TMainForm
     Top = 7
     Width = 54
     Caption = 'Password:'
+    ParentColor = False
   end
   object FromPassword: TEdit
     Left = 480
@@ -79,6 +82,7 @@ object MainForm: TMainForm
     Top = 7
     Width = 72
     Caption = 'Server Name:'
+    ParentColor = False
   end
   object FromServerName: TEdit
     Left = 80
@@ -167,6 +171,7 @@ object MainForm: TMainForm
           Width = 152
           Anchors = [akTop, akRight]
           Caption = 'Table Name for SQL Export:'
+          ParentColor = False
         end
         object ScriptTableName: TEdit
           Left = 872
@@ -233,6 +238,7 @@ object MainForm: TMainForm
           Width = 7
           Anchors = [akLeft, akBottom]
           Caption = '0'
+          ParentColor = False
         end
         object SaveSQLBtn: TButton
           Left = 904
@@ -279,6 +285,7 @@ object MainForm: TMainForm
           Width = 24
           Anchors = [akLeft, akBottom]
           Caption = 'SQL'
+          ParentColor = False
         end
         object Button4: TButton
           Left = 160
@@ -302,6 +309,7 @@ object MainForm: TMainForm
         Top = 14
         Width = 69
         Caption = 'To Database:'
+        ParentColor = False
       end
       object ToDatabase: TEdit
         Left = 848
@@ -317,6 +325,7 @@ object MainForm: TMainForm
         Top = 14
         Width = 75
         Caption = 'To UserName:'
+        ParentColor = False
       end
       object ToUserName: TEdit
         Left = 368
@@ -332,6 +341,7 @@ object MainForm: TMainForm
         Top = 14
         Width = 70
         Caption = 'To Password:'
+        ParentColor = False
       end
       object ToPassword: TEdit
         Left = 616
@@ -349,6 +359,7 @@ object MainForm: TMainForm
         Top = 14
         Width = 88
         Caption = 'To Server Name:'
+        ParentColor = False
       end
       object ToServerName: TEdit
         Left = 120
@@ -364,6 +375,7 @@ object MainForm: TMainForm
         Top = 45
         Width = 67
         Caption = 'Table Name:'
+        ParentColor = False
       end
       object ToTableName: TEdit
         Left = 236
@@ -379,6 +391,7 @@ object MainForm: TMainForm
         Top = 45
         Width = 75
         Caption = 'Unique Field:'
+        ParentColor = False
       end
       object FromUniqueField: TEdit
         Left = 496
@@ -394,6 +407,7 @@ object MainForm: TMainForm
         Top = 45
         Width = 100
         Caption = 'SQL for from table'
+        ParentColor = False
       end
       object LoadFromandToDataBtn: TBitBtn
         Left = 859
@@ -547,6 +561,7 @@ object MainForm: TMainForm
         Top = 164
         Width = 7
         Caption = '0'
+        ParentColor = False
       end
       object CompareStopRunBtn: TBitBtn
         Left = 362
@@ -579,6 +594,7 @@ object MainForm: TMainForm
         Top = 80
         Width = 68
         Caption = 'From Fields:'
+        ParentColor = False
       end
       object FromFieldsEdit: TEdit
         Left = 80
@@ -596,6 +612,7 @@ object MainForm: TMainForm
         Width = 53
         Anchors = [akTop, akRight]
         Caption = 'To Fields:'
+        ParentColor = False
       end
       object ToFieldsEdit: TEdit
         Left = 688
@@ -822,6 +839,7 @@ object MainForm: TMainForm
         Top = 274
         Width = 110
         Caption = 'Link Table Columns'
+        ParentColor = False
       end
       object PrimaryColumnsList: TDBLookupListBox
         Left = 120
