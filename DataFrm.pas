@@ -3,7 +3,7 @@ unit DataFrm;
 interface
 
 uses
-  SysUtils, Classes, DB, sqldb, SdfData, mssqlconn;
+  SysUtils, Classes, DB, sqldb, mysql80conn, SdfData, mssqlconn;
 
 type
 
@@ -16,6 +16,7 @@ type
     ColumnsQuery1: TSQLQuery;
     DataSource1: TDataSource;
     DBQuery1: TSQLQuery;
+    FromMySQL80Connection: TMySQL80Connection;
     ScriptQuery0: TSQLQuery;
     ScriptQuerySource0: TDataSource;
     TablesSource1: TDataSource;

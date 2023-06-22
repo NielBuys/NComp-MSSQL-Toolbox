@@ -23,6 +23,7 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    SQLTypeSelect: TComboBox;
     SpeedButton1: TSpeedButton;
     ToFieldsEdit: TEdit;
     FromFieldsEdit: TEdit;
@@ -272,6 +273,8 @@ begin
         INI.WriteString('DB','FromUserName',FromUserName.Text);
         INI.WriteString('DB','FromPassword',encrypt(FromPassword.Text));
         INI.WriteString('DB','FromServerName',FromServerName.Text);
+        If SQLTypeSelect.ItemIndex <> -1 then
+          INI.WriteInteger('DB','SQLType',SQLTypeSelect.ItemIndex);
         INI.WriteString('COMPARE','ToTableName',ToTableName.Text);
         INI.WriteString('COMPARE','FromUniqueField',FromUniqueField.Text);
         INI.WriteString('COMPARE','FromSQLEdit',EncodeStringBase64(FromSQLEdit.Text));
@@ -1349,6 +1352,7 @@ begin
         FromUserName.Text := INI.ReadString('DB','FromUserName','');
         FromPassword.Text := Decrypt(INI.ReadString('DB','FromPassword',''));
         FromServerName.Text := INI.ReadString('DB','FromServerName','');
+        SQLTypeSelect.ItemIndex := INI.ReadInteger('DB','SQLType',0);
         ToTableName.Text := INI.ReadString('COMPARE','ToTableName','');
         FromUniqueField.Text := INI.ReadString('COMPARE','FromUniqueField','');
         FromSQLEdit.Text := DecodeStringBase64(INI.ReadString('COMPARE','FromSQLEdit',''));

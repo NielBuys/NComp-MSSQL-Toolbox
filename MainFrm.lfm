@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 642
+  Left = 464
   Height = 650
-  Top = 197
+  Top = 242
   Width = 1024
   Caption = 'NComp MSSQL Toolbox'
   ClientHeight = 625
@@ -34,7 +34,7 @@ object MainForm: TMainForm
     TabOrder = 6
   end
   object Label1: TLabel
-    Left = 781
+    Left = 800
     Height = 15
     Top = 7
     Width = 53
@@ -43,7 +43,7 @@ object MainForm: TMainForm
     ParentColor = False
   end
   object Label2: TLabel
-    Left = 216
+    Left = 207
     Height = 15
     Top = 7
     Width = 59
@@ -51,7 +51,7 @@ object MainForm: TMainForm
     ParentColor = False
   end
   object FromUserName: TEdit
-    Left = 280
+    Left = 266
     Height = 27
     Top = 1
     Width = 127
@@ -59,7 +59,7 @@ object MainForm: TMainForm
     TabOrder = 1
   end
   object Label3: TLabel
-    Left = 424
+    Left = 394
     Height = 15
     Top = 7
     Width = 54
@@ -67,7 +67,7 @@ object MainForm: TMainForm
     ParentColor = False
   end
   object FromPassword: TEdit
-    Left = 480
+    Left = 449
     Height = 27
     Top = 1
     Width = 127
@@ -85,7 +85,7 @@ object MainForm: TMainForm
     ParentColor = False
   end
   object FromServerName: TEdit
-    Left = 80
+    Left = 79
     Height = 27
     Top = 1
     Width = 127
@@ -93,7 +93,7 @@ object MainForm: TMainForm
     TabOrder = 0
   end
   object ConnecttoServerBtn: TBitBtn
-    Left = 624
+    Left = 677
     Height = 27
     Top = 1
     Width = 122
@@ -112,7 +112,7 @@ object MainForm: TMainForm
     TabOrder = 5
   end
   object FromDBCombo: TDBLookupComboBox
-    Left = 848
+    Left = 857
     Height = 27
     Hint = 'Choose DB'
     Top = 1
@@ -1077,6 +1077,21 @@ object MainForm: TMainForm
         TabOrder = 14
       end
     end
+  end
+  object SQLTypeSelect: TComboBox
+    Left = 576
+    Height = 27
+    Top = 1
+    Width = 101
+    AutoSize = False
+    ItemHeight = 0
+    ItemIndex = 0
+    Items.Strings = (
+      'MSSQL'
+      'MySQL'
+    )
+    TabOrder = 8
+    Text = 'MSSQL'
   end
   object MainMenu1: TMainMenu
     Left = 176
