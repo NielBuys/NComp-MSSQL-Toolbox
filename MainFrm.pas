@@ -23,6 +23,7 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    FromPort: TEdit;
     SQLTypeSelect: TComboBox;
     SpeedButton1: TSpeedButton;
     ToFieldsEdit: TEdit;
@@ -273,6 +274,7 @@ begin
         INI.WriteString('DB','FromUserName',FromUserName.Text);
         INI.WriteString('DB','FromPassword',encrypt(FromPassword.Text));
         INI.WriteString('DB','FromServerName',FromServerName.Text);
+        INI.WriteString('DB','FromPort',FromPort.Text);
         If SQLTypeSelect.ItemIndex <> -1 then
           INI.WriteInteger('DB','SQLType',SQLTypeSelect.ItemIndex);
         INI.WriteString('COMPARE','ToTableName',ToTableName.Text);
@@ -313,23 +315,51 @@ var
 begin
       If ConnecttoServerBtn.Caption = 'Disconnect server' then
       begin
-           Dataform.FromConnection.Close;
-           Dataform.ToConnection.Close;
-           ConnecttoServerBtn.Caption := 'Connect to server';
-           Dataform.FromConnection.DatabaseName := '';
-           FromDBCombo.Clear;
+          if (SQLTypeSelect.ItemIndex = 0) then
+          begin
+            Dataform.FromConnection.Close;
+          end
+          else
+          begin
+            Dataform.FromMySQL80Connection.Close;
+          end;
+          Dataform.ToConnection.Close;
+          ConnecttoServerBtn.Caption := 'Connect to server';
+          Dataform.FromConnection.DatabaseName := '';
+          FromDBCombo.Clear;
       end
       else
       begin
           try
-            Dataform.FromConnection.Close;
-            Dataform.FromConnection.Params.Clear;
+            if (SQLTypeSelect.ItemIndex = 0) then
+            begin
+                 Dataform.FromConnection.Close;
+                 Dataform.FromConnection.Params.Clear;
        //     Dataform.FromConnection.Params.Add('DriverID=MSSQL2005');
-            Dataform.FromConnection.UserName := FromUserName.Text;
-            Dataform.FromConnection.Password := FromPassword.Text;
-            Dataform.FromConnection.HostName := FromServerName.Text;
-            Dataform.FromConnection.Open;
-            Dataform.DBQuery1.Open;
+                 Dataform.FromConnection.UserName := FromUserName.Text;
+                 Dataform.FromConnection.Password := FromPassword.Text;
+                 Dataform.FromConnection.HostName := FromServerName.Text;
+                 Dataform.FromTransaction.DataBase := Dataform.FromConnection;
+                 Dataform.FromConnection.Open;
+                 Dataform.DBQuery1.SQL.Text := 'SELECT name as [Database] FROM sys.databases order by [Database]';
+                 Dataform.DBQuery1.SQLConnection := Dataform.FromConnection;
+                 Dataform.DBQuery1.Open;
+            end
+            else
+            begin
+               Dataform.FromMySQL80Connection.Close;
+               Dataform.FromMySQL80Connection.Params.Clear;
+               Dataform.FromMySQL80Connection.UserName := FromUserName.Text;
+               Dataform.FromMySQL80Connection.Password := FromPassword.Text;
+               Dataform.FromMySQL80Connection.HostName := FromServerName.Text;
+               Dataform.FromMySQL80Connection.Port := StrtoInt(FromPort.Text);
+               Dataform.FromMySQL80Connection.DatabaseName := 'information_schema';
+               Dataform.FromTransaction.DataBase := Dataform.FromMySQL80Connection;
+               Dataform.FromMySQL80Connection.Open;
+               Dataform.DBQuery1.SQL.Text := 'show databases';
+               Dataform.DBQuery1.SQLConnection := Dataform.FromMySQL80Connection;
+               Dataform.DBQuery1.Open;
+            end;
             If (LastFromDB < FromDBCombo.Items.Count) and (LastFromDB >= 0) then
             begin
                  FromDBCombo.ItemIndex := LastFromDB;
@@ -338,12 +368,59 @@ begin
             ConnecttoServerBtn.Caption := 'Disconnect server';
           except
           begin
-            ShowMessage('Unable to connect to MSSQL From Server!');
-            Dataform.FromConnection.Close;
+            ShowMessage('Unable to connect to SQL Server!');
+            if (SQLTypeSelect.ItemIndex = 0) then
+            begin
+              Dataform.FromConnection.Close;
+            end
+            else
+            begin
+              Dataform.FromMySQL80Connection.Close;
+            end;
           end;
           raise;
           end;
       end;
+end;
+
+procedure TMainForm.FromDBComboSelect(Sender: TObject);
+var
+          s: string;
+begin
+          try
+            LastFromDB := FromDBCombo.ItemIndex;
+            s := FromDBCombo.Items[FromDBCombo.ItemIndex];
+            if (SQLTypeSelect.ItemIndex = 0) then
+            begin
+              Dataform.FromConnection.Close;
+              Dataform.FromConnection.DatabaseName := s;
+              Dataform.FromConnection.Open;
+            end
+            else
+            begin
+              Dataform.FromMySQL80Connection.Close;
+              Dataform.FromMySQL80Connection.DatabaseName := s;
+              Dataform.FromMySQL80Connection.Open;
+            end;
+            Dataform.DBQuery1.Open;
+            FromDBCombo.ItemIndex := LastFromDB;
+          except
+          begin
+            ShowMessage('Unable to select DB , make sure the DB exist');
+            if (SQLTypeSelect.ItemIndex = 0) then
+            begin
+              Dataform.FromConnection.Close;
+            end
+            else
+            begin
+              Dataform.FromMySQL80Connection.Close;
+            end;
+            ConnecttoServerBtn.Caption := 'Connect to server';
+            Dataform.FromConnection.DatabaseName := '';
+          end;
+          raise;
+          end;
+
 end;
 
 procedure TMainForm.RefreshCSVColumnsBtnClick(Sender: TObject);
@@ -614,30 +691,6 @@ begin
       SetupGrid.Cells[2,SetupGrid.RowCount - 1] := PrimaryColumnsList.Items[PrimaryColumnsList.ItemIndex];
       SetupGrid.Cells[3,SetupGrid.RowCount - 1] := TableList.Items[TableList.ItemIndex];
       SetupGrid.Cells[4,SetupGrid.RowCount - 1] := ColumnsList.Items[ColumnsList.ItemIndex];
-end;
-
-procedure TMainForm.FromDBComboSelect(Sender: TObject);
-var
-          s: string;
-begin
-          try
-            LastFromDB := FromDBCombo.ItemIndex;
-            s := FromDBCombo.Items[FromDBCombo.ItemIndex];
-            Dataform.FromConnection.Close;
-            Dataform.FromConnection.DatabaseName := s;
-            Dataform.FromConnection.Open;
-            Dataform.DBQuery1.Open;
-            FromDBCombo.ItemIndex := LastFromDB;
-          except
-          begin
-            ShowMessage('Unable to select DB , make sure the DB exist');
-            Dataform.FromConnection.Close;
-            ConnecttoServerBtn.Caption := 'Connect to server';
-            Dataform.FromConnection.DatabaseName := '';
-          end;
-          raise;
-          end;
-
 end;
 
 procedure TMainForm.GenerateQueriesBtnClick(Sender: TObject);
@@ -1352,6 +1405,7 @@ begin
         FromUserName.Text := INI.ReadString('DB','FromUserName','');
         FromPassword.Text := Decrypt(INI.ReadString('DB','FromPassword',''));
         FromServerName.Text := INI.ReadString('DB','FromServerName','');
+        FromPort.Text := INI.ReadString('DB','FromPort','');
         SQLTypeSelect.ItemIndex := INI.ReadInteger('DB','SQLType',0);
         ToTableName.Text := INI.ReadString('COMPARE','ToTableName','');
         FromUniqueField.Text := INI.ReadString('COMPARE','FromUniqueField','');
@@ -1544,10 +1598,21 @@ procedure TMainForm.ExecuteQueryBtnClick(Sender: TObject);
 var
           SQLString: String;
 begin
-          if Dataform.FromConnection.Connected = False then
+          if (SQLTypeSelect.ItemIndex = 0) then
           begin
-            showmessage('Connect database first');
-            exit;
+            if Dataform.FromConnection.Connected = False then
+            begin
+              showmessage('Connect database first');
+              exit;
+            end;
+          end
+          else
+          begin
+            if Dataform.FromMySQL80Connection.Connected = False then
+            begin
+              showmessage('Connect database first');
+              exit;
+            end;
           end;
           try
             if copy(ScriptSQLEdit.Text,ScriptSQLEdit.SelStart+1,ScriptSQLEdit.SelLength) = '' then
@@ -1558,6 +1623,14 @@ begin
                  0 :
                    begin
                         DataForm.ScriptQuery0.close;
+                        if (SQLTypeSelect.ItemIndex = 0) then
+                        begin
+                          DataForm.ScriptQuery0.SQLConnection := Dataform.FromConnection;
+                        end
+                        else
+                        begin
+                          DataForm.ScriptQuery0.SQLConnection := Dataform.FromMySQL80Connection;
+                        end;
                         ScriptGrid.DataSource := Dataform.ScriptQuerySource0;
                         DBNavigator2.Datasource := Dataform.ScriptQuerySource0;
                         with Dataform.ScriptQuery0.SQL do
@@ -1580,6 +1653,14 @@ begin
                  1 :
                    begin
                         DataForm.ScriptQuery1.close;
+                        if (SQLTypeSelect.ItemIndex = 0) then
+                        begin
+                          DataForm.ScriptQuery1.SQLConnection := Dataform.FromConnection;
+                        end
+                        else
+                        begin
+                          DataForm.ScriptQuery1.SQLConnection := Dataform.FromMySQL80Connection;
+                        end;
                         ScriptGrid.DataSource := Dataform.ScriptQuerySource1;
                         DBNavigator2.Datasource := Dataform.ScriptQuerySource1;
                         with Dataform.ScriptQuery1.SQL do

@@ -1,8 +1,8 @@
 object DataForm: TDataForm
   OldCreateOrder = False
   Height = 628
-  HorizontalOffset = 1058
-  VerticalOffset = 169
+  HorizontalOffset = 3012
+  VerticalOffset = 283
   Width = 739
   object FromConnection: TMSSQLConnection
     Connected = False
@@ -14,7 +14,7 @@ object DataForm: TDataForm
     Password = 'h0enderm1s'
     Transaction = FromTransaction
     UserName = 'sa'
-    HostName = '192.168.0.108'
+    HostName = '192.168.0.157'
     LogEvents = []
     Left = 56
     Top = 40
@@ -194,17 +194,19 @@ object DataForm: TDataForm
   end
   object DBQuery1: TSQLQuery
     PacketRecords = -1
+    MaxIndexesCount = 4
     FieldDefs = <    
       item
-        Name = 'name'
+        Name = 'Database'
+        Attributes = [faReadonly]
         DataType = ftString
         Precision = -1
-        Size = 512
+        Size = 128
       end>
     Database = FromConnection
     Transaction = FromTransaction
     SQL.Strings = (
-      ' SELECT name FROM sys.databases order by name'
+      'SELECT name as [Database] FROM sys.databases order by [Database]'
     )
     Params = <>
     Macros = <>
