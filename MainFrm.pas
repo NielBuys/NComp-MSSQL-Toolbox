@@ -23,7 +23,17 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    FindRecordsBtn: TButton;
+    RecordsFoundMemo: TMemo;
+    PrefixEdt: TEdit;
+    PrefixLbl: TLabel;
+    ReplaceWithEdt: TEdit;
+    FindEdt: TEdit;
     FromPort: TEdit;
+    FindLbl: TLabel;
+    ReplaceWithLbl: TLabel;
+    TabSheetFindAndReplace: TTabSheet;
+    ToPort: TEdit;
     SQLTypeSelect: TComboBox;
     SpeedButton1: TSpeedButton;
     ToFieldsEdit: TEdit;
@@ -115,9 +125,9 @@ type
     FromSQLEdit: TMemo;
     TabControl1: TTabControl;
     TableList: TDBLookupListBox;
-    TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
-    TabSheet3: TTabSheet;
+    TabSheetCompareDBs: TTabSheet;
+    TabsheetQueriesAndExport: TTabSheet;
+    TabSheetImport: TTabSheet;
     TestLinkedTableBtn: TButton;
     ToDatabase: TEdit;
     ToPassword: TEdit;
@@ -129,8 +139,8 @@ type
     procedure AddPrimaryDetailHelpBtnClick(Sender: TObject);
     procedure AddValueBtnClick(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure FindRecordsBtnClick(Sender: TObject);
     procedure ClearProjectBtnClick(Sender: TObject);
-    procedure CommitResultsetBtnClick(Sender: TObject);
     procedure CompareStopRunBtnClick(Sender: TObject);
     procedure CSVGridEnter(Sender: TObject);
     procedure CSVSearchBtnClick(Sender: TObject);
@@ -177,9 +187,11 @@ type
     procedure TestLinkedTableBtnClick(Sender: TObject);
     procedure SetupGridClick(Sender: TObject);
   private
+    procedure CloseConnections;
     function GenerateQueryLine(typestr: String): String;
     function getTablePrimaryKey(TableName: String): String;
     function LoadPrimaryTable(): Boolean;
+    procedure setQueryConnections;
     { Private declarations }
   public
     SetupGridSelectedRow: Integer;
@@ -257,44 +269,6 @@ begin
 
 end;
 
-procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
-var
-        ConfigFilePath :String;
-        INI: TINIFile;
-begin
-      Dataform.FromQuery1.Close;
-      Dataform.ToQuery1.Close;
-      Dataform.ToQuery2.Close;
-
-      ConfigFilePath := GetAppConfigFile(False);
-      INI := TINIFile.Create(ConfigFilePath);
-      try
-        If FromDBCombo.ItemIndex <> -1 then
-          INI.WriteInteger('DB','FromDatabase',FromDBCombo.ItemIndex);
-        INI.WriteString('DB','FromUserName',FromUserName.Text);
-        INI.WriteString('DB','FromPassword',encrypt(FromPassword.Text));
-        INI.WriteString('DB','FromServerName',FromServerName.Text);
-        INI.WriteString('DB','FromPort',FromPort.Text);
-        If SQLTypeSelect.ItemIndex <> -1 then
-          INI.WriteInteger('DB','SQLType',SQLTypeSelect.ItemIndex);
-        INI.WriteString('COMPARE','ToTableName',ToTableName.Text);
-        INI.WriteString('COMPARE','FromUniqueField',FromUniqueField.Text);
-        INI.WriteString('COMPARE','FromSQLEdit',EncodeStringBase64(FromSQLEdit.Text));
-        INI.WriteString('COMPARE','ToSQLEdit',EncodeStringBase64(ToSQLEdit.Text));
-        INI.WriteString('COMPARE','FromFieldsEdit',FromFieldsEdit.Text);
-        INI.WriteString('COMPARE','ToFieldsEdit',ToFieldsEdit.Text);
-        INI.WriteString('COMPARE','ToUserName',ToUserName.Text);
-        INI.WriteString('COMPARE','ToPassword',encrypt(ToPassword.Text));
-        INI.WriteString('COMPARE','ToServerName',ToServerName.Text);
-        INI.WriteString('COMPARE','ToDatabase',ToDatabase.Text);
-        INI.WriteString('SCRIPTS','SQL' + InttoStr(TabControl1.TabIndex),EncodeStringBase64(ScriptSQLEdit.Text));
-        INI.WriteInteger('FORM','PageControl1',Pagecontrol1.TabIndex);
-      finally
-        INI.Free;
-      end;
-
-end;
-
 procedure TMainForm.ExportSQLBtnClick(Sender: TObject);
 var
          button: TControl;
@@ -315,15 +289,7 @@ var
 begin
       If ConnecttoServerBtn.Caption = 'Disconnect server' then
       begin
-          if (SQLTypeSelect.ItemIndex = 0) then
-          begin
-            Dataform.FromConnection.Close;
-          end
-          else
-          begin
-            Dataform.FromMySQL80Connection.Close;
-          end;
-          Dataform.ToConnection.Close;
+          CloseConnections();
           ConnecttoServerBtn.Caption := 'Connect to server';
           Dataform.FromConnection.DatabaseName := '';
           FromDBCombo.Clear;
@@ -340,6 +306,7 @@ begin
                  Dataform.FromConnection.Password := FromPassword.Text;
                  Dataform.FromConnection.HostName := FromServerName.Text;
                  Dataform.FromTransaction.DataBase := Dataform.FromConnection;
+                 Dataform.ToTransaction.DataBase := Dataform.ToConnection;
                  Dataform.FromConnection.Open;
                  Dataform.DBQuery1.SQL.Text := 'SELECT name as [Database] FROM sys.databases order by [Database]';
                  Dataform.DBQuery1.SQLConnection := Dataform.FromConnection;
@@ -355,8 +322,9 @@ begin
                Dataform.FromMySQL80Connection.Port := StrtoInt(FromPort.Text);
                Dataform.FromMySQL80Connection.DatabaseName := 'information_schema';
                Dataform.FromTransaction.DataBase := Dataform.FromMySQL80Connection;
+               Dataform.ToTransaction.DataBase := Dataform.ToMySQL80Connection;
                Dataform.FromMySQL80Connection.Open;
-               Dataform.DBQuery1.SQL.Text := 'show databases';
+               Dataform.DBQuery1.SQL.Text := 'SELECT table_schema as `Database` FROM information_schema.tables Group by TABLE_SCHEMA Order by TABLE_SCHEMA';
                Dataform.DBQuery1.SQLConnection := Dataform.FromMySQL80Connection;
                Dataform.DBQuery1.Open;
             end;
@@ -365,21 +333,63 @@ begin
                  FromDBCombo.ItemIndex := LastFromDB;
                  FromDBComboSelect(FromDBCombo);
             end;
+            setQueryConnections();
             ConnecttoServerBtn.Caption := 'Disconnect server';
           except
           begin
             ShowMessage('Unable to connect to SQL Server!');
-            if (SQLTypeSelect.ItemIndex = 0) then
-            begin
-              Dataform.FromConnection.Close;
-            end
-            else
-            begin
-              Dataform.FromMySQL80Connection.Close;
-            end;
+            CloseConnections();
           end;
           raise;
           end;
+      end;
+end;
+
+procedure TMainForm.CloseConnections();
+begin
+     if (Dataform.FromConnection.Connected) then
+     begin
+       Dataform.FromConnection.Close;
+     end;
+     if (Dataform.ToConnection.Connected) then
+     begin
+       Dataform.ToConnection.Close;
+     end;
+     if (Dataform.ToMySQL80Connection.Connected) then
+     begin
+       Dataform.ToMySQL80Connection.Close;
+     end;
+     if (Dataform.FromMySQL80Connection.Connected) then
+     begin
+       Dataform.FromMySQL80Connection.Close;
+     end;
+end;
+
+procedure TMainForm.setQueryConnections();
+begin
+      if (Dataform.FromConnection.Connected) then
+      begin
+        DataForm.ScriptQuery0.SQLConnection := Dataform.FromConnection;
+        DataForm.ScriptQuery1.SQLConnection := Dataform.FromConnection;
+        DataForm.FromQuery1.SQLConnection := Dataform.FromConnection;
+        DataForm.TableandColumnsQuery.SQLConnection := Dataform.FromConnection;
+        DataForm.TablesQuery1.SQLConnection := Dataform.FromConnection;
+        DataForm.ColumnsQuery1.SQLConnection := Dataform.FromConnection;
+        DataForm.ColumnsQuery2.SQLConnection := Dataform.FromConnection;
+        DataForm.ToQuery1.SQLConnection := Dataform.ToConnection;
+        DataForm.ToQuery2.SQLConnection := Dataform.ToConnection;
+      end
+      else
+      begin
+        DataForm.ScriptQuery0.SQLConnection := Dataform.FromMySQL80Connection;
+        DataForm.ScriptQuery1.SQLConnection := Dataform.FromMySQL80Connection;
+        DataForm.FromQuery1.SQLConnection := Dataform.FromMySQL80Connection;
+        DataForm.TableandColumnsQuery.SQLConnection := Dataform.FromMySQL80Connection;
+        DataForm.TablesQuery1.SQLConnection := Dataform.FromMySQL80Connection;
+        DataForm.ColumnsQuery1.SQLConnection := Dataform.FromMySQL80Connection;
+        DataForm.ColumnsQuery2.SQLConnection := Dataform.FromMySQL80Connection;
+        DataForm.ToQuery1.SQLConnection := Dataform.ToMySQL80Connection;
+        DataForm.ToQuery2.SQLConnection := Dataform.ToMySQL80Connection;
       end;
 end;
 
@@ -390,7 +400,7 @@ begin
           try
             LastFromDB := FromDBCombo.ItemIndex;
             s := FromDBCombo.Items[FromDBCombo.ItemIndex];
-            if (SQLTypeSelect.ItemIndex = 0) then
+            if (Dataform.FromConnection.Connected) then
             begin
               Dataform.FromConnection.Close;
               Dataform.FromConnection.DatabaseName := s;
@@ -407,14 +417,7 @@ begin
           except
           begin
             ShowMessage('Unable to select DB , make sure the DB exist');
-            if (SQLTypeSelect.ItemIndex = 0) then
-            begin
-              Dataform.FromConnection.Close;
-            end
-            else
-            begin
-              Dataform.FromMySQL80Connection.Close;
-            end;
+            CloseConnections();
             ConnecttoServerBtn.Caption := 'Connect to server';
             Dataform.FromConnection.DatabaseName := '';
           end;
@@ -1285,6 +1288,39 @@ begin
       showmessage(Dataform.FromConnection.DatabaseName);
 end;
 
+procedure TMainForm.FindRecordsBtnClick(Sender: TObject);
+var
+          TableColumnQueryStr: String;
+begin
+      if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
+      begin
+        showmessage('Connect database first');
+        exit;
+      end;
+      TableColumnQueryStr := 'select table_schema, table_name, column_name FROM information_schema.columns';
+      TableColumnQueryStr := TableColumnQueryStr + ' where table_schema = ''' + FromDBCombo.Items[FromDBCombo.ItemIndex] + '''';
+      if (PrefixEdt.text <> '') then
+        TableColumnQueryStr := TableColumnQueryStr + ' and table_name like ''' + PrefixEdt.text + '%''';
+      DataForm.TableandColumnsQuery.close;
+      with Dataform.TableandColumnsQuery.SQL do
+      begin
+        Clear;
+        Text := TableColumnQueryStr;
+      end;
+      Dataform.TableandColumnsQuery.Prepare;
+      Dataform.TableandColumnsQuery.Open;
+      ProgressBar1.Max := Dataform.TableandColumnsQuery.RecordCount;
+      ProgressBar1.Position := 0;
+      Dataform.TableandColumnsQuery.First;
+      Dataform.TableandColumnsQuery.DisableControls;
+      while not Dataform.TableandColumnsQuery.EOF do
+      begin
+
+        ProgressBar1.StepIt;
+        Application.processMessages;
+      end;
+end;
+
 procedure TMainForm.ClearProjectBtnClick(Sender: TObject);
 begin
       if MessageDlg('Are you sure you want to clear the project!',
@@ -1294,10 +1330,6 @@ begin
       end;
 end;
 
-procedure TMainForm.CommitResultsetBtnClick(Sender: TObject);
-begin
-
-end;
 
 procedure TMainForm.CompareStopRunBtnClick(Sender: TObject);
 begin
@@ -1416,6 +1448,7 @@ begin
         ToUserName.Text := INI.ReadString('COMPARE','ToUserName','');
         ToPassword.Text := Decrypt(INI.ReadString('COMPARE','ToPassword',''));
         ToServerName.Text := INI.ReadString('COMPARE','ToServerName','');
+        ToPort.Text := INI.ReadString('COMPARE','ToPort','');
         ToDatabase.Text := INI.ReadString('COMPARE','ToDatabase','');
         If INI.ReadString('SCRIPTS','SQL0','') <> '' then
            ScriptSQLEdit.Text := DecodeStringBase64(INI.ReadString('SCRIPTS','SQL0',''));
@@ -1425,11 +1458,48 @@ begin
       end;
 end;
 
+procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
+var
+        ConfigFilePath :String;
+        INI: TINIFile;
+begin
+      CloseConnections();
+
+      ConfigFilePath := GetAppConfigFile(False);
+      INI := TINIFile.Create(ConfigFilePath);
+      try
+        INI.WriteString('DB','FromUserName',FromUserName.Text);
+        INI.WriteString('DB','FromPassword',encrypt(FromPassword.Text));
+        INI.WriteString('DB','FromServerName',FromServerName.Text);
+        INI.WriteString('DB','FromPort',FromPort.Text);
+        If SQLTypeSelect.ItemIndex <> -1 then
+          INI.WriteInteger('DB','SQLType',SQLTypeSelect.ItemIndex);
+        If LastFromDB <> -1 then
+          INI.WriteInteger('DB','FromDatabase',LastFromDB);
+        INI.WriteString('COMPARE','ToTableName',ToTableName.Text);
+        INI.WriteString('COMPARE','FromUniqueField',FromUniqueField.Text);
+        INI.WriteString('COMPARE','FromSQLEdit',EncodeStringBase64(FromSQLEdit.Text));
+        INI.WriteString('COMPARE','ToSQLEdit',EncodeStringBase64(ToSQLEdit.Text));
+        INI.WriteString('COMPARE','FromFieldsEdit',FromFieldsEdit.Text);
+        INI.WriteString('COMPARE','ToFieldsEdit',ToFieldsEdit.Text);
+        INI.WriteString('COMPARE','ToUserName',ToUserName.Text);
+        INI.WriteString('COMPARE','ToPassword',encrypt(ToPassword.Text));
+        INI.WriteString('COMPARE','ToServerName',ToServerName.Text);
+        INI.WriteString('COMPARE','ToPort',ToPort.Text);
+        INI.WriteString('COMPARE','ToDatabase',ToDatabase.Text);
+        INI.WriteString('SCRIPTS','SQL' + InttoStr(TabControl1.TabIndex),EncodeStringBase64(ScriptSQLEdit.Text));
+        INI.WriteInteger('FORM','PageControl1',Pagecontrol1.TabIndex);
+      finally
+        INI.Free;
+      end;
+
+end;
+
 procedure TMainForm.LoadFromandToDataBtnClick(Sender: TObject);
 var
           ToSQLtext,FromSQLtext:string;
 begin
-          if Dataform.FromConnection.Connected = False then
+          if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
           begin
             showmessage('Connect from database first!');
             exit;
@@ -1467,13 +1537,27 @@ begin
           raise;
           end;
           try
-            Dataform.ToConnection.Close;
-            Dataform.ToConnection.Params.Clear;
-            Dataform.ToConnection.DatabaseName :=  ToDatabase.Text;
-            Dataform.ToConnection.UserName := ToUserName.Text;
-            Dataform.ToConnection.Password := ToPassword.Text;
-            Dataform.ToConnection.HostName := ToServerName.Text;
-            Dataform.ToConnection.Open;
+            If (Dataform.FromConnection.Connected) then
+            begin
+              Dataform.ToConnection.Close;
+              Dataform.ToConnection.Params.Clear;
+              Dataform.ToConnection.DatabaseName :=  ToDatabase.Text;
+              Dataform.ToConnection.UserName := ToUserName.Text;
+              Dataform.ToConnection.Password := ToPassword.Text;
+              Dataform.ToConnection.HostName := ToServerName.Text;
+              Dataform.ToConnection.Open;
+            end
+            else
+            begin
+              Dataform.ToMySQL80Connection.Close;
+              Dataform.ToMySQL80Connection.Params.Clear;
+              Dataform.ToMySQL80Connection.UserName := ToUserName.Text;
+              Dataform.ToMySQL80Connection.Password := ToPassword.Text;
+              Dataform.ToMySQL80Connection.HostName := ToServerName.Text;
+              Dataform.ToMySQL80Connection.Port := StrtoInt(ToPort.Text);
+              Dataform.ToMySQL80Connection.DatabaseName := ToDatabase.Text;
+              Dataform.ToMySQL80Connection.Open;
+            end;
             DataForm.ToQuery1.close;
             Dataform.ToQuery1.SQL.Text := ToSQLtext;
             Dataform.ToQuery1.Open;
@@ -1495,7 +1579,7 @@ var
           RecordChanged: Boolean;
           FieldsString,ValuesString,QueryString:WideString;
 begin
-          if Dataform.ToConnection.Connected = False then
+          if (Dataform.ToConnection.Connected = False) and (Dataform.ToMySQL80Connection.Connected = False) then
           begin
             showmessage('Connect to SQL server first');
             exit;
@@ -1598,22 +1682,12 @@ procedure TMainForm.ExecuteQueryBtnClick(Sender: TObject);
 var
           SQLString: String;
 begin
-          if (SQLTypeSelect.ItemIndex = 0) then
+          if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
           begin
-            if Dataform.FromConnection.Connected = False then
-            begin
-              showmessage('Connect database first');
-              exit;
-            end;
-          end
-          else
-          begin
-            if Dataform.FromMySQL80Connection.Connected = False then
-            begin
-              showmessage('Connect database first');
-              exit;
-            end;
+            showmessage('Connect database first');
+            exit;
           end;
+
           try
             if copy(ScriptSQLEdit.Text,ScriptSQLEdit.SelStart+1,ScriptSQLEdit.SelLength) = '' then
                 SQLString := ScriptSQLEdit.Text
@@ -1623,14 +1697,6 @@ begin
                  0 :
                    begin
                         DataForm.ScriptQuery0.close;
-                        if (SQLTypeSelect.ItemIndex = 0) then
-                        begin
-                          DataForm.ScriptQuery0.SQLConnection := Dataform.FromConnection;
-                        end
-                        else
-                        begin
-                          DataForm.ScriptQuery0.SQLConnection := Dataform.FromMySQL80Connection;
-                        end;
                         ScriptGrid.DataSource := Dataform.ScriptQuerySource0;
                         DBNavigator2.Datasource := Dataform.ScriptQuerySource0;
                         with Dataform.ScriptQuery0.SQL do
@@ -1653,14 +1719,6 @@ begin
                  1 :
                    begin
                         DataForm.ScriptQuery1.close;
-                        if (SQLTypeSelect.ItemIndex = 0) then
-                        begin
-                          DataForm.ScriptQuery1.SQLConnection := Dataform.FromConnection;
-                        end
-                        else
-                        begin
-                          DataForm.ScriptQuery1.SQLConnection := Dataform.FromMySQL80Connection;
-                        end;
                         ScriptGrid.DataSource := Dataform.ScriptQuerySource1;
                         DBNavigator2.Datasource := Dataform.ScriptQuerySource1;
                         with Dataform.ScriptQuery1.SQL do

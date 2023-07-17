@@ -14,9 +14,11 @@ type
     ColumnsSource2: TDataSource;
     CSVSource: TDataSource;
     ColumnsQuery1: TSQLQuery;
-    DataSource1: TDataSource;
+    TableandColumnsSource: TDataSource;
     DBQuery1: TSQLQuery;
     FromMySQL80Connection: TMySQL80Connection;
+    TableandColumnsQuery: TSQLQuery;
+    ToMySQL80Connection: TMySQL80Connection;
     ScriptQuery0: TSQLQuery;
     ScriptQuerySource0: TDataSource;
     TablesSource1: TDataSource;
