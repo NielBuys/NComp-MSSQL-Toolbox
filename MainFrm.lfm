@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 444
+  Left = 795
   Height = 650
-  Top = 116
+  Top = 36
   Width = 1077
   Caption = 'NComp MSSQL Toolbox'
   ClientHeight = 625
@@ -713,7 +713,7 @@ object MainForm: TMainForm
         Left = 181
         Height = 23
         Top = 3
-        Width = 177
+        Width = 147
         Caption = 'Use first line as header'
         Checked = True
         State = cbChecked
@@ -1089,7 +1089,7 @@ object MainForm: TMainForm
       end
     end
     object TabSheetFindAndReplace: TTabSheet
-      Caption = 'Find & Replace'
+      Caption = 'Find and Replace'
       ClientHeight = 530
       ClientWidth = 1067
       object FindLbl: TLabel
@@ -1122,7 +1122,7 @@ object MainForm: TMainForm
         Top = 0
         Width = 424
         AutoSize = False
-        TabOrder = 1
+        TabOrder = 2
       end
       object FindRecordsBtn: TButton
         Left = 88
@@ -1131,7 +1131,7 @@ object MainForm: TMainForm
         Width = 208
         Caption = 'Find text over tables and columns'
         OnClick = FindRecordsBtnClick
-        TabOrder = 2
+        TabOrder = 3
       end
       object PrefixLbl: TLabel
         Left = 41
@@ -1147,15 +1147,56 @@ object MainForm: TMainForm
         Top = 28
         Width = 128
         AutoSize = False
-        TabOrder = 3
+        TabOrder = 1
       end
       object RecordsFoundMemo: TMemo
         Left = 0
-        Height = 90
+        Height = 154
+        Top = 376
+        Width = 928
+        Anchors = [akTop, akLeft, akRight]
+        ScrollBars = ssAutoBoth
+        TabOrder = 6
+      end
+      object DBGrid1: TDBGrid
+        Left = 0
+        Height = 128
         Top = 88
         Width = 1064
         Anchors = [akTop, akLeft, akRight]
+        Color = clWindow
+        Columns = <>
+        DataSource = DataForm.TableandColumnsSource
         TabOrder = 4
+      end
+      object RecordsFoundStrGrid: TStringGrid
+        Left = 0
+        Height = 160
+        Top = 216
+        Width = 928
+        Anchors = [akTop, akLeft, akRight]
+        ColCount = 3
+        Columns = <        
+          item
+            MinSize = 0
+            MaxSize = 500
+            Title.Caption = 'Table'
+            Width = 400
+          end        
+          item
+            MinSize = 0
+            MaxSize = 500
+            Title.Caption = 'Column'
+            Width = 400
+          end        
+          item
+            MinSize = 0
+            Title.Caption = 'Records found'
+            Width = 100
+          end>
+        FixedCols = 0
+        RowCount = 1
+        TabOrder = 5
       end
     end
   end

@@ -14,6 +14,7 @@ type
     ColumnsSource2: TDataSource;
     CSVSource: TDataSource;
     ColumnsQuery1: TSQLQuery;
+    TempQuery1: TSQLQuery;
     TableandColumnsSource: TDataSource;
     DBQuery1: TSQLQuery;
     FromMySQL80Connection: TMySQL80Connection;

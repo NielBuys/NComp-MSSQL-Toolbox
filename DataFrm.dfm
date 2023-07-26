@@ -2,7 +2,7 @@ object DataForm: TDataForm
   OldCreateOrder = False
   Height = 628
   HorizontalOffset = 1110
-  VerticalOffset = 178
+  VerticalOffset = 152
   Width = 760
   object FromConnection: TMSSQLConnection
     Connected = False
@@ -63,7 +63,7 @@ object DataForm: TDataForm
   object ToQuerySource1: TDataSource
     DataSet = ToQuery1
     Left = 176
-    Top = 184
+    Top = 176
   end
   object ToQuery2: TSQLQuery
     PacketRecords = -1
@@ -254,9 +254,11 @@ object DataForm: TDataForm
     Top = 168
   end
   object TableandColumnsQuery: TSQLQuery
+    PacketRecords = -1
     FieldDefs = <>
     Database = FromConnection
     Transaction = FromTransaction
+    ReadOnly = True
     Params = <>
     Macros = <>
     Left = 72
@@ -265,6 +267,15 @@ object DataForm: TDataForm
   object TableandColumnsSource: TDataSource
     DataSet = TableandColumnsQuery
     Left = 248
+    Top = 536
+  end
+  object TempQuery1: TSQLQuery
+    FieldDefs = <>
+    Database = FromConnection
+    Transaction = FromTransaction
+    Params = <>
+    Macros = <>
+    Left = 408
     Top = 536
   end
 end
