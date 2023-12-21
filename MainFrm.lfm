@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 795
+  Left = 432
   Height = 650
-  Top = 36
+  Top = 181
   Width = 1077
   Caption = 'NComp MSSQL Toolbox'
   ClientHeight = 625
@@ -19,20 +19,6 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   Position = poScreenCenter
   LCLVersion = '2.2.6.0'
-  object CloseBtn: TBitBtn
-    Left = 997
-    Height = 25
-    Hint = 'Close Application'
-    Top = 595
-    Width = 73
-    Anchors = [akRight, akBottom]
-    DefaultCaption = True
-    Kind = bkClose
-    ModalResult = 11
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 7
-  end
   object Label1: TLabel
     Left = 853
     Height = 15
@@ -52,7 +38,7 @@ object MainForm: TMainForm
   end
   object FromUserName: TEdit
     Left = 266
-    Height = 27
+    Height = 28
     Top = 1
     Width = 127
     AutoSize = False
@@ -68,7 +54,7 @@ object MainForm: TMainForm
   end
   object FromPassword: TEdit
     Left = 449
-    Height = 27
+    Height = 28
     Top = 1
     Width = 127
     AutoSize = False
@@ -86,7 +72,7 @@ object MainForm: TMainForm
   end
   object FromServerName: TEdit
     Left = 80
-    Height = 27
+    Height = 28
     Top = 1
     Width = 127
     AutoSize = False
@@ -94,7 +80,7 @@ object MainForm: TMainForm
   end
   object ConnecttoServerBtn: TBitBtn
     Left = 728
-    Height = 27
+    Height = 28
     Top = 1
     Width = 120
     Caption = 'Connect to server'
@@ -105,15 +91,15 @@ object MainForm: TMainForm
     Left = 8
     Height = 25
     Top = 595
-    Width = 320
-    Anchors = [akLeft, akBottom]
+    Width = 1062
+    Anchors = [akLeft, akRight, akBottom]
     Smooth = True
     Step = 1
     TabOrder = 6
   end
   object FromDBCombo: TDBLookupComboBox
     Left = 910
-    Height = 27
+    Height = 28
     Hint = 'Choose DB'
     Top = 1
     Width = 160
@@ -132,12 +118,13 @@ object MainForm: TMainForm
   object PageControl1: TPageControl
     Left = 0
     Height = 559
-    Top = 32
+    Top = 33
     Width = 1077
-    ActivePage = TabSheetFindAndReplace
+    ActivePage = TabSheetImport
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 3
-    TabOrder = 8
+    TabIndex = 2
+    TabOrder = 7
+    OnExit = PageControl1Exit
     object TabsheetQueriesAndExport: TTabSheet
       Caption = 'Querys / Export'
       ClientHeight = 530
@@ -224,7 +211,7 @@ object MainForm: TMainForm
         object ExportSQLBtn: TButton
           Left = 957
           Height = 25
-          Top = 458
+          Top = 446
           Width = 99
           Anchors = [akRight, akBottom]
           Caption = 'Export SQL'
@@ -295,7 +282,6 @@ object MainForm: TMainForm
           Caption = 'Button4'
           OnClick = Button4Click
           TabOrder = 9
-          Visible = False
         end
       end
     end
@@ -303,11 +289,12 @@ object MainForm: TMainForm
       Caption = 'Compare'
       ClientHeight = 530
       ClientWidth = 1067
+      OnExit = TabSheetCompareDBsExit
       object ToDatabaseLbl: TLabel
         Left = 800
         Height = 15
         Top = 14
-        Width = 69
+        Width = 70
         Caption = 'To Database:'
         ParentColor = False
       end
@@ -323,7 +310,7 @@ object MainForm: TMainForm
         Left = 265
         Height = 15
         Top = 14
-        Width = 75
+        Width = 76
         Caption = 'To UserName:'
         ParentColor = False
       end
@@ -339,7 +326,7 @@ object MainForm: TMainForm
         Left = 497
         Height = 15
         Top = 14
-        Width = 70
+        Width = 71
         Caption = 'To Password:'
         ParentColor = False
       end
@@ -357,7 +344,7 @@ object MainForm: TMainForm
         Left = 24
         Height = 15
         Top = 14
-        Width = 88
+        Width = 89
         Caption = 'To Server Name:'
         ParentColor = False
       end
@@ -373,7 +360,7 @@ object MainForm: TMainForm
         Left = 152
         Height = 15
         Top = 45
-        Width = 67
+        Width = 68
         Caption = 'Table Name:'
         ParentColor = False
       end
@@ -405,7 +392,7 @@ object MainForm: TMainForm
         Left = 10
         Height = 15
         Top = 45
-        Width = 100
+        Width = 99
         Caption = 'SQL for from table'
         ParentColor = False
       end
@@ -606,10 +593,10 @@ object MainForm: TMainForm
         TabOrder = 7
       end
       object ToFieldsLbl: TLabel
-        Left = 678
+        Left = 677
         Height = 15
         Top = 80
-        Width = 53
+        Width = 54
         Anchors = [akTop, akRight]
         Caption = 'To Fields:'
         ParentColor = False
@@ -848,7 +835,7 @@ object MainForm: TMainForm
         Left = 352
         Height = 15
         Top = 274
-        Width = 110
+        Width = 111
         Caption = 'Link Table Columns'
         ParentColor = False
       end
@@ -1080,7 +1067,7 @@ object MainForm: TMainForm
         Top = 288
         Width = 25
         Font.Color = clWindowText
-        Font.Height = -10
+        Font.Height = -11
         Font.Name = 'Tahoma'
         Kind = bkHelp
         OnClick = AddPrimaryDetailHelpBtnClick
@@ -1124,13 +1111,13 @@ object MainForm: TMainForm
         AutoSize = False
         TabOrder = 2
       end
-      object FindRecordsBtn: TButton
+      object FindandReplaceRecordsBtn: TButton
         Left = 88
         Height = 27
         Top = 56
-        Width = 208
-        Caption = 'Find text over tables and columns'
-        OnClick = FindRecordsBtnClick
+        Width = 272
+        Caption = 'Find and Replace text over tables and columns'
+        OnClick = FindandReplaceRecordsBtnClick
         TabOrder = 3
       end
       object PrefixLbl: TLabel
@@ -1156,7 +1143,7 @@ object MainForm: TMainForm
         Width = 928
         Anchors = [akTop, akLeft, akRight]
         ScrollBars = ssAutoBoth
-        TabOrder = 6
+        TabOrder = 7
       end
       object DBGrid1: TDBGrid
         Left = 0
@@ -1167,7 +1154,7 @@ object MainForm: TMainForm
         Color = clWindow
         Columns = <>
         DataSource = DataForm.TableandColumnsSource
-        TabOrder = 4
+        TabOrder = 5
       end
       object RecordsFoundStrGrid: TStringGrid
         Left = 0
@@ -1196,13 +1183,22 @@ object MainForm: TMainForm
           end>
         FixedCols = 0
         RowCount = 1
-        TabOrder = 5
+        TabOrder = 6
+      end
+      object FindRecordsBtn: TButton
+        Left = 360
+        Height = 27
+        Top = 56
+        Width = 208
+        Caption = 'Find text over tables and columns'
+        OnClick = FindRecordsBtnClick
+        TabOrder = 4
       end
     end
   end
   object SQLTypeSelect: TComboBox
     Left = 632
-    Height = 27
+    Height = 28
     Top = 1
     Width = 96
     AutoSize = False
@@ -1212,12 +1208,12 @@ object MainForm: TMainForm
       'MSSQL'
       'MySQL'
     )
-    TabOrder = 9
+    TabOrder = 8
     Text = 'MSSQL'
   end
   object FromPort: TEdit
     Left = 576
-    Height = 27
+    Height = 28
     Hint = 'MySQL Server Port'
     Top = 1
     Width = 56

@@ -23,6 +23,7 @@ interface
   function TrimDash(stemp: AnsiString): AnsiString;
   function MyRoundTo(const AValue: Double; const ADigit: TRoundToRange): Double;
   function ValidEmail(email: AnsiString): boolean;
+  function FixMySQLString(stemp: String): String;
   function FixSQLString(stemp: String): String;
   function ChangeEnterforSMS(stemp: AnsiString): AnsiString;
   function UrlEncode(const DecodedStr: AnsiString; Pluses: Boolean): AnsiString;
@@ -370,8 +371,8 @@ function ValidEmail(email: AnsiString): boolean;
 
 end;
 
-function FixSQLString(stemp: String): String;
-const SpecialChar = ['&', '\',#39];
+function FixMySQLString(stemp: String): String;
+const SpecialChar = ['%','&', '\',#39,'"','/'];
 var
   i: integer;
   Skiploop:Boolean;
@@ -388,48 +389,44 @@ begin
  //   showmessage(stemp[i]);
     if not (stemp[i] in SpecialChar) then
     begin
-      result := result+stemp[i]
+      result := result+stemp[i];
     end
     else
     begin
       if stemp[i] = #39 then
-      begin
-        if (stemp[i+1] <> #39) then
-          result := result+''''''
-        else
-        begin
-          result := result+stemp[i]+stemp[i+1];
-          Skiploop := true;
-        end;
-      end
+        result := result+#39+stemp[i]
       else
-      begin
-        if stemp[i] = '\' then
-        begin
-          if (stemp[i+1] <> '\') then
-            result := result+'\\'
-          else
-          begin
-            result := result+stemp[i]+stemp[i+1];
-            Skiploop := true;
-          end;
-        end
-        else
-        begin
-          if stemp[i] = '&' then
-          begin
-            if (stemp[i+1] <> '&') then
-              result := result+'&'
-            else
-            begin
-              result := result+stemp[i]+stemp[i+1];
-              Skiploop := true;
-            end;
-          end
-          else
-            result := result+'/';
-        end;
-      end;
+        result := result+'\'+stemp[i];
+    end;
+  end;
+end;
+
+function FixSQLString(stemp: String): String;
+const SpecialChar = ['%','&', '\',#39,'/'];
+var
+  i: integer;
+  Skiploop:Boolean;
+begin
+  result := '';
+  skiploop := false;
+  for i := 1 to length(stemp) do
+  begin
+    if skiploop = true then
+    begin
+      skiploop := false;
+      continue;
+    end;
+ //   showmessage(stemp[i]);
+    if not (stemp[i] in SpecialChar) then
+    begin
+      result := result+stemp[i];
+    end
+    else
+    begin
+      if stemp[i] = #39 then
+        result := result+#39+stemp[i]
+      else
+        result := result+'\'+stemp[i];
     end;
   end;
 end;

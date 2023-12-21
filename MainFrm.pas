@@ -23,8 +23,9 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
-    DBGrid1: TDBGrid;
     FindRecordsBtn: TButton;
+    DBGrid1: TDBGrid;
+    FindandReplaceRecordsBtn: TButton;
     RecordsFoundMemo: TMemo;
     PrefixEdt: TEdit;
     PrefixLbl: TLabel;
@@ -101,7 +102,6 @@ type
     FixLinkedValueMenuBtn: TMenuItem;
     CSVGridMenu: TPopupMenu;
     OpenDialog1: TOpenDialog;
-    CloseBtn: TBitBtn;
     FromPassword: TEdit;
     FromServerName: TEdit;
     FromUserName: TEdit;
@@ -141,12 +141,13 @@ type
     procedure AddPrimaryDetailHelpBtnClick(Sender: TObject);
     procedure AddValueBtnClick(Sender: TObject);
     procedure Button4Click(Sender: TObject);
-    procedure FindRecordsBtnClick(Sender: TObject);
+    procedure FindandReplaceRecordsBtnClick(Sender: TObject);
     procedure ClearProjectBtnClick(Sender: TObject);
     procedure CompareStopRunBtnClick(Sender: TObject);
     procedure CSVGridEnter(Sender: TObject);
     procedure CSVSearchBtnClick(Sender: TObject);
     procedure DeleteSelectedRowBtnClick(Sender: TObject);
+    procedure FindRecordsBtnClick(Sender: TObject);
     procedure FixLinkedValueMenuBtnClick(Sender: TObject);
     procedure AddLinkedColumnBtnClick(Sender: TObject);
     procedure FromDBComboSelect(Sender: TObject);
@@ -163,12 +164,14 @@ type
     procedure LoadTablesBtnClick(Sender: TObject);
     procedure AddPrimaryTableDetailBtnClick(Sender: TObject);
     procedure ConnecttoServerBtnClick(Sender: TObject);
+    procedure PageControl1Exit(Sender: TObject);
     procedure RefreshCSVColumnsBtnClick(Sender: TObject);
     procedure ScriptGridEnter(Sender: TObject);
     procedure SetupGridDrawCell(Sender: TObject; aCol, aRow: Integer;
       aRect: TRect; aState: TGridDrawState);
     procedure SpeedButton1Click(Sender: TObject);
     procedure TabControl1Change(Sender: TObject);
+    procedure TabSheetCompareDBsExit(Sender: TObject);
     procedure XMLToCSVConvertBtnClick(Sender: TObject);
     procedure OpenProjectBtnClick(Sender: TObject);
     procedure SaveProjectBtnClick(Sender: TObject);
@@ -193,12 +196,14 @@ type
     function GenerateQueryLine(typestr: String): String;
     function getTablePrimaryKey(TableName: String): String;
     function LoadPrimaryTable(): Boolean;
+    function OpenTableColumnQuery: Boolean;
     procedure setQueryConnections;
     { Private declarations }
   public
     SetupGridSelectedRow: Integer;
     CSVGridSelectedField: TField;
     SharedSetupGrid: TStringGrid;
+    ConnectedVia: String;
     { Public declarations }
   end;
 
@@ -289,6 +294,7 @@ procedure TMainForm.ConnecttoServerBtnClick(Sender: TObject);
 var
           s: String;
 begin
+      ConnectedVia := 'NULL';
       If ConnecttoServerBtn.Caption = 'Disconnect server' then
       begin
           CloseConnections();
@@ -310,6 +316,7 @@ begin
                  Dataform.FromTransaction.DataBase := Dataform.FromConnection;
                  Dataform.ToTransaction.DataBase := Dataform.ToConnection;
                  Dataform.FromConnection.Open;
+                 ConnectedVia := 'MSSQL';
                  Dataform.DBQuery1.SQL.Text := 'SELECT name as [Database] FROM sys.databases order by [Database]';
                  Dataform.DBQuery1.SQLConnection := Dataform.FromConnection;
                  Dataform.DBQuery1.Open;
@@ -326,6 +333,7 @@ begin
                Dataform.FromTransaction.DataBase := Dataform.FromMySQL80Connection;
                Dataform.ToTransaction.DataBase := Dataform.ToMySQL80Connection;
                Dataform.FromMySQL80Connection.Open;
+               ConnectedVia := 'MySQL';
                Dataform.DBQuery1.SQL.Text := 'SELECT table_schema as `Database` FROM information_schema.tables Group by TABLE_SCHEMA Order by TABLE_SCHEMA';
                Dataform.DBQuery1.SQLConnection := Dataform.FromMySQL80Connection;
                Dataform.DBQuery1.Open;
@@ -345,6 +353,11 @@ begin
           raise;
           end;
       end;
+end;
+
+procedure TMainForm.PageControl1Exit(Sender: TObject);
+begin
+
 end;
 
 procedure TMainForm.CloseConnections();
@@ -528,6 +541,12 @@ begin
       finally
         INI.Free;
       end;
+end;
+
+procedure TMainForm.TabSheetCompareDBsExit(Sender: TObject);
+begin
+      dataform.FromQuery1.close;
+      dataform.ToQuery1.close;
 end;
 
 
@@ -1223,6 +1242,82 @@ begin
       SetupGrid.DeleteRow(SetupGrid.Row);
 end;
 
+procedure TMainForm.FindRecordsBtnClick(Sender: TObject);
+var
+          RecordCountQueryStr: String;
+begin
+      if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
+      begin
+        showmessage('Connect database first');
+        exit;
+      end;
+      If (OpenTableColumnQuery() <> true) then
+      begin
+           exit;
+      end;
+      ProgressBar1.Max := Dataform.TableandColumnsQuery.RecordCount;
+      ProgressBar1.Position := 0;
+      Dataform.TableandColumnsQuery.First;
+      Dataform.TableandColumnsQuery.DisableControls;
+      RecordsFoundMemo.Lines.Clear;
+      RecordsFoundStrGrid.RowCount := 1;
+      while not Dataform.TableandColumnsQuery.EOF do
+      begin
+        If (Dataform.FromConnection.Connected) then
+        begin
+          RecordCountQueryStr := 'select [' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString +
+            '] from [' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
+            '] where [' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '] like ''%' + FixSQLString(trim(FindEdt.Text)) +
+            '%'';';
+        end
+        else
+        begin
+          RecordCountQueryStr := 'select `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString +
+            '` from ' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
+            ' where `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '` like ''%' + FixMySQLString(trim(FindEdt.Text)) +
+            '%'';';
+        end;
+        try
+          Dataform.TempQuery1.Close;
+          Dataform.TempQuery1.SQL.Text := RecordCountQueryStr;
+          Dataform.TempQuery1.Open;
+        except
+          on E : Exception do
+          begin
+            RecordsFoundMemo.Lines.Add('Record count query failed: ' + E.Message);
+            RecordsFoundMemo.Lines.Add(RecordCountQueryStr);
+            exit;
+          end;
+        end;
+        if (Dataform.tempQuery1.RecordCount > 0) then
+        begin
+          Dataform.tempQuery1.Last;
+          RecordsFoundStrGrid.RowCount := RecordsFoundStrGrid.RowCount + 1;
+          RecordsFoundStrGrid.Cells[0,RecordsFoundStrGrid.RowCount - 1] := Dataform.TableandColumnsQuery.FieldByName('table_name').asString;
+          RecordsFoundStrGrid.Cells[1,RecordsFoundStrGrid.RowCount - 1] := Dataform.TableandColumnsQuery.FieldByName('column_name').asString;
+          RecordsFoundStrGrid.Cells[2,RecordsFoundStrGrid.RowCount - 1] := InttoStr(Dataform.tempQuery1.RecordCount);
+          If (Dataform.FromConnection.Connected) then
+          begin
+            RecordsFoundMemo.Lines.Add('select * from [' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
+            '] where [' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '] like ''%' + FixSQLString(trim(FindEdt.Text)) +
+            '%'';');
+          end
+          else
+          begin
+            RecordsFoundMemo.Lines.Add('select * from ' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
+            ' where `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '` like ''%' + FixMySQLString(trim(FindEdt.Text)) +
+            '%'';');
+          end;
+        end;
+        Dataform.TableandColumnsQuery.Next;
+        ProgressBar1.StepIt;
+        Application.processMessages;
+      end;
+      Dataform.TableandColumnsQuery.EnableControls;
+      Dataform.TempQuery1.Close;
+      showmessage('Finished');
+end;
+
 procedure TMainForm.CSVSearchBtnClick(Sender: TObject);
 begin
       if CSVSearchCombo.ItemIndex = -1 then
@@ -1286,54 +1381,58 @@ begin
 end;
 
 procedure TMainForm.Button4Click(Sender: TObject);
+var
+          SQLString: String;
+//          StrList: TStringList;
+          startpos, endpos: Integer;
+          C: Char;
+          isinQuoted: Boolean;
 begin
-//     showmessage(inttostr(TabControl1.TabIndex));
-//     showmessage(Tabcontrol1.Tabs[TabControl1.TabIndex]);
-      showmessage(Dataform.FromConnection.DatabaseName);
+      if copy(ScriptSQLEdit.Text,ScriptSQLEdit.SelStart+1,ScriptSQLEdit.SelLength) = '' then
+          SQLString := ScriptSQLEdit.Text
+      else
+          SQLString := copy(ScriptSQLEdit.Text,ScriptSQLEdit.SelStart+1,ScriptSQLEdit.SelLength);
+      startpos := 1;
+      endpos := 1;
+      isinQuoted := false;
+      for C in SQLString do
+      begin
+        if (C = char(39)) and (isinQuoted = false) then
+          isinQuoted := true
+        else if (C = char(39)) and (isinQuoted = true) then
+          isinQuoted := false;
+        if (C = ';') and (isinQuoted = false) then
+        begin
+          ScriptSQL.Lines.Add(trim(copy(SQLString,startpos,((endpos+1) - startpos))));
+          startpos := (endpos+1);
+        end;
+        inc(endpos);
+      end;
+//      StrList := TStringList.Create;
+//      StrList.Delimiter := ';';
+//      StrList.StrictDelimiter := True;
+//      StrList.DelimitedText := SQLString;
+//      ScriptSQL.Lines.Clear;
+//      for i := 0 to StrList.count -1 do
+//      begin
+//        ScriptSQL.Lines.Add(StrList[i]);
+//      end;
+//      StrList.Free;
 end;
 
-procedure TMainForm.FindRecordsBtnClick(Sender: TObject);
+procedure TMainForm.FindandReplaceRecordsBtnClick(Sender: TObject);
 var
-          TableColumnQueryStr,RecordCountQueryStr: String;
+          RecordCountQueryStr: String;
 begin
       if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
       begin
         showmessage('Connect database first');
         exit;
       end;
-      If (Dataform.FromConnection.Connected) then
+      If (OpenTableColumnQuery() <> true) then
       begin
-        TableColumnQueryStr := 'select a.TABLE_CATALOG as table_schema, a.TABLE_NAME as table_name, a.COLUMN_NAME as column_name';
-        TableColumnQueryStr := TableColumnQueryStr + ' FROM information_schema.columns a';
-        TableColumnQueryStr := TableColumnQueryStr + ' LEFT OUTER JOIN INFORMATION_SCHEMA.VIEWS b ON a.TABLE_CATALOG = b.TABLE_CATALOG AND a.TABLE_SCHEMA = b.TABLE_SCHEMA AND a.TABLE_NAME = b.TABLE_NAME';
-        TableColumnQueryStr := TableColumnQueryStr + ' where b.TABLE_NAME is null and a.TABLE_CATALOG = ''' + FromDBCombo.Items[FromDBCombo.ItemIndex] + '''';
-        if (PrefixEdt.text <> '') then
-          TableColumnQueryStr := TableColumnQueryStr + ' and table_name like ''' + PrefixEdt.text + '%''';
-      end
-      else
-      begin
-        TableColumnQueryStr := 'select table_schema, table_name, column_name FROM information_schema.columns';
-        TableColumnQueryStr := TableColumnQueryStr + ' where table_schema = ''' + FromDBCombo.Items[FromDBCombo.ItemIndex] + '''';
-        if (PrefixEdt.text <> '') then
-          TableColumnQueryStr := TableColumnQueryStr + ' and table_name like ''' + PrefixEdt.text + '%''';
+           exit;
       end;
-      try
-        DataForm.TableandColumnsQuery.close;
-        with Dataform.TableandColumnsQuery.SQL do
-        begin
-          Clear;
-          Text := TableColumnQueryStr;
-        end;
-        Dataform.TableandColumnsQuery.Prepare;
-        Dataform.TableandColumnsQuery.Open;
-      except
-        on E : Exception do
-        begin
-          RecordsFoundMemo.Lines.Add('Get Tables and Columns failed: ' + E.Message);
-          exit;
-        end;
-      end;
-      Dataform.TableandColumnsQuery.Last;
       ProgressBar1.Max := Dataform.TableandColumnsQuery.RecordCount;
       ProgressBar1.Position := 0;
       Dataform.TableandColumnsQuery.First;
@@ -1346,14 +1445,14 @@ begin
         begin
           RecordCountQueryStr := 'select [' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString +
             '] from [' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
-            '] where [' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '] like ''%' + FindEdt.Text +
+            '] where [' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '] like ''%' + FixSQLString(trim(FindEdt.Text)) +
             '%'';';
         end
         else
         begin
           RecordCountQueryStr := 'select `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString +
             '` from ' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
-            ' where `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '` like ''%' + FindEdt.Text +
+            ' where `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '` like ''%' + FixMySQLString(trim(FindEdt.Text)) +
             '%'';';
         end;
         try
@@ -1379,15 +1478,15 @@ begin
           begin
             RecordsFoundMemo.Lines.Add('update [' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
               '] set [' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '] = replace([' +
-              Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '], ''' + FindEdt.Text + ''', ''' +
-              ReplaceWithEdt.Text + ''');');
+              Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '], ''' + FixSQLString(trim(FindEdt.Text)) + ''', ''' +
+              FixSQLString(trim(ReplaceWithEdt.Text)) + ''');');
           end
           else
           begin
             RecordsFoundMemo.Lines.Add('update `' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
               '` set `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '` = replace(`' +
-              Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '`, ''' + FindEdt.Text + ''', ''' +
-              ReplaceWithEdt.Text + ''');');
+              Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '`, ''' + FixMySQLString(trim(FindEdt.Text)) + ''', ''' +
+              FixMySQLString(trim(ReplaceWithEdt.Text)) + ''');');
           end;
         end;
         Dataform.TableandColumnsQuery.Next;
@@ -1397,6 +1496,46 @@ begin
       Dataform.TableandColumnsQuery.EnableControls;
       Dataform.TempQuery1.Close;
       showmessage('Finished');
+end;
+
+function TMainForm.OpenTableColumnQuery(): Boolean;
+var
+         TableColumnQueryStr: String;
+begin
+    If (Dataform.FromConnection.Connected) then
+    begin
+      TableColumnQueryStr := 'select a.TABLE_CATALOG as table_schema, a.TABLE_NAME as table_name, a.COLUMN_NAME as column_name';
+      TableColumnQueryStr := TableColumnQueryStr + ' FROM information_schema.columns a';
+      TableColumnQueryStr := TableColumnQueryStr + ' LEFT OUTER JOIN INFORMATION_SCHEMA.VIEWS b ON a.TABLE_CATALOG = b.TABLE_CATALOG AND a.TABLE_SCHEMA = b.TABLE_SCHEMA AND a.TABLE_NAME = b.TABLE_NAME';
+      TableColumnQueryStr := TableColumnQueryStr + ' where b.TABLE_NAME is null and a.TABLE_CATALOG = ''' + FromDBCombo.Items[FromDBCombo.ItemIndex] + '''';
+      if (PrefixEdt.text <> '') then
+        TableColumnQueryStr := TableColumnQueryStr + ' and table_name like ''' + PrefixEdt.text + '%''';
+    end
+    else
+    begin
+      TableColumnQueryStr := 'select table_schema, table_name, column_name FROM information_schema.columns';
+      TableColumnQueryStr := TableColumnQueryStr + ' where table_schema = ''' + FromDBCombo.Items[FromDBCombo.ItemIndex] + '''';
+      if (PrefixEdt.text <> '') then
+        TableColumnQueryStr := TableColumnQueryStr + ' and table_name like ''' + PrefixEdt.text + '%''';
+    end;
+    try
+      DataForm.TableandColumnsQuery.close;
+      with Dataform.TableandColumnsQuery.SQL do
+      begin
+        Clear;
+        Text := TableColumnQueryStr;
+      end;
+      Dataform.TableandColumnsQuery.Prepare;
+      Dataform.TableandColumnsQuery.Open;
+    except
+      on E : Exception do
+      begin
+        RecordsFoundMemo.Lines.Add('Get Tables and Columns failed: ' + E.Message);
+        OpenTableColumnQuery := false;
+      end;
+    end;
+    Dataform.TableandColumnsQuery.Last;
+    OpenTableColumnQuery := true;
 end;
 
 procedure TMainForm.ClearProjectBtnClick(Sender: TObject);
@@ -1585,7 +1724,7 @@ var
 begin
           if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
           begin
-            showmessage('Connect from database first!');
+            showmessage('Connect database first!');
             exit;
           end;
           FromSQLtext := FromSQLEdit.Text;
@@ -1756,6 +1895,7 @@ begin
             Dataform.FromQuery1.Next;
           end;
           CompareStopRunBtn.Visible := false;
+          Dataform.FromQuery1.First;
           Dataform.FromQuery1.EnableControls;
           dataform.ToQuery2.close;
           showmessage('Finished');
@@ -1764,7 +1904,7 @@ end;
 
 procedure TMainForm.ExecuteQueryBtnClick(Sender: TObject);
 var
-          SQLString: String;
+          SQLString, ResultString: String;
 begin
           if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
           begin
@@ -1797,7 +1937,9 @@ begin
                         else
                         begin
                             Dataform.ScriptQuery0.ExecSQL;
-                            showmessage('Query executed');
+                            ResultString := 'Query executed: ' + InttoStr(Dataform.ScriptQuery0.RowsAffected) + ' Record affected';
+                            ScriptSQL.Lines.Add(ResultString);
+                            showmessage(ResultString);
                         end;
                    end;
                  1 :
@@ -1819,7 +1961,9 @@ begin
                         else
                         begin
                             Dataform.ScriptQuery1.ExecSQL;
-                            showmessage('Query executed');
+                            ResultString := 'Query executed: ' + InttoStr(Dataform.ScriptQuery1.RowsAffected) + ' Record affected';
+                            ScriptSQL.Lines.Add(ResultString);
+                            showmessage(ResultString);
                         end;
                    end;
             end;
@@ -1898,6 +2042,11 @@ begin
           begin
                ProgressBar1.StepIt;
                Application.processMessages;
+               if (Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,SetupGridSelectedRow]).asString = 'NULL') then
+               begin
+                 Dataform.CSVDataset.Next;
+                 continue;
+               end;
                Dataform.FromQuery1.Close;
                with Dataform.FromQuery1.SQL do
                begin

@@ -52,7 +52,7 @@
         <PackageName Value="LCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="5">
       <Unit0>
         <Filename Value="CompareMSSQLTables.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -72,24 +72,20 @@
         <ResourceBaseClass Value="DataModule"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\NielUniversalUtils\UtilsUnit.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit3>
-      <Unit4>
         <Filename Value="AboutFrm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="AboutForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-      </Unit4>
-      <Unit5>
+      </Unit3>
+      <Unit4>
         <Filename Value="fixlinkedvaluesfrm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FixLinkedValuesForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FixLinkedValuesFrm"/>
-      </Unit5>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -105,6 +101,7 @@
     </Parsing>
     <Linking>
       <Debugging>
+        <DebugInfoType Value="dsDwarf2"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>
