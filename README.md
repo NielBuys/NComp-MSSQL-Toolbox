@@ -1,6 +1,6 @@
 # NComp MSSQL Toolbox
 <br>
-This tool have 3 functions<br>
+This tool have 4 functions<br>
 <br>
 1. Basic MSSQL IDE. The result set can also be exported as inserts or updates.<br>
 <br>
@@ -9,6 +9,8 @@ This tool have 3 functions<br>
 Joins can be added to the from query if only certain records should be compared, as long as the end result only have the current table fields visible.<br>
 <br>
 3. Import help utilities.<br>
+<br>
+4. Find or find and replace text over tables and columns.<br>
 <br>
 Installs for the following environments are available. Win64, Win32 and Linux Debian.<br>
 <br>
