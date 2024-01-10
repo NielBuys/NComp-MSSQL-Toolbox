@@ -23,7 +23,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="1"/>
-      <BuildNr Value="15"/>
+      <MinorVersionNr Value="1"/>
       <StringTable CompanyName="ncomp.co.za" FileDescription="NComp MSSQL Toolbox (ncomp.co.za )" ProductName="NComp MSSQL Toolbox" ProductVersion="1.0"/>
     </VersionInfo>
     <BuildModes Count="1">
