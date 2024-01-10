@@ -1149,28 +1149,47 @@ begin
                   showmessage('Primary Key not found for linked table ' + SetupGrid.Cells[3,I]);
                   exit;
                 end;
-                TempValue := 'select ' + KeyColumnName + ' from ' + SetupGrid.Cells[3,I] +
-                ' where ' + SetupGrid.Cells[4,I] + ' = ''' + Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,I]).asString + '''';
+                if lowercase(Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,I]).asString) = 'null'   then
+                   TempValue := 'null'
+                else
+                    TempValue := 'select ' + KeyColumnName + ' from ' + SetupGrid.Cells[3,I] +
+                    ' where ' + SetupGrid.Cells[4,I] + ' = ''' + Dataform.CSVDataset.FieldByName(SetupGrid.Cells[1,I]).asString + '''';
 
-                if typestr = 'Insert' then
+                if (typestr = 'Insert') then
                 begin
                      if FieldsString = '' then
                      begin
                           FieldsString := SetupGrid.Cells[2,I];
-                          ValuesString := '(' + TempValue + ')';
+                          if TempValue = 'null' then
+                             ValuesString := TempValue
+                          else
+                             ValuesString := '(' + TempValue + ')';
                      end
                      else
                      begin
                           FieldsString := FieldsString + ',' + SetupGrid.Cells[2,I];
-                          ValuesString := ValuesString + ',' + '(' + TempValue + ')';
+                          if TempValue = 'null' then
+                              ValuesString := ValuesString + ',' + TempValue
+                          else
+                              ValuesString := ValuesString + ',' + '(' + TempValue + ')';
                      end;
                 end
                 else
                 begin
                      if FieldsString = '' then
-                       FieldsString := SetupGrid.Cells[2,I] + ' = ' +  '(' + TempValue + ')'
+                     begin
+                        if TempValue = 'null' then
+                           FieldsString := SetupGrid.Cells[2,I] + ' = ' +  TempValue
+                        else
+                           FieldsString := SetupGrid.Cells[2,I] + ' = ' +  '(' + TempValue + ')';
+                     end
                      else
-                       FieldsString := FieldsString + ', ' + SetupGrid.Cells[2,I] + ' = ' + '(' + TempValue + ')';
+                     begin
+                          if TempValue = 'null' then
+                             FieldsString := FieldsString + ', ' + SetupGrid.Cells[2,I] + ' = ' + TempValue
+                          else
+                             FieldsString := FieldsString + ', ' + SetupGrid.Cells[2,I] + ' = ' + '(' + TempValue + ')';
+                     end;
                 end;
            end;
            if SetupGrid.Cells[0,I] = 'Value' then
@@ -1792,7 +1811,10 @@ begin
           end;
           raise;
           end;
-
+          if (Dataform.ToQuery1.FieldCount <> Dataform.FromQuery1.FieldCount) then
+          begin
+            ShowMessage('From and To column count do not match');
+          end;
 end;
 
 procedure TMainForm.BtnCompareRightClick(Sender: TObject);
@@ -1805,6 +1827,11 @@ begin
           if (Dataform.ToConnection.Connected = False) and (Dataform.ToMySQL80Connection.Connected = False) then
           begin
             showmessage('Connect to SQL server first');
+            exit;
+          end;
+          if (Dataform.ToQuery1.FieldCount <> Dataform.FromQuery1.FieldCount) then
+          begin
+            ShowMessage('From and To column count do not match');
             exit;
           end;
           Outputlog.Clear;

@@ -771,7 +771,7 @@ begin
         case TFieldType(Ord(FieldStore.DataType)) of
           ftString, ftGuid, ftWideString, ftMemo:
           begin
-            if (FieldStore.AsString = '') or (FieldStore.IsNull) then
+            if (FieldStore.AsString = '') or (FieldStore.IsNull) or (LowerCase(FieldStore.AsString) = 'null') then
                temp := 'null'  //Put a default string
             else
             begin

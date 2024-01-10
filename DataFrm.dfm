@@ -1,13 +1,13 @@
 object DataForm: TDataForm
   OldCreateOrder = False
   Height = 628
-  HorizontalOffset = 1115
+  HorizontalOffset = 1110
   VerticalOffset = 26
   Width = 760
   object FromConnection: TMSSQLConnection
     Connected = False
     LoginPrompt = False
-    KeepConnection = False
+    KeepConnection = True
     Params.Strings = (
       ''
     )
@@ -22,7 +22,7 @@ object DataForm: TDataForm
   object ToConnection: TMSSQLConnection
     Connected = False
     LoginPrompt = False
-    KeepConnection = False
+    KeepConnection = True
     Params.Strings = (
       ''
     )
@@ -240,7 +240,7 @@ object DataForm: TDataForm
   object FromMySQL80Connection: TMySQL80Connection
     Connected = False
     LoginPrompt = False
-    KeepConnection = False
+    KeepConnection = True
     SkipLibraryVersionCheck = False
     Left = 216
     Top = 40
@@ -248,7 +248,7 @@ object DataForm: TDataForm
   object ToMySQL80Connection: TMySQL80Connection
     Connected = False
     LoginPrompt = False
-    KeepConnection = False
+    KeepConnection = True
     SkipLibraryVersionCheck = False
     Left = 520
     Top = 168
