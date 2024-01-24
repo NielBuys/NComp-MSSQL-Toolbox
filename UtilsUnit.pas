@@ -402,7 +402,7 @@ begin
 end;
 
 function FixSQLString(stemp: String): String;
-const SpecialChar = ['%','&', '\',#39,'/'];
+const SpecialChar = ['%', '\',#39,'/'];
 var
   i: integer;
   Skiploop:Boolean;
