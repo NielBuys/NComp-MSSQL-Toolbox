@@ -3,7 +3,7 @@ Version: 1.1-0
 Section: base
 Priority: optional
 Architecture: amd64
-Depends: freetds-dev 
+Depends: freetds-dev,libmysqlclient-dev 
 Maintainer: Niel Buys nbuys@ncomp.co.za
 Homepage: https://www.ncomp.co.za
 Description: Various MSSQL Tools
