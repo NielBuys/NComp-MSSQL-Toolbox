@@ -1,6 +1,6 @@
-# NComp MSSQL Toolbox
+# NComp SQL Toolbox
 <br>
-This tool have 4 functions<br>
+This tool have 4 functions connecting to MSSQL or MySQL<br>
 <br>
 1. Basic MSSQL IDE. The result set can also be exported as inserts or updates.<br>
 <br>
