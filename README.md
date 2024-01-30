@@ -2,7 +2,7 @@
 <br>
 This tool have 4 functions connecting to MSSQL or MySQL<br>
 <br>
-1. Basic MSSQL IDE. The result set can also be exported as inserts or updates.<br>
+1. Basic SQL IDE. The result set can also be exported as inserts or updates.<br>
 <br>
 2. Compare 2 tables one way, during the run it will create sql scripts of all the changes to all the fields in the selected table. Both tables should have the same structure during the run. Insert and Update query's are created during the run and can be saved for later execution.<br>
 <br>
