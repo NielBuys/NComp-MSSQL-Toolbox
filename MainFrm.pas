@@ -1527,6 +1527,7 @@ begin
       TableColumnQueryStr := TableColumnQueryStr + ' FROM information_schema.columns a';
       TableColumnQueryStr := TableColumnQueryStr + ' LEFT OUTER JOIN INFORMATION_SCHEMA.VIEWS b ON a.TABLE_CATALOG = b.TABLE_CATALOG AND a.TABLE_SCHEMA = b.TABLE_SCHEMA AND a.TABLE_NAME = b.TABLE_NAME';
       TableColumnQueryStr := TableColumnQueryStr + ' where b.TABLE_NAME is null and a.TABLE_CATALOG = ''' + FromDBCombo.Items[FromDBCombo.ItemIndex] + '''';
+      TableColumnQueryStr := TableColumnQueryStr + ' and NOT a.DATA_TYPE = ''image''';
       if (PrefixEdt.text <> '') then
         TableColumnQueryStr := TableColumnQueryStr + ' and table_name like ''' + PrefixEdt.text + '%''';
     end

@@ -1,9 +1,9 @@
 object MainForm: TMainForm
-  Left = 309
+  Left = 359
   Height = 650
-  Top = 86
+  Top = 188
   Width = 1077
-  Caption = 'NComp MSSQL Toolbox'
+  Caption = 'NComp SQL Toolbox'
   ClientHeight = 650
   ClientWidth = 1077
   Color = clBtnFace
@@ -99,7 +99,7 @@ object MainForm: TMainForm
   end
   object FromDBCombo: TDBLookupComboBox
     Left = 910
-    Height = 28
+    Height = 24
     Hint = 'Choose DB'
     Top = 1
     Width = 160
@@ -121,9 +121,9 @@ object MainForm: TMainForm
     Height = 584
     Top = 33
     Width = 1077
-    ActivePage = TabSheetCompareDBs
+    ActivePage = TabSheetFindAndReplace
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 3
     TabOrder = 7
     OnExit = PageControl1Exit
     object TabsheetQueriesAndExport: TTabSheet
@@ -194,8 +194,8 @@ object MainForm: TMainForm
           ChildSizing.ShrinkVertical = crsScaleChilds
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 100
-          ClientHeight = 25
-          ClientWidth = 241
+          ClientHeight = 21
+          ClientWidth = 237
           DataSource = DataForm.ScriptQuerySource1
           Options = []
           TabOrder = 4

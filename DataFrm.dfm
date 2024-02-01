@@ -2,7 +2,7 @@ object DataForm: TDataForm
   OldCreateOrder = False
   Height = 628
   HorizontalOffset = 1110
-  VerticalOffset = 26
+  VerticalOffset = 28
   Width = 760
   object FromConnection: TMSSQLConnection
     Connected = False

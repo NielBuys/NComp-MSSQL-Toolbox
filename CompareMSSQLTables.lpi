@@ -11,7 +11,7 @@
         <CompatibilityMode Value="True"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="NComp MSSQL Toolbox"/>
+      <Title Value="NComp SQL Toolbox"/>
       <Scaled Value="True"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
@@ -24,7 +24,7 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="1"/>
-      <StringTable CompanyName="ncomp.co.za" FileDescription="NComp MSSQL Toolbox (ncomp.co.za )" ProductName="NComp MSSQL Toolbox" ProductVersion="1.0"/>
+      <StringTable CompanyName="ncomp.co.za" FileDescription="NComp SQL Toolbox (ncomp.co.za )" ProductName="NComp SQL Toolbox" ProductVersion="1.0"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
