@@ -6,6 +6,6 @@ Architecture: amd64
 Depends: freetds-dev,libmysqlclient-dev 
 Maintainer: Niel Buys nbuys@ncomp.co.za
 Homepage: https://www.ncomp.co.za
-Description: Various MSSQL Tools
+Description: Various SQL Tools
  Scripting, Compare tables and Import.
 

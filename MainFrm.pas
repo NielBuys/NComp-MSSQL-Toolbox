@@ -1303,7 +1303,14 @@ begin
         except
           on E : Exception do
           begin
-            RecordsFoundMemo.Lines.Add('Record count query failed: ' + E.Message);
+            if ((Dataform.FromConnection.Connected) and (Pos('Error 20018', E.Message) > 0)) then
+            begin
+              Dataform.TableandColumnsQuery.Next;
+              ProgressBar1.StepIt;
+              Application.processMessages;
+              Continue;
+            end;
+            RecordsFoundMemo.Lines.Add('Query failed: ' + E.Message);
             RecordsFoundMemo.Lines.Add(RecordCountQueryStr);
             exit;
           end;
@@ -1481,7 +1488,14 @@ begin
         except
           on E : Exception do
           begin
-            RecordsFoundMemo.Lines.Add('Record count query failed: ' + E.Message);
+            if ((Dataform.FromConnection.Connected) and (Pos('Error 20018', E.Message) > 0)) then
+            begin
+              Dataform.TableandColumnsQuery.Next;
+              ProgressBar1.StepIt;
+              Application.processMessages;
+              Continue;
+            end;
+            RecordsFoundMemo.Lines.Add('Query failed: ' + E.Message);
             RecordsFoundMemo.Lines.Add(RecordCountQueryStr);
             exit;
           end;

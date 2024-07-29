@@ -18,7 +18,7 @@ object MainForm: TMainForm
   OnClose = FormClose
   OnCreate = FormCreate
   Position = poScreenCenter
-  LCLVersion = '3.0.0.3'
+  LCLVersion = '3.4.0.0'
   object Label1: TLabel
     Left = 853
     Height = 15
