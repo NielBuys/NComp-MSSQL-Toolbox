@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 359
+  Left = 323
   Height = 650
-  Top = 188
+  Top = 160
   Width = 1077
   Caption = 'NComp SQL Toolbox'
   ClientHeight = 650
@@ -121,9 +121,9 @@ object MainForm: TMainForm
     Height = 584
     Top = 33
     Width = 1077
-    ActivePage = TabSheetFindAndReplace
+    ActivePage = TabSheetImport
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 3
+    TabIndex = 2
     TabOrder = 7
     OnExit = PageControl1Exit
     object TabsheetQueriesAndExport: TTabSheet
@@ -701,7 +701,7 @@ object MainForm: TMainForm
         Left = 177
         Height = 23
         Top = 3
-        Width = 177
+        Width = 147
         Caption = 'Use first line as header'
         Checked = True
         State = cbChecked
