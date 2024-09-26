@@ -1,16 +1,14 @@
 # NComp SQL Toolbox
 <br>
-This tool have 4 functions connecting to MSSQL or MySQL<br>
+This tool offers four key functions:<br>
 <br>
-1. Basic SQL IDE. The result set can also be exported as inserts or updates.<br>
+1. SQL IDE: A basic yet powerful integrated development environment for both Microsoft SQL Server (MSSQL) and MySQL. The tool allows you to run queries, view result sets, and export them as SQL inserts or updates for easy reuse.<br>
 <br>
-2. Compare 2 tables one way, during the run it will create sql scripts of all the changes to all the fields in the selected table. Both tables should have the same structure during the run. Insert and Update query's are created during the run and can be saved for later execution.<br>
+2. Table Comparison: Compare two tables in one direction, generating SQL scripts to reflect changes across all fields in the selected table. The tables must have identical structures. During the comparison, the tool creates INSERT and UPDATE queries, which can be saved for future execution. Additionally, you can join other tables in the query to limit comparisons to specific records, provided that only fields from the current table are in the final result set.<br>
 <br>
-Joins can be added to the from query if only certain records should be compared, as long as the end result only have the current table fields visible.<br>
+3. Import Utilities: A suite of helper tools to assist with importing data efficiently.<br>
 <br>
-3. Import help utilities.<br>
-<br>
-4. Find or find and replace text over tables and columns.<br>
+4. Find & Replace: Search for or find-and-replace text across tables and columns, streamlining updates and modifications to your data.<br>
 <br>
 Installs for the following environments are available. Win64, Win32 and Linux Debian.<br>
 <br>
