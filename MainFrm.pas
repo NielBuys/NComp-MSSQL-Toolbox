@@ -17,7 +17,6 @@ type
     AddLinkedColumnBtn: TButton;
     AddPrimaryTableDetailBtn: TButton;
     AddValueBtn: TButton;
-    AddPrimaryDetailHelpBtn: TBitBtn;
     BtnCompareRight: TBitBtn;
     Button1: TButton;
     Button2: TButton;
@@ -35,6 +34,8 @@ type
     FindLbl: TLabel;
     ReplaceWithLbl: TLabel;
     RecordsFoundStrGrid: TStringGrid;
+    AddPrimaryDetailHelpBtn: TSpeedButton;
+    CompareStopRunBtn: TSpeedButton;
     TabSheetFindAndReplace: TTabSheet;
     ToPort: TEdit;
     SQLTypeSelect: TComboBox;
@@ -47,7 +48,6 @@ type
     LoadPrimaryColumnsBtn: TButton;
     ClearProjectBtn: TButton;
     ColumnsList: TDBLookupListBox;
-    CompareStopRunBtn: TBitBtn;
     CSVFirstLineCheck: TCheckBox;
     CSVGrid: TDBGrid;
     CSVSearchBtn: TButton;
@@ -141,9 +141,9 @@ type
     procedure AddPrimaryDetailHelpBtnClick(Sender: TObject);
     procedure AddValueBtnClick(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure CompareStopRunBtnClick(Sender: TObject);
     procedure FindandReplaceRecordsBtnClick(Sender: TObject);
     procedure ClearProjectBtnClick(Sender: TObject);
-    procedure CompareStopRunBtnClick(Sender: TObject);
     procedure CSVGridEnter(Sender: TObject);
     procedure CSVSearchBtnClick(Sender: TObject);
     procedure DeleteSelectedRowBtnClick(Sender: TObject);
@@ -548,7 +548,6 @@ begin
       dataform.FromQuery1.close;
       dataform.ToQuery1.close;
 end;
-
 
 procedure TMainForm.XMLToCSVConvertBtnClick(Sender: TObject);
 var
@@ -1390,7 +1389,7 @@ end;
 
 procedure TMainForm.AddPrimaryDetailHelpBtnClick(Sender: TObject);
 begin
-     showmessage('Each project needs an primary detail record. Usage instuctions: Select the CSV Column that will be used to search if the imported record exist. Then choose the linked table the same as the primary table. Next select the link table column that will be used to search if the record exist.');
+      showmessage('Each project requires a primary detail record. Usage instructions: First, select the CSV column that will be used to check if the imported record exists. Then, choose the linked table, which should be the same as the primary table. Finally, select the column from the link table that will be used to verify if the record already exists.');
 end;
 
 procedure TMainForm.AddValueBtnClick(Sender: TObject);
@@ -1444,6 +1443,11 @@ begin
 //        ScriptSQL.Lines.Add(StrList[i]);
 //      end;
 //      StrList.Free;
+end;
+
+procedure TMainForm.CompareStopRunBtnClick(Sender: TObject);
+begin
+      StopRunBool := true;
 end;
 
 procedure TMainForm.FindandReplaceRecordsBtnClick(Sender: TObject);
@@ -1579,12 +1583,6 @@ begin
       begin
            SetupGrid.RowCount := 1;
       end;
-end;
-
-
-procedure TMainForm.CompareStopRunBtnClick(Sender: TObject);
-begin
-     StopRunBool := true;
 end;
 
 procedure TMainForm.CSVGridEnter(Sender: TObject);
