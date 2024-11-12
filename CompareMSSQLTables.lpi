@@ -24,7 +24,7 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="1"/>
+      <BuildNr Value="2"/>
       <StringTable CompanyName="ncomp.co.za" FileDescription="NComp SQL Toolbox (ncomp.co.za )" ProductName="NComp SQL Toolbox" ProductVersion="1.0"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -53,7 +53,7 @@
         <PackageName Value="LCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="6">
       <Unit0>
         <Filename Value="CompareMSSQLTables.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -87,6 +87,11 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="FixLinkedValuesFrm"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="pingthreadunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="PingThreadUnit"/>
+      </Unit5>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

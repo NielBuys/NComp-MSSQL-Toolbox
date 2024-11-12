@@ -1,6 +1,11 @@
 program CompareMSSQLTables;
+{$mode objfpc}{$H+}
+{$define UseCThreads}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+    cthreads,
+  {$ENDIF}{$ENDIF}
   Forms, Interfaces,
   MainFrm in 'MainFrm.pas' {MainForm},
   DataFrm in 'DataFrm.pas' {DataForm: TDataModule},

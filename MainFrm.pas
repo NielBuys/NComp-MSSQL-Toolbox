@@ -6,7 +6,7 @@ uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, Grids,
   DBGrids, StdCtrls, Buttons, Menus, ComCtrls, DbCtrls, ExtCtrls, ActnList,
   UtilsUnit, Types, IniFiles, DB, sqldb, BufDataset, laz2_DOM, laz2_XMLRead,
-  Base64;
+  Base64, PingThreadUnit;
 
 type
 
@@ -17,7 +17,6 @@ type
     AddLinkedColumnBtn: TButton;
     AddPrimaryTableDetailBtn: TButton;
     AddValueBtn: TButton;
-    BtnCompareRight: TBitBtn;
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
@@ -36,6 +35,8 @@ type
     RecordsFoundStrGrid: TStringGrid;
     AddPrimaryDetailHelpBtn: TSpeedButton;
     CompareStopRunBtn: TSpeedButton;
+    CancelFindBtn: TSpeedButton;
+    BtnCompareRight: TSpeedButton;
     TabSheetFindAndReplace: TTabSheet;
     ToPort: TEdit;
     SQLTypeSelect: TComboBox;
@@ -140,7 +141,9 @@ type
     procedure AddColumnBtnClick(Sender: TObject);
     procedure AddPrimaryDetailHelpBtnClick(Sender: TObject);
     procedure AddValueBtnClick(Sender: TObject);
+    procedure BtnCompareRightClick(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure CancelFindBtnClick(Sender: TObject);
     procedure CompareStopRunBtnClick(Sender: TObject);
     procedure FindandReplaceRecordsBtnClick(Sender: TObject);
     procedure ClearProjectBtnClick(Sender: TObject);
@@ -185,7 +188,6 @@ type
     procedure Button3Click(Sender: TObject);
     procedure About1Click(Sender: TObject);
     procedure LoadFromandToDataBtnClick(Sender: TObject);
-    procedure BtnCompareRightClick(Sender: TObject);
     procedure ExecuteQueryBtnClick(Sender: TObject);
     procedure LoadCSVBtnClick(Sender: TObject);
     procedure SaveSQLBtnClick(Sender: TObject);
@@ -293,12 +295,15 @@ end;
 procedure TMainForm.ConnecttoServerBtnClick(Sender: TObject);
 var
           s: String;
+      //    PingThread: TPingThread;
 begin
       ConnectedVia := 'NULL';
-      If ConnecttoServerBtn.Caption = 'Disconnect server' then
+      If ConnecttoServerBtn.Caption = 'Disconnect' then
       begin
+      //    PingThread.Terminate;
+      //    PingThread.WaitFor;
           CloseConnections();
-          ConnecttoServerBtn.Caption := 'Connect to server';
+          ConnecttoServerBtn.Caption := 'Connect';
           Dataform.FromConnection.DatabaseName := '';
           FromDBCombo.Clear;
       end
@@ -320,6 +325,9 @@ begin
                  Dataform.DBQuery1.SQL.Text := 'SELECT name as [Database] FROM sys.databases order by [Database]';
                  Dataform.DBQuery1.SQLConnection := Dataform.FromConnection;
                  Dataform.DBQuery1.Open;
+                   // Initialize and start the ping thread
+        //         PingThread := TPingThread.Create(Dataform.FromConnection, 300000); // 5-minute interval
+        //         PingThread.Start; // Start the thread execution
             end
             else
             begin
@@ -344,7 +352,7 @@ begin
                  FromDBComboSelect(FromDBCombo);
             end;
             setQueryConnections();
-            ConnecttoServerBtn.Caption := 'Disconnect server';
+            ConnecttoServerBtn.Caption := 'Disconnect';
           except
           begin
             ShowMessage('Unable to connect to SQL Server!');
@@ -435,7 +443,7 @@ begin
           begin
             ShowMessage('Unable to select DB , make sure the DB exist');
             CloseConnections();
-            ConnecttoServerBtn.Caption := 'Connect to server';
+            ConnecttoServerBtn.Caption := 'Connect';
             Dataform.FromConnection.DatabaseName := '';
           end;
           raise;
@@ -1276,6 +1284,8 @@ begin
       ProgressBar1.Max := Dataform.TableandColumnsQuery.RecordCount;
       ProgressBar1.Position := 0;
       Dataform.TableandColumnsQuery.First;
+      StopRunBool := false;
+      CancelFindBtn.Visible := true;
       Dataform.TableandColumnsQuery.DisableControls;
       RecordsFoundMemo.Lines.Clear;
       RecordsFoundStrGrid.RowCount := 1;
@@ -1336,8 +1346,13 @@ begin
         end;
         Dataform.TableandColumnsQuery.Next;
         ProgressBar1.StepIt;
+        if StopRunBool then
+        begin
+             break;
+        end;
         Application.processMessages;
       end;
+      CancelFindBtn.Visible := false;
       Dataform.TableandColumnsQuery.EnableControls;
       Dataform.TempQuery1.Close;
       showmessage('Finished');
@@ -1445,6 +1460,11 @@ begin
 //      StrList.Free;
 end;
 
+procedure TMainForm.CancelFindBtnClick(Sender: TObject);
+begin
+  StopRunBool := true;
+end;
+
 procedure TMainForm.CompareStopRunBtnClick(Sender: TObject);
 begin
       StopRunBool := true;
@@ -1466,6 +1486,8 @@ begin
       ProgressBar1.Max := Dataform.TableandColumnsQuery.RecordCount;
       ProgressBar1.Position := 0;
       Dataform.TableandColumnsQuery.First;
+      StopRunBool := false;
+      CancelFindBtn.Visible := true;
       Dataform.TableandColumnsQuery.DisableControls;
       RecordsFoundMemo.Lines.Clear;
       RecordsFoundStrGrid.RowCount := 1;
@@ -1528,8 +1550,13 @@ begin
         end;
         Dataform.TableandColumnsQuery.Next;
         ProgressBar1.StepIt;
+        if StopRunBool then
+        begin
+             break;
+        end;
         Application.processMessages;
       end;
+      CancelFindBtn.Visible := false;
       Dataform.TableandColumnsQuery.EnableControls;
       Dataform.TempQuery1.Close;
       showmessage('Finished');
