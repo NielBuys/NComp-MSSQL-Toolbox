@@ -2001,6 +2001,13 @@ begin
                            Dataform.ScriptQuery0.Open;
                            RowsCountLabel.Caption := InttoStr(Dataform.ScriptQuery0.RecordCount);
                         end
+                        else If (Dataform.ScriptQuery1.StatementType = stUnknown) or (Dataform.ScriptQuery1.StatementType = stDDL) then
+                        begin
+                           Dataform.ScriptQuery1.Transaction.Active := false;
+                           Dataform.ScriptQuery1.ExecSQL;
+                           Dataform.ScriptQuery1.Transaction.Active := true;
+                           showmessage('Command Execution finished');
+                        end
                         else
                         begin
                             Dataform.ScriptQuery0.ExecSQL;
@@ -2024,6 +2031,13 @@ begin
                         begin
                            Dataform.ScriptQuery1.Open;
                            RowsCountLabel.Caption := InttoStr(Dataform.ScriptQuery1.RecordCount);
+                        end
+                        else If (Dataform.ScriptQuery1.StatementType = stUnknown) or (Dataform.ScriptQuery1.StatementType = stDDL) then
+                        begin
+                           Dataform.ScriptQuery1.Transaction.Active := false;
+                           Dataform.ScriptQuery1.ExecSQL;
+                           Dataform.ScriptQuery1.Transaction.Active := true;
+                           showmessage('Command Execution finished');
                         end
                         else
                         begin
