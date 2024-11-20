@@ -123,13 +123,6 @@ object MainForm: TMainForm
     Width = 1077
     ActivePage = TabSheetCompareDBs
     Anchors = [akTop, akLeft, akRight, akBottom]
-    Font.CharSet = ANSI_CHARSET
-    Font.Color = clBlack
-    Font.Height = -15
-    Font.Name = 'Liberation Serif'
-    Font.Pitch = fpVariable
-    Font.Quality = fqDraft
-    ParentFont = False
     TabIndex = 1
     TabOrder = 7
     OnExit = PageControl1Exit
@@ -160,10 +153,10 @@ object MainForm: TMainForm
           TabOrder = 1
         end
         object Label16: TLabel
-          Left = 736
+          Left = 742
           Height = 18
           Top = 39
-          Width = 179
+          Width = 173
           Anchors = [akTop, akRight]
           Caption = 'Table Name for SQL Export:'
           ParentColor = False
@@ -230,7 +223,7 @@ object MainForm: TMainForm
           Left = 48
           Height = 18
           Top = 248
-          Width = 8
+          Width = 7
           Anchors = [akLeft, akBottom]
           Caption = '0'
           ParentColor = False
@@ -270,7 +263,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 18
           Top = 248
-          Width = 28
+          Width = 25
           Anchors = [akLeft, akBottom]
           Caption = 'SQL'
           ParentColor = False
@@ -296,7 +289,7 @@ object MainForm: TMainForm
         Left = 800
         Height = 18
         Top = 14
-        Width = 81
+        Width = 78
         Caption = 'To Database:'
         ParentColor = False
       end
@@ -312,7 +305,7 @@ object MainForm: TMainForm
         Left = 265
         Height = 18
         Top = 14
-        Width = 90
+        Width = 86
         Caption = 'To UserName:'
         ParentColor = False
       end
@@ -328,7 +321,7 @@ object MainForm: TMainForm
         Left = 497
         Height = 18
         Top = 14
-        Width = 83
+        Width = 82
         Caption = 'To Password:'
         ParentColor = False
       end
@@ -346,7 +339,7 @@ object MainForm: TMainForm
         Left = 8
         Height = 18
         Top = 14
-        Width = 105
+        Width = 102
         Caption = 'To Server Name:'
         ParentColor = False
       end
@@ -362,7 +355,7 @@ object MainForm: TMainForm
         Left = 152
         Height = 18
         Top = 45
-        Width = 79
+        Width = 77
         Caption = 'Table Name:'
         ParentColor = False
       end
@@ -378,7 +371,7 @@ object MainForm: TMainForm
         Left = 432
         Height = 18
         Top = 45
-        Width = 85
+        Width = 82
         Caption = 'Unique Field:'
         ParentColor = False
       end
@@ -394,7 +387,7 @@ object MainForm: TMainForm
         Left = 10
         Height = 18
         Top = 45
-        Width = 118
+        Width = 115
         Caption = 'SQL for from table'
         ParentColor = False
       end
@@ -522,7 +515,7 @@ object MainForm: TMainForm
         Left = 10
         Height = 18
         Top = 164
-        Width = 8
+        Width = 7
         Caption = '0'
         ParentColor = False
       end
@@ -556,10 +549,10 @@ object MainForm: TMainForm
         TabOrder = 7
       end
       object ToFieldsLbl: TLabel
-        Left = 678
+        Left = 680
         Height = 18
         Top = 80
-        Width = 61
+        Width = 59
         Anchors = [akTop, akRight]
         Caption = 'To Fields:'
         ParentColor = False
@@ -737,7 +730,7 @@ object MainForm: TMainForm
         Left = 177
         Height = 23
         Top = 3
-        Width = 174
+        Width = 165
         Caption = 'Use first line as header'
         Checked = True
         State = cbChecked
@@ -878,7 +871,7 @@ object MainForm: TMainForm
         Left = 344
         Height = 18
         Top = 267
-        Width = 126
+        Width = 122
         Caption = 'Link Table Columns'
         ParentColor = False
       end
@@ -1161,7 +1154,7 @@ object MainForm: TMainForm
       object FindLbl: TLabel
         Left = 48
         Height = 18
-        Top = 8
+        Top = 9
         Width = 32
         Caption = 'Find:'
         ParentColor = False
@@ -1178,7 +1171,7 @@ object MainForm: TMainForm
         Left = 520
         Height = 18
         Top = 8
-        Width = 85
+        Width = 83
         Caption = 'Replace with:'
         ParentColor = False
       end
@@ -1202,8 +1195,8 @@ object MainForm: TMainForm
       object PrefixLbl: TLabel
         Left = 41
         Height = 18
-        Top = 32
-        Width = 41
+        Top = 37
+        Width = 42
         Caption = 'Prefix:'
         ParentColor = False
       end

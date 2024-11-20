@@ -36,6 +36,7 @@ object DataForm: TDataForm
     FieldDefs = <>
     Database = FromConnection
     Transaction = FromTransaction
+    ReadOnly = True
     SQL.Strings = (
       'select * from tblBatch'
     )
@@ -56,6 +57,7 @@ object DataForm: TDataForm
     FieldDefs = <>
     Database = ToConnection
     Transaction = ToTransaction
+    ReadOnly = True
     Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>

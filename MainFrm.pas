@@ -1862,7 +1862,7 @@ var
           I:Integer;
           s,ToSQL,ToFields: String;
           RecordChanged: Boolean;
-          FieldsString,ValuesString,QueryString:WideString;
+          FieldsString,ValuesString,QueryString:String;
 begin
           if (Dataform.ToConnection.Connected = False) and (Dataform.ToMySQL80Connection.Connected = False) then
           begin
