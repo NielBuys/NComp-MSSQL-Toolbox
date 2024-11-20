@@ -3,7 +3,7 @@ object DataForm: TDataForm
   Height = 628
   HorizontalOffset = 366
   VerticalOffset = 163
-  Width = 760
+  Width = 788
   object FromConnection: TMSSQLConnection
     Connected = False
     LoginPrompt = False
@@ -16,8 +16,8 @@ object DataForm: TDataForm
     UserName = 'sa'
     HostName = '192.168.0.157'
     LogEvents = []
-    Left = 56
-    Top = 40
+    Left = 368
+    Top = 104
   end
   object ToConnection: TMSSQLConnection
     Connected = False
@@ -28,7 +28,7 @@ object DataForm: TDataForm
     )
     Transaction = ToTransaction
     LogEvents = []
-    Left = 384
+    Left = 368
     Top = 168
   end
   object FromQuery1: TSQLQuery
@@ -39,6 +39,7 @@ object DataForm: TDataForm
     SQL.Strings = (
       'select * from tblBatch'
     )
+    Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
     Left = 56
@@ -55,6 +56,7 @@ object DataForm: TDataForm
     FieldDefs = <>
     Database = ToConnection
     Transaction = ToTransaction
+    Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
     Left = 56
@@ -70,6 +72,7 @@ object DataForm: TDataForm
     FieldDefs = <>
     Database = ToConnection
     Transaction = ToTransaction
+    Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
     Left = 56
@@ -78,13 +81,13 @@ object DataForm: TDataForm
   object FromTransaction: TSQLTransaction
     Active = False
     Database = FromConnection
-    Left = 376
-    Top = 40
+    Left = 688
+    Top = 104
   end
   object ToTransaction: TSQLTransaction
     Active = False
     Database = ToConnection
-    Left = 656
+    Left = 688
     Top = 168
   end
   object ScriptQuerySource1: TDataSource
@@ -133,9 +136,11 @@ object DataForm: TDataForm
       end>
     Database = FromConnection
     Transaction = FromTransaction
+    ReadOnly = True
     SQL.Strings = (
       'SELECT name FROM sys.Tables order by name'
     )
+    Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
     Left = 72
@@ -151,9 +156,11 @@ object DataForm: TDataForm
     FieldDefs = <>
     Database = FromConnection
     Transaction = FromTransaction
+    ReadOnly = True
     SQL.Strings = (
       'SELECT name FROM sys.columns WHERE object_id = OBJECT_ID(:tablename)'
     )
+    Options = [sqoKeepOpenOnCommit]
     Params = <    
       item
         DataType = ftUnknown
@@ -174,9 +181,11 @@ object DataForm: TDataForm
     FieldDefs = <>
     Database = FromConnection
     Transaction = FromTransaction
+    ReadOnly = True
     SQL.Strings = (
       'SELECT name FROM sys.columns WHERE object_id = OBJECT_ID(:tablename)'
     )
+    Options = [sqoKeepOpenOnCommit]
     Params = <    
       item
         DataType = ftUnknown
@@ -205,18 +214,20 @@ object DataForm: TDataForm
       end>
     Database = FromConnection
     Transaction = FromTransaction
+    ReadOnly = True
     SQL.Strings = (
       'SELECT name as [Database] FROM sys.databases order by [Database]'
     )
+    Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
-    Left = 336
-    Top = 112
+    Left = 480
+    Top = 16
   end
   object DBSource1: TDataSource
     DataSet = DBQuery1
-    Left = 424
-    Top = 112
+    Left = 568
+    Top = 16
   end
   object ScriptQuerySource0: TDataSource
     DataSet = ScriptQuery0
@@ -242,15 +253,15 @@ object DataForm: TDataForm
     LoginPrompt = False
     KeepConnection = True
     SkipLibraryVersionCheck = False
-    Left = 216
-    Top = 40
+    Left = 528
+    Top = 104
   end
   object ToMySQL80Connection: TMySQL80Connection
     Connected = False
     LoginPrompt = False
     KeepConnection = True
     SkipLibraryVersionCheck = False
-    Left = 520
+    Left = 528
     Top = 168
   end
   object TableandColumnsQuery: TSQLQuery
@@ -259,6 +270,7 @@ object DataForm: TDataForm
     Database = FromConnection
     Transaction = FromTransaction
     ReadOnly = True
+    Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
     Left = 72
@@ -270,9 +282,11 @@ object DataForm: TDataForm
     Top = 536
   end
   object TempQuery1: TSQLQuery
+    PacketRecords = -1
     FieldDefs = <>
     Database = FromConnection
     Transaction = FromTransaction
+    Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
     Left = 408

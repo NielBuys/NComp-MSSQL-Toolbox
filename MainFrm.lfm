@@ -121,7 +121,7 @@ object MainForm: TMainForm
     Height = 584
     Top = 33
     Width = 1077
-    ActivePage = TabsheetQueriesAndExport
+    ActivePage = TabSheetCompareDBs
     Anchors = [akTop, akLeft, akRight, akBottom]
     Font.CharSet = ANSI_CHARSET
     Font.Color = clBlack
@@ -130,7 +130,7 @@ object MainForm: TMainForm
     Font.Pitch = fpVariable
     Font.Quality = fqDraft
     ParentFont = False
-    TabIndex = 0
+    TabIndex = 1
     TabOrder = 7
     OnExit = PageControl1Exit
     object TabsheetQueriesAndExport: TTabSheet
@@ -191,7 +191,7 @@ object MainForm: TMainForm
         object DBNavigator2: TDBNavigator
           Left = 815
           Height = 25
-          Top = 245
+          Top = 248
           Width = 241
           Anchors = [akRight, akBottom]
           BevelOuter = bvNone
