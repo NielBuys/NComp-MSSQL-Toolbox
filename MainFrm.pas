@@ -21,6 +21,7 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    ScriptSQLHeightEdt: TEdit;
     FindRecordsBtn: TButton;
     DBGrid1: TDBGrid;
     FindandReplaceRecordsBtn: TButton;
@@ -136,6 +137,7 @@ type
     ToPassword: TEdit;
     ToServerName: TEdit;
     ToUserName: TEdit;
+    ScriptSQLHeightUpDown: TUpDown;
     ValueEdt: TEdit;
     XMLToCSVConvertBtn: TButton;
     procedure AddColumnBtnClick(Sender: TObject);
@@ -170,6 +172,9 @@ type
     procedure PageControl1Exit(Sender: TObject);
     procedure RefreshCSVColumnsBtnClick(Sender: TObject);
     procedure ScriptGridEnter(Sender: TObject);
+    procedure ScriptSQLEditResize(Sender: TObject);
+    procedure ScriptSQLHeightEdtChange(Sender: TObject);
+    procedure ScriptSQLHeightUpDownClick(Sender: TObject; Button: TUDBtnType);
     procedure SetupGridDrawCell(Sender: TObject; aCol, aRow: Integer;
       aRect: TRect; aState: TGridDrawState);
     procedure SpeedButton1Click(Sender: TObject);
@@ -474,6 +479,37 @@ begin
      end;
 end;
 
+procedure TMainForm.ScriptSQLEditResize(Sender: TObject);
+begin
+    ScriptSQLHeightUpDown.Position := ScriptSQLEdit.Height;
+    ScriptSQLHeightEdt.Text := InttoStr(ScriptSQLEdit.Height);
+end;
+
+procedure TMainForm.ScriptSQLHeightEdtChange(Sender: TObject);
+var
+   IntHeight: Integer;
+   WindowHeight: Integer;
+begin
+     WindowHeight := Self.Height - 330;
+     if (ScriptSQLHeightEdt.Text = '') then
+       IntHeight := 180
+     else if (StrtoInt(ScriptSQLHeightEdt.Text) < 50) then
+       exit
+     else if (StrtoInt(ScriptSQLHeightEdt.Text) > WindowHeight) then
+       IntHeight :=  WindowHeight
+     else
+       IntHeight := StrtoInt(ScriptSQLHeightEdt.Text);
+     ScriptSQLHeightUpDown.Position := IntHeight;
+     ScriptSQLEdit.Height := IntHeight;
+end;
+
+procedure TMainForm.ScriptSQLHeightUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+begin
+     ScriptSQLHeightEdt.Text := InttoStr(ScriptSQLHeightUpDown.Position);
+     ScriptSQLEdit.Height := ScriptSQLHeightUpDown.Position;
+end;
+
 procedure TMainForm.SetupGridDrawCell(Sender: TObject; aCol, aRow: Integer;
   aRect: TRect; aState: TGridDrawState);
 var
@@ -514,6 +550,8 @@ var
   TabIndex: Integer;
   ConfigFilePath :String;
   INI: TINIFile;
+  ScriptQuery: TComponent;
+  ScriptQuerySource: TComponent;
 begin
       ConfigFilePath := GetAppConfigFile(False);
       INI := TINIFile.Create(ConfigFilePath);
@@ -530,21 +568,23 @@ begin
         begin
             ScriptSQLEdit.Text := '';
         end;
-        case TabControl1.TabIndex of
-             0 :
-               begin
-                 ScriptGrid.DataSource := Dataform.ScriptQuerySource0;
-                 DBNavigator2.Datasource := Dataform.ScriptQuerySource0;
-                 RowsCountLabel.Caption := InttoStr(Dataform.ScriptQuery0.RecordCount);
 
-               end;
-             1 :
-               begin
-                 ScriptGrid.DataSource := Dataform.ScriptQuerySource1;
-                 DBNavigator2.Datasource := Dataform.ScriptQuerySource1;
-                 RowsCountLabel.Caption := InttoStr(Dataform.ScriptQuery1.RecordCount);
-               end;
+        ScriptQuery := DataForm.FindComponent('ScriptQuery' + IntToStr(TabControl1.TabIndex));
+        if not Assigned(ScriptQuery) or not (ScriptQuery is TSQLQuery) then
+        begin
+          ShowMessage('Error: ScriptQuery' + IntToStr(TabControl1.TabIndex) + ' not found or invalid.');
+          Exit;
         end;
+
+        ScriptQuerySource := DataForm.FindComponent('ScriptQuerySource' + IntToStr(TabControl1.TabIndex));
+        if not Assigned(ScriptQuerySource) or not (ScriptQuerySource is TDataSource) then
+        begin
+          ShowMessage('Error: ScriptQuerySource' + IntToStr(TabControl1.TabIndex) + ' not found or invalid.');
+          Exit;
+        end;
+        ScriptGrid.DataSource := TDataSource(ScriptQuerySource);
+        DBNavigator2.Datasource := TDataSource(ScriptQuerySource);
+        RowsCountLabel.Caption := InttoStr(TSQLQuery(ScriptQuery).RecordCount);
         PreviousScriptsTab := TabIndex;
       finally
         INI.Free;
@@ -1972,6 +2012,8 @@ end;
 procedure TMainForm.ExecuteQueryBtnClick(Sender: TObject);
 var
           SQLString, ResultString: String;
+          ScriptQuery: TComponent;
+          ScriptQuerySource: TComponent;
 begin
           if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
           begin
@@ -1984,69 +2026,47 @@ begin
                 SQLString := ScriptSQLEdit.Text
             else
                 SQLString := copy(ScriptSQLEdit.Text,ScriptSQLEdit.SelStart+1,ScriptSQLEdit.SelLength);
-            case TabControl1.TabIndex of
-                 0 :
-                   begin
-                        DataForm.ScriptQuery0.close;
-                        ScriptGrid.DataSource := Dataform.ScriptQuerySource0;
-                        DBNavigator2.Datasource := Dataform.ScriptQuerySource0;
-                        with Dataform.ScriptQuery0.SQL do
-                        begin
-                          Clear;
-                          Text := SQLString;
-                        end;
-                        Dataform.ScriptQuery0.Prepare;
-                        If (Dataform.ScriptQuery0.StatementType = stSelect) then
-                        begin
-                           Dataform.ScriptQuery0.Open;
-                           RowsCountLabel.Caption := InttoStr(Dataform.ScriptQuery0.RecordCount);
-                        end
-                        else If (Dataform.ScriptQuery1.StatementType = stUnknown) or (Dataform.ScriptQuery1.StatementType = stDDL) then
-                        begin
-                           Dataform.ScriptQuery1.Transaction.Active := false;
-                           Dataform.ScriptQuery1.ExecSQL;
-                           Dataform.ScriptQuery1.Transaction.Active := true;
-                           showmessage('Command Execution finished');
-                        end
-                        else
-                        begin
-                            Dataform.ScriptQuery0.ExecSQL;
-                            ResultString := 'Query executed: ' + InttoStr(Dataform.ScriptQuery0.RowsAffected) + ' Record affected';
-                            ScriptSQL.Lines.Add(ResultString);
-                            showmessage(ResultString);
-                        end;
-                   end;
-                 1 :
-                   begin
-                        DataForm.ScriptQuery1.close;
-                        ScriptGrid.DataSource := Dataform.ScriptQuerySource1;
-                        DBNavigator2.Datasource := Dataform.ScriptQuerySource1;
-                        with Dataform.ScriptQuery1.SQL do
-                        begin
-                          Clear;
-                          Text := SQLString;
-                        end;
-                        Dataform.ScriptQuery1.Prepare;
-                        If (Dataform.ScriptQuery1.StatementType = stSelect) then
-                        begin
-                           Dataform.ScriptQuery1.Open;
-                           RowsCountLabel.Caption := InttoStr(Dataform.ScriptQuery1.RecordCount);
-                        end
-                        else If (Dataform.ScriptQuery1.StatementType = stUnknown) or (Dataform.ScriptQuery1.StatementType = stDDL) then
-                        begin
-                           Dataform.ScriptQuery1.Transaction.Active := false;
-                           Dataform.ScriptQuery1.ExecSQL;
-                           Dataform.ScriptQuery1.Transaction.Active := true;
-                           showmessage('Command Execution finished');
-                        end
-                        else
-                        begin
-                            Dataform.ScriptQuery1.ExecSQL;
-                            ResultString := 'Query executed: ' + InttoStr(Dataform.ScriptQuery1.RowsAffected) + ' Record affected';
-                            ScriptSQL.Lines.Add(ResultString);
-                            showmessage(ResultString);
-                        end;
-                   end;
+
+            ScriptQuery := DataForm.FindComponent('ScriptQuery' + IntToStr(TabControl1.TabIndex));
+            if not Assigned(ScriptQuery) or not (ScriptQuery is TSQLQuery) then
+            begin
+              ShowMessage('Error: ScriptQuery' + IntToStr(TabControl1.TabIndex) + ' not found or invalid.');
+              Exit;
+            end;
+
+            ScriptQuerySource := DataForm.FindComponent('ScriptQuerySource' + IntToStr(TabControl1.TabIndex));
+            if not Assigned(ScriptQuerySource) or not (ScriptQuerySource is TDataSource) then
+            begin
+              ShowMessage('Error: ScriptQuerySource' + IntToStr(TabControl1.TabIndex) + ' not found or invalid.');
+              Exit;
+            end;
+            TSQLQuery(ScriptQuery).Close;
+            ScriptGrid.DataSource := TDataSource(ScriptQuerySource);
+            DBNavigator2.Datasource := TDataSource(ScriptQuerySource);
+            with TSQLQuery(ScriptQuery).SQL do
+            begin
+              Clear;
+              Text := SQLString;
+            end;
+            TSQLQuery(ScriptQuery).Prepare;
+            If (TSQLQuery(ScriptQuery).StatementType = stSelect) then
+            begin
+               TSQLQuery(ScriptQuery).Open;
+               RowsCountLabel.Caption := InttoStr(TSQLQuery(ScriptQuery).RecordCount);
+            end
+            else If (TSQLQuery(ScriptQuery).StatementType = stUnknown) or (TSQLQuery(ScriptQuery).StatementType = stDDL) then
+            begin
+               TSQLQuery(ScriptQuery).Transaction.Active := false;
+               TSQLQuery(ScriptQuery).ExecSQL;
+               TSQLQuery(ScriptQuery).Transaction.Active := true;
+               showmessage('Command Execution finished');
+            end
+            else
+            begin
+                TSQLQuery(ScriptQuery).ExecSQL;
+                ResultString := 'Query executed: ' + InttoStr(TSQLQuery(ScriptQuery).RowsAffected) + ' Record affected';
+                ScriptSQL.Lines.Add(ResultString);
+                showmessage(ResultString);
             end;
 
           except

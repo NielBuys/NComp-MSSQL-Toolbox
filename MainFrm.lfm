@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 683
+  Left = 465
   Height = 650
-  Top = 214
+  Top = 164
   Width = 1077
   Caption = 'NComp SQL Toolbox'
   ClientHeight = 650
@@ -121,9 +121,9 @@ object MainForm: TMainForm
     Height = 584
     Top = 33
     Width = 1077
-    ActivePage = TabSheetCompareDBs
+    ActivePage = TabsheetQueriesAndExport
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 0
     TabOrder = 7
     OnExit = PageControl1Exit
     object TabsheetQueriesAndExport: TTabSheet
@@ -180,27 +180,32 @@ object MainForm: TMainForm
           ParentShowHint = False
           ScrollBars = ssVertical
           TabOrder = 3
+          OnResize = ScriptSQLEditResize
         end
         object DBNavigator2: TDBNavigator
+          AnchorSideTop.Control = ScriptSQLEdit
+          AnchorSideTop.Side = asrBottom
           Left = 815
-          Height = 25
-          Top = 248
+          Height = 28
+          Top = 241
           Width = 241
-          Anchors = [akRight, akBottom]
+          Anchors = [akTop, akRight]
           BevelOuter = bvNone
+          BorderSpacing.Top = 2
           ChildSizing.EnlargeHorizontal = crsScaleChilds
           ChildSizing.EnlargeVertical = crsScaleChilds
           ChildSizing.ShrinkHorizontal = crsScaleChilds
           ChildSizing.ShrinkVertical = crsScaleChilds
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 100
-          ClientHeight = 25
+          ClientHeight = 28
           ClientWidth = 241
           DataSource = DataForm.ScriptQuerySource1
           Options = []
           TabOrder = 4
         end
         object ScriptSQL: TMemo
+          AnchorSideTop.Side = asrBottom
           Left = 2
           Height = 77
           Top = 468
@@ -210,21 +215,26 @@ object MainForm: TMainForm
           TabOrder = 5
         end
         object ExportSQLBtn: TButton
+          AnchorSideTop.Control = ScriptGrid
+          AnchorSideTop.Side = asrBottom
           Left = 957
           Height = 25
           Top = 468
           Width = 99
-          Anchors = [akRight, akBottom]
+          Anchors = [akTop, akRight, akBottom]
+          BorderSpacing.Top = 2
           Caption = 'Export SQL'
           TabOrder = 6
           OnClick = ExportSQLBtnClick
         end
         object RowsCountLabel: TLabel
+          AnchorSideTop.Control = ScriptSQLEdit
+          AnchorSideTop.Side = asrBottom
           Left = 48
           Height = 18
-          Top = 248
+          Top = 241
           Width = 7
-          Anchors = [akLeft, akBottom]
+          BorderSpacing.Top = 2
           Caption = '0'
           ParentColor = False
         end
@@ -239,12 +249,17 @@ object MainForm: TMainForm
           OnClick = SaveSQLBtnClick
         end
         object ScriptGrid: TDBGrid
+          AnchorSideTop.Control = ScriptSQLHeightEdt
+          AnchorSideTop.Side = asrBottom
+          AnchorSideBottom.Control = ScriptSQL
           Left = 2
-          Height = 187
+          Height = 189
           Hint = 'From Table'
           Top = 277
           Width = 1054
-          Anchors = [akLeft, akRight, akBottom]
+          Anchors = [akTop, akLeft, akRight, akBottom]
+          BorderSpacing.Top = 2
+          BorderSpacing.Bottom = 2
           Color = clWindow
           Columns = <>
           DataSource = DataForm.ScriptQuerySource1
@@ -260,11 +275,13 @@ object MainForm: TMainForm
           OnEnter = ScriptGridEnter
         end
         object Label12: TLabel
+          AnchorSideTop.Control = ScriptSQLEdit
+          AnchorSideTop.Side = asrBottom
           Left = 8
           Height = 18
-          Top = 248
+          Top = 241
           Width = 25
-          Anchors = [akLeft, akBottom]
+          BorderSpacing.Top = 2
           Caption = 'SQL'
           ParentColor = False
         end
@@ -277,6 +294,39 @@ object MainForm: TMainForm
           TabOrder = 9
           Visible = False
           OnClick = Button4Click
+        end
+        object ScriptSQLHeightUpDown: TUpDown
+          AnchorSideTop.Control = ScriptSQLEdit
+          AnchorSideTop.Side = asrBottom
+          Left = 767
+          Height = 34
+          Top = 241
+          Width = 17
+          Anchors = [akTop, akRight]
+          BorderSpacing.Top = 2
+          Increment = 5
+          Max = 4000
+          Min = 50
+          OnClick = ScriptSQLHeightUpDownClick
+          Position = 187
+          TabOrder = 10
+        end
+        object ScriptSQLHeightEdt: TEdit
+          AnchorSideTop.Control = ScriptSQLEdit
+          AnchorSideTop.Side = asrBottom
+          Left = 688
+          Height = 34
+          Hint = 'SQL Query Box Height'
+          Top = 241
+          Width = 80
+          Anchors = [akTop, akRight]
+          AutoSize = False
+          BorderSpacing.Top = 2
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 11
+          Text = '180'
+          OnChange = ScriptSQLHeightEdtChange
         end
       end
     end
@@ -730,7 +780,7 @@ object MainForm: TMainForm
         Left = 177
         Height = 23
         Top = 3
-        Width = 165
+        Width = 174
         Caption = 'Use first line as header'
         Checked = True
         State = cbChecked
