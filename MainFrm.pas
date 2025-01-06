@@ -6,7 +6,7 @@ uses
   SysUtils, Variants, Classes, Graphics, Controls, Forms, Dialogs, Grids,
   DBGrids, StdCtrls, Buttons, Menus, ComCtrls, DbCtrls, ExtCtrls, ActnList,
   UtilsUnit, Types, IniFiles, DB, sqldb, BufDataset, laz2_DOM, laz2_XMLRead,
-  Base64, PingThreadUnit;
+  Base64, PingThreadUnit, DBUnit;
 
 type
 
@@ -21,6 +21,8 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    TablesDirectoryMenuItem: TMenuItem;
+    ViewMenuItem: TMenuItem;
     ScriptSQLHeightEdt: TEdit;
     FindRecordsBtn: TButton;
     DBGrid1: TDBGrid;
@@ -38,6 +40,7 @@ type
     CompareStopRunBtn: TSpeedButton;
     CancelFindBtn: TSpeedButton;
     BtnCompareRight: TSpeedButton;
+    TablesDirectoryBtn: TSpeedButton;
     TabSheetFindAndReplace: TTabSheet;
     ToPort: TEdit;
     SQLTypeSelect: TComboBox;
@@ -155,6 +158,7 @@ type
     procedure FindRecordsBtnClick(Sender: TObject);
     procedure FixLinkedValueMenuBtnClick(Sender: TObject);
     procedure AddLinkedColumnBtnClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FromDBComboSelect(Sender: TObject);
     procedure GenerateQueriesBtnClick(Sender: TObject);
     procedure GenerateInsertfromResultsetMNUClick(Sender: TObject);
@@ -179,6 +183,8 @@ type
       aRect: TRect; aState: TGridDrawState);
     procedure SpeedButton1Click(Sender: TObject);
     procedure TabControl1Change(Sender: TObject);
+    procedure TablesDirectoryBtnClick(Sender: TObject);
+    procedure TablesDirectoryMenuItemClick(Sender: TObject);
     procedure TabSheetCompareDBsExit(Sender: TObject);
     procedure XMLToCSVConvertBtnClick(Sender: TObject);
     procedure OpenProjectBtnClick(Sender: TObject);
@@ -186,7 +192,6 @@ type
     procedure CSVSearchNextBtnClick(Sender: TObject);
     procedure TableListClick(Sender: TObject);
     procedure ExportSQLBtnClick(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -223,7 +228,7 @@ var
   PreviousScriptsTab: Integer;
 
 implementation
-      uses datafrm, AboutFrm, FixLinkedValuesFrm;
+      uses datafrm, AboutFrm, FixLinkedValuesFrm, TablesDirectoryFrm;
 
 {$R *.lfm}
 
@@ -591,6 +596,19 @@ begin
       end;
 end;
 
+procedure TMainForm.TablesDirectoryBtnClick(Sender: TObject);
+begin
+      TablesDirectoryMenuItem.Click;
+end;
+
+procedure TMainForm.TablesDirectoryMenuItemClick(Sender: TObject);
+begin
+      Application.CreateForm(TTablesDirectoryForm, TablesDirectoryForm);
+      TablesDirectoryForm.TargetEdit := MainForm.ScriptSQLEdit;
+      TablesDirectoryForm.showmodal;
+      TablesDirectoryForm.Free;
+end;
+
 procedure TMainForm.TabSheetCompareDBsExit(Sender: TObject);
 begin
       dataform.FromQuery1.close;
@@ -726,14 +744,12 @@ end;
 
 procedure TMainForm.TableListClick(Sender: TObject);
 begin
-      Dataform.ColumnsQuery1.Close;
-      Dataform.ColumnsQuery1.ParamByName('tablename').Value := TableList.Items[TableList.ItemIndex];
-      Dataform.ColumnsQuery1.Open;
+      LoadTableColumns(TableList.Items[TableList.ItemIndex]);
 end;
 
 procedure TMainForm.LoadTablesBtnClick(Sender: TObject);
 begin
-      Dataform.TablesQuery1.Open;
+     LoadDBTables();
 end;
 
 procedure TMainForm.AddLinkedColumnBtnClick(Sender: TObject);
@@ -764,6 +780,45 @@ begin
       SetupGrid.Cells[2,SetupGrid.RowCount - 1] := PrimaryColumnsList.Items[PrimaryColumnsList.ItemIndex];
       SetupGrid.Cells[3,SetupGrid.RowCount - 1] := TableList.Items[TableList.ItemIndex];
       SetupGrid.Cells[4,SetupGrid.RowCount - 1] := ColumnsList.Items[ColumnsList.ItemIndex];
+end;
+
+procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+        ConfigFilePath :String;
+        INI: TINIFile;
+begin
+      CloseConnections();
+
+      ConfigFilePath := GetAppConfigFile(False);
+      INI := TINIFile.Create(ConfigFilePath);
+      try
+        INI.WriteString('DB','FromUserName',FromUserName.Text);
+        INI.WriteString('DB','FromPassword',encrypt(FromPassword.Text));
+        INI.WriteString('DB','FromServerName',FromServerName.Text);
+        INI.WriteString('DB','FromPort',FromPort.Text);
+        If SQLTypeSelect.ItemIndex <> -1 then
+          INI.WriteInteger('DB','SQLType',SQLTypeSelect.ItemIndex);
+        If LastFromDB <> -1 then
+          INI.WriteInteger('DB','FromDatabase',LastFromDB);
+        INI.WriteString('COMPARE','ToTableName',ToTableName.Text);
+        INI.WriteString('COMPARE','FromUniqueField',FromUniqueField.Text);
+        INI.WriteString('COMPARE','FromSQLEdit',EncodeStringBase64(FromSQLEdit.Text));
+        INI.WriteString('COMPARE','ToSQLEdit',EncodeStringBase64(ToSQLEdit.Text));
+        INI.WriteString('COMPARE','FromFieldsEdit',FromFieldsEdit.Text);
+        INI.WriteString('COMPARE','ToFieldsEdit',ToFieldsEdit.Text);
+        INI.WriteString('COMPARE','ToUserName',ToUserName.Text);
+        INI.WriteString('COMPARE','ToPassword',encrypt(ToPassword.Text));
+        INI.WriteString('COMPARE','ToServerName',ToServerName.Text);
+        INI.WriteString('COMPARE','ToPort',ToPort.Text);
+        INI.WriteString('COMPARE','ToDatabase',ToDatabase.Text);
+        INI.WriteString('FINDANDREPLACE','Find',FindEdt.Text);
+        INI.WriteString('FINDANDREPLACE','ReplaceWith',ReplaceWithEdt.Text);
+        INI.WriteString('FINDANDREPLACE','Prefix',PrefixEdt.Text);
+        INI.WriteString('SCRIPTS','SQL' + InttoStr(TabControl1.TabIndex),EncodeStringBase64(ScriptSQLEdit.Text));
+        INI.WriteInteger('FORM','PageControl1',Pagecontrol1.TabIndex);
+      finally
+        INI.Free;
+      end;
 end;
 
 procedure TMainForm.GenerateQueriesBtnClick(Sender: TObject);
@@ -1775,46 +1830,6 @@ begin
       finally
         INI.Free;
       end;
-end;
-
-procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
-var
-        ConfigFilePath :String;
-        INI: TINIFile;
-begin
-      CloseConnections();
-
-      ConfigFilePath := GetAppConfigFile(False);
-      INI := TINIFile.Create(ConfigFilePath);
-      try
-        INI.WriteString('DB','FromUserName',FromUserName.Text);
-        INI.WriteString('DB','FromPassword',encrypt(FromPassword.Text));
-        INI.WriteString('DB','FromServerName',FromServerName.Text);
-        INI.WriteString('DB','FromPort',FromPort.Text);
-        If SQLTypeSelect.ItemIndex <> -1 then
-          INI.WriteInteger('DB','SQLType',SQLTypeSelect.ItemIndex);
-        If LastFromDB <> -1 then
-          INI.WriteInteger('DB','FromDatabase',LastFromDB);
-        INI.WriteString('COMPARE','ToTableName',ToTableName.Text);
-        INI.WriteString('COMPARE','FromUniqueField',FromUniqueField.Text);
-        INI.WriteString('COMPARE','FromSQLEdit',EncodeStringBase64(FromSQLEdit.Text));
-        INI.WriteString('COMPARE','ToSQLEdit',EncodeStringBase64(ToSQLEdit.Text));
-        INI.WriteString('COMPARE','FromFieldsEdit',FromFieldsEdit.Text);
-        INI.WriteString('COMPARE','ToFieldsEdit',ToFieldsEdit.Text);
-        INI.WriteString('COMPARE','ToUserName',ToUserName.Text);
-        INI.WriteString('COMPARE','ToPassword',encrypt(ToPassword.Text));
-        INI.WriteString('COMPARE','ToServerName',ToServerName.Text);
-        INI.WriteString('COMPARE','ToPort',ToPort.Text);
-        INI.WriteString('COMPARE','ToDatabase',ToDatabase.Text);
-        INI.WriteString('FINDANDREPLACE','Find',FindEdt.Text);
-        INI.WriteString('FINDANDREPLACE','ReplaceWith',ReplaceWithEdt.Text);
-        INI.WriteString('FINDANDREPLACE','Prefix',PrefixEdt.Text);
-        INI.WriteString('SCRIPTS','SQL' + InttoStr(TabControl1.TabIndex),EncodeStringBase64(ScriptSQLEdit.Text));
-        INI.WriteInteger('FORM','PageControl1',Pagecontrol1.TabIndex);
-      finally
-        INI.Free;
-      end;
-
 end;
 
 procedure TMainForm.LoadFromandToDataBtnClick(Sender: TObject);

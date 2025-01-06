@@ -31,10 +31,9 @@ implementation
 
 procedure TAboutForm.Label1Click(Sender: TObject);
 begin
-     OpenURL('http://www.ncomp.co.za');
+     OpenURL('https://www.ncomp.co.za');
      //If ShellExecute (0, '', pchar('http://www.ncomp.co.za'), '', '', SW_NORMAL) <= 32 then
      // showmessage('The Link Failed to open');
 end;
-
 
 end.

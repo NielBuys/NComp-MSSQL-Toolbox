@@ -1,0 +1,64 @@
+object TablesDirectoryForm: TTablesDirectoryForm
+  Left = 1126
+  Height = 558
+  Top = 155
+  Width = 561
+  Caption = 'Tables Directory'
+  ClientHeight = 558
+  ClientWidth = 561
+  OnShow = FormShow
+  Position = poMainFormCenter
+  LCLVersion = '3.6.0.0'
+  object TableList: TDBLookupListBox
+    Left = 8
+    Height = 494
+    Top = 32
+    Width = 192
+    Anchors = [akTop, akLeft, akBottom]
+    KeyField = 'name'
+    ListField = 'name'
+    ListFieldIndex = 0
+    ListSource = DataForm.TablesSource1
+    LookupCache = False
+    OnClick = TableListClick
+    OnKeyDown = TableListKeyDown
+    TabOrder = 0
+    TopIndex = -1
+  end
+  object TablesListLbl: TLabel
+    Left = 8
+    Height = 17
+    Top = 8
+    Width = 69
+    Caption = 'Tables List'
+  end
+  object ColumnsList: TDBLookupListBox
+    Left = 208
+    Height = 494
+    Top = 32
+    Width = 192
+    Anchors = [akTop, akLeft, akBottom]
+    KeyField = 'name'
+    ListField = 'name'
+    ListFieldIndex = 0
+    ListSource = DataForm.ColumnsSource1
+    LookupCache = False
+    OnKeyDown = ColumnsListKeyDown
+    TabOrder = 1
+    TopIndex = -1
+  end
+  object ColumnsListLbl: TLabel
+    Left = 208
+    Height = 17
+    Top = 8
+    Width = 83
+    Caption = 'Columns List'
+  end
+  object ShortcutLbl: TLabel
+    Left = 8
+    Height = 17
+    Top = 535
+    Width = 331
+    Caption = 'Press Ctrl+A to add Table or Column to Query text'
+  end
+end

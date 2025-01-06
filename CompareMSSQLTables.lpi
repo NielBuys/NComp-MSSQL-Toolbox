@@ -53,7 +53,7 @@
         <PackageName Value="LCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="6">
+    <Units Count="8">
       <Unit0>
         <Filename Value="CompareMSSQLTables.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -92,6 +92,18 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="PingThreadUnit"/>
       </Unit5>
+      <Unit6>
+        <Filename Value="dbunit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="DBUnit"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="tablesdirectoryfrm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TablesDirectoryForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TablesDirectoryFrm"/>
+      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -100,11 +112,6 @@
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
     </SearchPaths>
-    <Parsing>
-      <SyntaxOptions>
-        <SyntaxMode Value="Delphi"/>
-      </SyntaxOptions>
-    </Parsing>
     <Linking>
       <Debugging>
         <DebugInfoType Value="dsDwarf2"/>

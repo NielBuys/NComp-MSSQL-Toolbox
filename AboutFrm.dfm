@@ -12,22 +12,22 @@ object AboutForm: TAboutForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Position = poMainFormCenter
-  LCLVersion = '2.2.6.0'
+  LCLVersion = '3.6.0.0'
   object Label1: TLabel
     Left = 0
-    Height = 14
+    Height = 16
     Top = 283
-    Width = 297
-    Caption = 'Link to http://www.ncomp.co.za. Click here for support'
+    Width = 291
+    Caption = 'Link to https://www.ncomp.co.za. Click here for support'
     ParentColor = False
     OnClick = Label1Click
   end
   object Label2: TLabel
     Left = 0
-    Height = 14
+    Height = 16
     Top = 8
-    Width = 143
-    Caption = 'NComp MSSQL Toolbox'
+    Width = 111
+    Caption = 'NComp SQL Toolbox'
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'Tahoma'
@@ -36,20 +36,20 @@ object AboutForm: TAboutForm
     ParentFont = False
   end
   object Memo1: TMemo
-    Left = 1
-    Height = 237
+    Left = 0
+    Height = 245
     Top = 27
     Width = 407
     Lines.Strings = (
-      'This tool have 3 functions:'
+      'This tool offers four key functions:'
       ''
-      '1. Basic MSSQL IDE. The result set can also be exported as inserts or updates.'
+      '1. SQL IDE: A basic yet powerful integrated development environment for both Microsoft SQL Server (MSSQL) and MySQL. The tool allows you to run queries, view result sets, and export them as SQL inserts or updates for easy reuse.'
       ''
-      '2. Compare 2 tables one way, during the run it will create sql scripts of all the changes to all the fields in the selected table. Both tables should have the same structure during the run. Insert and Update query''s are created during the run and can be saved for later execution.'
+      '2. Table Comparison: Compare two tables in one direction, generating SQL scripts to reflect changes across all fields in the selected table. The tables must have identical structures. During the comparison, the tool creates INSERT and UPDATE queries, which can be saved for future execution. Additionally, you can join other tables in the query to limit comparisons to specific records, provided that only fields from the current table are in the final result set.'
       ''
-      'Joins can be added to the from query if only certain records should be compared, as long as the end result only have the current table fields visible.'
+      '3. Import Utilities: A suite of helper tools to assist with importing data efficiently.'
       ''
-      '3. Import help utilities.'
+      '4. Find & Replace: Search for or find-and-replace text across tables and columns, streamlining updates and modifications to your data.'
     )
     ScrollBars = ssVertical
     TabOrder = 0
@@ -57,7 +57,7 @@ object AboutForm: TAboutForm
   object BitBtn1: TBitBtn
     Left = 333
     Height = 25
-    Top = 272
+    Top = 274
     Width = 75
     DefaultCaption = True
     Kind = bkClose
