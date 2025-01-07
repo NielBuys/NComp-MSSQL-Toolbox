@@ -603,10 +603,8 @@ end;
 
 procedure TMainForm.TablesDirectoryMenuItemClick(Sender: TObject);
 begin
-      Application.CreateForm(TTablesDirectoryForm, TablesDirectoryForm);
       TablesDirectoryForm.TargetEdit := MainForm.ScriptSQLEdit;
       TablesDirectoryForm.showmodal;
-      TablesDirectoryForm.Free;
 end;
 
 procedure TMainForm.TabSheetCompareDBsExit(Sender: TObject);

@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 427
+  Left = 192
   Height = 650
-  Top = 217
+  Top = 210
   Width = 1077
   Caption = 'NComp SQL Toolbox'
   ClientHeight = 650
@@ -121,9 +121,9 @@ object MainForm: TMainForm
     Height = 584
     Top = 33
     Width = 1077
-    ActivePage = TabsheetQueriesAndExport
+    ActivePage = TabSheetImport
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 2
     TabOrder = 7
     OnExit = PageControl1Exit
     object TabsheetQueriesAndExport: TTabSheet
@@ -334,6 +334,7 @@ object MainForm: TMainForm
           Hint = 'Tables Directory'
           Top = 31
           Width = 27
+          Anchors = [akTop, akRight]
           Glyph.Data = {
             36030000424D3603000000000000360000002800000010000000100000000100
             1800000000000003000000000000000000000000000000000000FFFFFFFFFFFF

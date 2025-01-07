@@ -101,6 +101,7 @@
         <Filename Value="tablesdirectoryfrm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="TablesDirectoryForm"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="TablesDirectoryFrm"/>
       </Unit7>

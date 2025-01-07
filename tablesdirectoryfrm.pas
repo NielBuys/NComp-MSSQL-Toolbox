@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, DBCtrls, StdCtrls,
-  DBUnit, LCLType, MainFrm;
+  DBUnit, LCLType, MainFrm, DB;
 
 type
 
@@ -15,12 +15,15 @@ type
   TTablesDirectoryForm = class(TForm)
     ColumnsList: TDBLookupListBox;
     ColumnsListLbl: TLabel;
+    DBText1: TDBText;
+    SearchEdit: TEdit;
     ShortcutLbl: TLabel;
-    TablesListLbl: TLabel;
     TableList: TDBLookupListBox;
+    TablesListLbl: TLabel;
     procedure ColumnsListKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure FormShow(Sender: TObject);
+    procedure SearchEditChange(Sender: TObject);
     procedure TableListClick(Sender: TObject);
     procedure TableListKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -36,6 +39,7 @@ var
   TablesDirectoryForm: TTablesDirectoryForm;
 
 implementation
+  uses DataFrm;
 
 {$R *.lfm}
 
@@ -43,7 +47,22 @@ implementation
 
 procedure TTablesDirectoryForm.FormShow(Sender: TObject);
 begin
-  LoadDBTables();
+  if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
+  begin
+    showmessage('Connect to SQL server first!');
+    TablesDirectoryForm.Close;
+  end;
+  if (Dataform.TablesQuery1.Active = False) then
+  begin
+    LoadDBTables();
+  end;
+end;
+
+procedure TTablesDirectoryForm.SearchEditChange(Sender: TObject);
+begin
+    Dataform.TablesQuery1.Locate('name',SearchEdit.text,[loCaseInsensitive, loPartialKey]);
+    TableList.KeyValue := DataForm.TablesQuery1.FieldByName('name').asString;
+    LoadTableColumns(TableList.Items[TableList.ItemIndex]);
 end;
 
 procedure TTablesDirectoryForm.ColumnsListKeyDown(Sender: TObject;
@@ -58,6 +77,7 @@ end;
 
 procedure TTablesDirectoryForm.TableListClick(Sender: TObject);
 begin
+  Dataform.TablesQuery1.Locate('name',TableList.Items[TableList.ItemIndex],[]);
   LoadTableColumns(TableList.Items[TableList.ItemIndex]);
 end;
 

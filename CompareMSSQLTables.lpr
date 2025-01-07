@@ -10,7 +10,8 @@ uses
   MainFrm in 'MainFrm.pas' {MainForm},
   DataFrm in 'DataFrm.pas' {DataForm: TDataModule},
   UtilsUnit in 'UtilsUnit.pas',
-  AboutFrm in 'AboutFrm.pas' {AboutForm};
+  AboutFrm in 'AboutFrm.pas' {AboutForm},
+  TablesDirectoryFrm in 'tablesdirectoryfrm.pas' {TablesDirectoryForm};
 
 {$R *.res}
 
@@ -19,5 +20,6 @@ begin
   Application.Initialize;
   Application.CreateForm(TDataForm, DataForm);
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TTablesDirectoryForm, TablesDirectoryForm);
   Application.Run;
 end.
