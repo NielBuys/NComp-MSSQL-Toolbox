@@ -1,7 +1,7 @@
 object TablesDirectoryForm: TTablesDirectoryForm
-  Left = 394
+  Left = 956
   Height = 558
-  Top = 229
+  Top = 389
   Width = 720
   Caption = 'Tables Directory'
   ClientHeight = 558

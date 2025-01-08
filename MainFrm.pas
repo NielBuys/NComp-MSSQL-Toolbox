@@ -15,6 +15,7 @@ type
   TMainForm = class(TForm)
     AddColumnBtn: TButton;
     AddLinkedColumnBtn: TButton;
+    AddValueDetailHelpBtn: TSpeedButton;
     AddPrimaryTableDetailBtn: TButton;
     AddValueBtn: TButton;
     Button1: TButton;
@@ -146,6 +147,7 @@ type
     procedure AddColumnBtnClick(Sender: TObject);
     procedure AddPrimaryDetailHelpBtnClick(Sender: TObject);
     procedure AddValueBtnClick(Sender: TObject);
+    procedure AddValueDetailHelpBtnClick(Sender: TObject);
     procedure BtnCompareRightClick(Sender: TObject);
     procedure Button4Click(Sender: TObject);
     procedure CancelFindBtnClick(Sender: TObject);
@@ -1298,6 +1300,10 @@ begin
                 begin
                      TempValue := stringReplace(SetupGrid.Cells[1,I],'[NUM]','',[rfReplaceAll, rfIgnoreCase]);
                 end
+                else  if pos('[FUNC]',SetupGrid.Cells[1,I]) > 0 then
+                begin
+                     TempValue := stringReplace(SetupGrid.Cells[1,I],'[FUNC]','',[rfReplaceAll, rfIgnoreCase]);
+                end
                 else
                 begin
                      TempValue := '''' + SetupGrid.Cells[1,I] + '''';
@@ -1511,6 +1517,11 @@ begin
       SetupGrid.Cells[0,SetupGrid.RowCount - 1] := 'Value';
       SetupGrid.Cells[1,SetupGrid.RowCount - 1] := ValueEdt.Text;
       SetupGrid.Cells[2,SetupGrid.RowCount - 1] := PrimaryColumnsList.Items[PrimaryColumnsList.ItemIndex];
+end;
+
+procedure TMainForm.AddValueDetailHelpBtnClick(Sender: TObject);
+begin
+      showmessage('If the Value entered below is an numeric or a SQL function then add [NUM] for numeric values and [FUNC] for SQL functions.');
 end;
 
 procedure TMainForm.Button4Click(Sender: TObject);
