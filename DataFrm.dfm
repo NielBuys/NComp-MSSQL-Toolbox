@@ -185,7 +185,9 @@ object DataForm: TDataForm
     Transaction = FromTransaction
     ReadOnly = True
     SQL.Strings = (
-      'SELECT name FROM sys.columns WHERE object_id = OBJECT_ID(:tablename)'
+      'SELECT name FROM sys.columns'
+      'WHERE object_id = OBJECT_ID(:tablename)'
+      'ORDER BY name'
     )
     Options = [sqoKeepOpenOnCommit]
     Params = <    
