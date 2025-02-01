@@ -1,26 +1,27 @@
 object TablesDirectoryForm: TTablesDirectoryForm
-  Left = 956
-  Height = 558
-  Top = 389
-  Width = 720
+  Left = -1226
+  Height = 698
+  Top = 189
+  Width = 900
   Caption = 'Tables Directory'
-  ClientHeight = 558
-  ClientWidth = 720
+  ClientHeight = 698
+  ClientWidth = 900
+  DesignTimePPI = 120
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.6.0.0'
+  LCLVersion = '3.8.0.0'
   object TablesListLbl: TLabel
-    Left = 8
-    Height = 17
-    Top = 34
-    Width = 69
+    Left = 10
+    Height = 20
+    Top = 42
+    Width = 67
     Caption = 'Tables List'
   end
   object ColumnsList: TDBLookupListBox
-    Left = 224
-    Height = 446
-    Top = 80
-    Width = 214
+    Left = 280
+    Height = 558
+    Top = 100
+    Width = 268
     Anchors = [akTop, akLeft, akBottom]
     KeyField = 'name'
     ListField = 'name'
@@ -29,48 +30,47 @@ object TablesDirectoryForm: TTablesDirectoryForm
     LookupCache = False
     OnKeyDown = ColumnsListKeyDown
     TabOrder = 0
-    TopIndex = -1
   end
   object ColumnsListLbl: TLabel
-    Left = 224
-    Height = 17
-    Top = 34
-    Width = 107
+    Left = 280
+    Height = 20
+    Top = 42
+    Width = 106
     Caption = 'Columns List for'
   end
   object ShortcutLbl: TLabel
-    Left = 8
-    Height = 17
-    Top = 535
-    Width = 331
+    Left = 10
+    Height = 20
+    Top = 669
+    Width = 330
     Caption = 'Press Ctrl+A to add Table or Column to Query text'
   end
   object DBText1: TDBText
-    Left = 224
-    Height = 17
-    Top = 56
-    Width = 59
-    Constraints.MaxWidth = 214
+    Left = 280
+    Height = 20
+    Top = 70
+    Width = 60
+    Constraints.MaxWidth = 268
     DataField = 'name'
     DataSource = DataForm.TablesSource1
     Font.Style = [fsBold]
     ParentFont = False
   end
   object SearchEdit: TEdit
-    Left = 8
-    Height = 32
+    Left = 10
+    Height = 40
     Top = 0
-    Width = 214
+    Width = 268
     AutoSize = False
     TabOrder = 1
     TextHint = 'Search tables'
     OnChange = SearchEditChange
   end
   object TableList: TDBLookupListBox
-    Left = 8
-    Height = 470
-    Top = 56
-    Width = 214
+    Left = 10
+    Height = 588
+    Top = 70
+    Width = 268
     Anchors = [akTop, akLeft, akBottom]
     KeyField = 'name'
     ListField = 'name'
@@ -80,6 +80,5 @@ object TablesDirectoryForm: TTablesDirectoryForm
     OnClick = TableListClick
     OnKeyDown = TableListKeyDown
     TabOrder = 2
-    TopIndex = -1
   end
 end

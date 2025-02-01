@@ -6,16 +6,16 @@
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{E0BC6B5A-8189-40FB-99A0-7872252AE44C}
-AppName=NComp MSSQL Toolbox
+AppName=NComp SQL Toolbox
 AppVersion=1
 ;AppVerName=MSSQL Compare Tool 1
 AppPublisher=ncomp.co.za
 AppPublisherURL=http://www.ncomp.co.za
 AppSupportURL=http://www.ncomp.co.za
 AppUpdatesURL=http://www.ncomp.co.za
-DefaultDirName={pf}\NComp MSSQL Toolbox
-DefaultGroupName=NComp MSSQL Toolbox
-OutputBaseFilename=NCompMSSQLToolbox
+DefaultDirName={pf}\NComp SQL Toolbox
+DefaultGroupName=NComp SQL Toolbox
+OutputBaseFilename=NCompSQLToolbox
 Compression=lzma
 SolidCompression=yes
 ArchitecturesInstallIn64BitMode=x64
@@ -28,22 +28,23 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "Z:\Development\MSSQL-Compare-Tool\CompareMSSQLTables64bit.exe"; DestName: "CompareMSSQLTables.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "Z:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\dblib.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "Z:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\dblib_2008.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "Z:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\libiconv.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
-Source: "Z:\Development\MSSQL-Compare-Tool\CompareMSSQLTables32bit.exe"; DestName: "CompareMSSQLTables.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "Z:\Development\MSSQL-Compare-Tool\MSSQL 32bit dblib\dblib.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "Z:\Development\MSSQL-Compare-Tool\MSSQL 32bit dblib\dblib_2000.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
-Source: "Z:\Development\MSSQL-Compare-Tool\MSSQL 32bit dblib\libiconv2.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "C:\Development\MSSQL-Compare-Tool\CompareMSSQLTables64bit.exe"; DestName: "CompareSQLTables.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "C:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\dblib.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "C:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\dblib_2008.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "C:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\libiconv.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "C:\Development\MSSQL-Compare-Tool\MySQL 64bit\libmysql.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: Is64BitInstallMode
+Source: "C:\Development\MSSQL-Compare-Tool\CompareMSSQLTables32bit.exe"; DestName: "CompareSQLTables.exe"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "C:\Development\MSSQL-Compare-Tool\MSSQL 32bit dblib\dblib.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "C:\Development\MSSQL-Compare-Tool\MSSQL 32bit dblib\dblib_2000.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
+Source: "C:\Development\MSSQL-Compare-Tool\MSSQL 32bit dblib\libiconv2.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: not Is64BitInstallMode
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\NComp MSSQL Toolbox"; Filename: "{app}\CompareMSSQLTables.exe"
-Name: "{group}\{cm:ProgramOnTheWeb,NComp MSSQL Toolbox}"; Filename: "http://www.ncomp.co.za"
-Name: "{commondesktop}\NComp MSSQL Toolbox"; Filename: "{app}\CompareMSSQLTables.exe"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\MSSQL Compare Tool"; Filename: "{app}\CompareMSSQLTables.exe"; Tasks: quicklaunchicon
+Name: "{group}\NComp SQL Toolbox"; Filename: "{app}\CompareSQLTables.exe"
+Name: "{group}\{cm:ProgramOnTheWeb,NComp SQL Toolbox}"; Filename: "https://www.ncomp.co.za"
+Name: "{commondesktop}\NComp SQL Toolbox"; Filename: "{app}\CompareSQLTables.exe"; Tasks: desktopicon
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\SQL Compare Tool"; Filename: "{app}\CompareSQLTables.exe"; Tasks: quicklaunchicon
 
 [Run]
-Filename: "{app}\CompareMSSQLTables.exe"; Description: "{cm:LaunchProgram,NComp MSSQL Toolbox}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\CompareSQLTables.exe"; Description: "{cm:LaunchProgram,NComp SQL Toolbox}"; Flags: nowait postinstall skipifsilent
 

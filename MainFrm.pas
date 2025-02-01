@@ -1839,6 +1839,12 @@ begin
       finally
         INI.Free;
       end;
+      {$IFDEF LINUX}
+        MainForm.Font.Name := 'Serif';
+      {$ENDIF}
+      {$IFDEF WINDOWS}
+        MainForm.Font.Name := 'Roman';
+      {$ENDIF}
 end;
 
 procedure TMainForm.LoadFromandToDataBtnClick(Sender: TObject);
