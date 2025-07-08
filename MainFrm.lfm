@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = -1784
+  Left = 406
   Height = 812
-  Top = 81
+  Top = 137
   Width = 1346
   Caption = 'NComp SQL Toolbox'
   ClientHeight = 812
@@ -131,9 +131,9 @@ object MainForm: TMainForm
     Height = 730
     Top = 41
     Width = 1346
-    ActivePage = TabsheetQueriesAndExport
+    ActivePage = TabSheetFindAndReplace
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 0
+    TabIndex = 3
     TabOrder = 7
     OnExit = PageControl1Exit
     object TabsheetQueriesAndExport: TTabSheet
@@ -1028,7 +1028,7 @@ object MainForm: TMainForm
         AnchorSideLeft.Control = SaveProjectBtn
         Left = 740
         Height = 31
-        Top = 626
+        Top = 627
         Width = 174
         Anchors = [akLeft, akBottom]
         Caption = 'Delete Selected Row'
@@ -1112,7 +1112,7 @@ object MainForm: TMainForm
       object GenerateQueriesBtn: TButton
         Left = 1174
         Height = 31
-        Top = 626
+        Top = 625
         Width = 154
         Anchors = [akRight, akBottom]
         Caption = 'Generate Queries'

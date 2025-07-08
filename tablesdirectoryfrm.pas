@@ -62,7 +62,7 @@ procedure TTablesDirectoryForm.SearchEditChange(Sender: TObject);
 begin
     Dataform.TablesQuery1.Locate('name',SearchEdit.text,[loCaseInsensitive, loPartialKey]);
     TableList.KeyValue := DataForm.TablesQuery1.FieldByName('name').asString;
-    LoadTableColumns(TableList.Items[TableList.ItemIndex]);
+    Dataform.ColumnsQuery1 := LoadTableColumnsSQLQuery(Dataform.ColumnsQuery1, TableList.Items[TableList.ItemIndex]);
 end;
 
 procedure TTablesDirectoryForm.ColumnsListKeyDown(Sender: TObject;
@@ -78,7 +78,7 @@ end;
 procedure TTablesDirectoryForm.TableListClick(Sender: TObject);
 begin
   Dataform.TablesQuery1.Locate('name',TableList.Items[TableList.ItemIndex],[]);
-  LoadTableColumns(TableList.Items[TableList.ItemIndex]);
+  Dataform.ColumnsQuery1 := LoadTableColumnsSQLQuery(Dataform.ColumnsQuery1, TableList.Items[TableList.ItemIndex]);
 end;
 
 procedure TTablesDirectoryForm.TableListKeyDown(Sender: TObject; var Key: Word;

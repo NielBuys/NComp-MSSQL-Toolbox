@@ -217,7 +217,6 @@ type
     SetupGridSelectedRow: Integer;
     CSVGridSelectedField: TField;
     SharedSetupGrid: TStringGrid;
-    ConnectedVia: String;
     { Public declarations }
   end;
 
@@ -309,7 +308,6 @@ var
           s: String;
       //    PingThread: TPingThread;
 begin
-      ConnectedVia := 'NULL';
       If ConnecttoServerBtn.Caption = 'Disconnect' then
       begin
       //    PingThread.Terminate;
@@ -333,7 +331,6 @@ begin
                  Dataform.FromTransaction.DataBase := Dataform.FromConnection;
                  Dataform.ToTransaction.DataBase := Dataform.ToConnection;
                  Dataform.FromConnection.Open;
-                 ConnectedVia := 'MSSQL';
                  Dataform.DBQuery1.SQL.Text := 'SELECT name as [Database] FROM sys.databases order by [Database]';
                  Dataform.DBQuery1.SQLConnection := Dataform.FromConnection;
                  Dataform.DBQuery1.Open;
@@ -353,7 +350,6 @@ begin
                Dataform.FromTransaction.DataBase := Dataform.FromMySQL80Connection;
                Dataform.ToTransaction.DataBase := Dataform.ToMySQL80Connection;
                Dataform.FromMySQL80Connection.Open;
-               ConnectedVia := 'MySQL';
                Dataform.DBQuery1.SQL.Text := 'SELECT table_schema as `Database` FROM information_schema.tables Group by TABLE_SCHEMA Order by TABLE_SCHEMA';
                Dataform.DBQuery1.SQLConnection := Dataform.FromMySQL80Connection;
                Dataform.DBQuery1.Open;
@@ -437,13 +433,13 @@ begin
           try
             LastFromDB := FromDBCombo.ItemIndex;
             s := FromDBCombo.Items[FromDBCombo.ItemIndex];
-            if (Dataform.FromConnection.Connected) then
+            if (DBConnectionType = 'mssql') then
             begin
               Dataform.FromConnection.Close;
               Dataform.FromConnection.DatabaseName := s;
               Dataform.FromConnection.Open;
             end
-            else
+            else if (DBConnectionType = 'mysql') then
             begin
               Dataform.FromMySQL80Connection.Close;
               Dataform.FromMySQL80Connection.DatabaseName := s;
@@ -686,7 +682,7 @@ end;
 
 procedure TMainForm.OpenProjectBtnClick(Sender: TObject);
 begin
-      if Dataform.FromConnection.Connected = False then
+      if isDBConnected() = False then
       begin
         showmessage('Connect to SQL server first');
         exit;
@@ -717,9 +713,7 @@ begin
            begin
              PrimaryTableNameEdt.Text := SetupGrid.Cells[3,I];
              PrimaryColumnEdt.Text := SetupGrid.Cells[4,I];
-             Dataform.ColumnsQuery2.Close;
-             Dataform.ColumnsQuery2.ParamByName('tablename').Value := PrimaryTableNameEdt.Text;
-             Dataform.ColumnsQuery2.Open;
+             Dataform.ColumnsQuery2 := LoadTableColumnsSQLQuery(Dataform.ColumnsQuery2, PrimaryTableNameEdt.Text);
              Found := true;
            end;
       end;
@@ -744,7 +738,7 @@ end;
 
 procedure TMainForm.TableListClick(Sender: TObject);
 begin
-      LoadTableColumns(TableList.Items[TableList.ItemIndex]);
+      Dataform.ColumnsQuery1 := LoadTableColumnsSQLQuery(Dataform.ColumnsQuery1, TableList.Items[TableList.ItemIndex]);
 end;
 
 procedure TMainForm.LoadTablesBtnClick(Sender: TObject);
@@ -842,7 +836,7 @@ var
           tempQueryString: WideString;
           ScriptQuery: TSQLQuery;
 begin
-      if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
+      if (isDBConnected = False) then
       begin
         showmessage('Connect to SQL server first!');
         exit;
@@ -904,7 +898,7 @@ var
           QueryString: String;
           I: integer;
 begin
-      if Dataform.FromConnection.Connected = False then
+      if isDBConnected = False then
       begin
         showmessage('Connect from database first');
         exit;
@@ -941,7 +935,7 @@ var
           I: Integer;
           QueryString: String;
 begin
-      if Dataform.FromConnection.Connected = False then
+      if isDBConnected = False then
       begin
         showmessage('Connect from database first');
         exit;
@@ -1010,7 +1004,7 @@ var
           QueryString: String;
           I: integer;
 begin
-      if Dataform.FromConnection.Connected = False then
+      if isDBConnected = False then
       begin
         showmessage('Connect from database first');
         exit;
@@ -1046,7 +1040,7 @@ var
           Found: boolean;
           I: integer;
 begin
-      if Dataform.FromConnection.Connected = False then
+      if isDBConnected = False then
       begin
         showmessage('Connect from database first');
         exit;
@@ -1118,7 +1112,7 @@ var
           tempQueryString: WideString;
           ScriptQuery: TSQLQuery;
 begin
-      if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
+      if isDBConnected = False then
       begin
         showmessage('Connect to SQL server first!');
         exit;
@@ -1357,9 +1351,7 @@ begin
         showmessage('Add primary table name');
         exit;
       end;
-      Dataform.ColumnsQuery2.Close;
-      Dataform.ColumnsQuery2.ParamByName('tablename').Value := PrimaryTableNameEdt.Text;
-      Dataform.ColumnsQuery2.Open;
+      Dataform.ColumnsQuery2 := LoadTableColumnsSQLQuery(Dataform.ColumnsQuery2, PrimaryTableNameEdt.Text);
 end;
 
 procedure TMainForm.DeleteSelectedRowBtnClick(Sender: TObject);
@@ -1371,7 +1363,7 @@ procedure TMainForm.FindRecordsBtnClick(Sender: TObject);
 var
           RecordCountQueryStr: String;
 begin
-      if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
+      if isDBConnected = False then
       begin
         showmessage('Connect database first');
         exit;
@@ -1390,14 +1382,14 @@ begin
       RecordsFoundStrGrid.RowCount := 1;
       while not Dataform.TableandColumnsQuery.EOF do
       begin
-        If (Dataform.FromConnection.Connected) then
+        If (DBConnectionType = 'mssql') then
         begin
           RecordCountQueryStr := 'select [' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString +
             '] from [' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
             '] where [' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '] like ''%' + FixSQLString(trim(FindEdt.Text)) +
             '%'';';
         end
-        else
+        else If (DBConnectionType = 'mysql') then
         begin
           RecordCountQueryStr := 'select `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString +
             '` from ' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
@@ -1430,13 +1422,13 @@ begin
           RecordsFoundStrGrid.Cells[0,RecordsFoundStrGrid.RowCount - 1] := Dataform.TableandColumnsQuery.FieldByName('table_name').asString;
           RecordsFoundStrGrid.Cells[1,RecordsFoundStrGrid.RowCount - 1] := Dataform.TableandColumnsQuery.FieldByName('column_name').asString;
           RecordsFoundStrGrid.Cells[2,RecordsFoundStrGrid.RowCount - 1] := InttoStr(Dataform.tempQuery1.RecordCount);
-          If (Dataform.FromConnection.Connected) then
+          If (DBConnectionType = 'mssql') then
           begin
             RecordsFoundMemo.Lines.Add('select * from [' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
             '] where [' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '] like ''%' + FixSQLString(trim(FindEdt.Text)) +
             '%'';');
           end
-          else
+          else If (DBConnectionType = 'mysql') then
           begin
             RecordsFoundMemo.Lines.Add('select * from ' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
             ' where `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '` like ''%' + FixMySQLString(trim(FindEdt.Text)) +
@@ -1578,7 +1570,7 @@ procedure TMainForm.FindandReplaceRecordsBtnClick(Sender: TObject);
 var
           RecordCountQueryStr: String;
 begin
-      if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
+      if isDBConnected = False then
       begin
         showmessage('Connect database first');
         exit;
@@ -1597,14 +1589,14 @@ begin
       RecordsFoundStrGrid.RowCount := 1;
       while not Dataform.TableandColumnsQuery.EOF do
       begin
-        If (Dataform.FromConnection.Connected) then
+        If (DBConnectionType = 'mssql') then
         begin
           RecordCountQueryStr := 'select [' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString +
             '] from [' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
             '] where [' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '] like ''%' + FixSQLString(trim(FindEdt.Text)) +
             '%'';';
         end
-        else
+        else If (DBConnectionType = 'mysql') then
         begin
           RecordCountQueryStr := 'select `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString +
             '` from ' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
@@ -1637,14 +1629,14 @@ begin
           RecordsFoundStrGrid.Cells[0,RecordsFoundStrGrid.RowCount - 1] := Dataform.TableandColumnsQuery.FieldByName('table_name').asString;
           RecordsFoundStrGrid.Cells[1,RecordsFoundStrGrid.RowCount - 1] := Dataform.TableandColumnsQuery.FieldByName('column_name').asString;
           RecordsFoundStrGrid.Cells[2,RecordsFoundStrGrid.RowCount - 1] := InttoStr(Dataform.tempQuery1.RecordCount);
-          If (Dataform.FromConnection.Connected) then
+          If (DBConnectionType = 'mssql') then
           begin
             RecordsFoundMemo.Lines.Add('update [' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
               '] set [' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '] = replace([' +
               Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '], ''' + FixSQLString(trim(FindEdt.Text)) + ''', ''' +
               FixSQLString(trim(ReplaceWithEdt.Text)) + ''');');
           end
-          else
+          else If (DBConnectionType = 'mysql') then
           begin
             RecordsFoundMemo.Lines.Add('update `' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
               '` set `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '` = replace(`' +
@@ -1670,7 +1662,7 @@ function TMainForm.OpenTableColumnQuery(): Boolean;
 var
          TableColumnQueryStr: String;
 begin
-    If (Dataform.FromConnection.Connected) then
+    If (DBConnectionType = 'mssql') then
     begin
       TableColumnQueryStr := 'select a.TABLE_CATALOG as table_schema, a.TABLE_NAME as table_name, a.COLUMN_NAME as column_name';
       TableColumnQueryStr := TableColumnQueryStr + ' FROM information_schema.columns a';
@@ -1680,12 +1672,17 @@ begin
       if (PrefixEdt.text <> '') then
         TableColumnQueryStr := TableColumnQueryStr + ' and table_name like ''' + PrefixEdt.text + '%''';
     end
-    else
+    else If (DBConnectionType = 'mysql') then
     begin
       TableColumnQueryStr := 'select table_schema, table_name, column_name FROM information_schema.columns';
       TableColumnQueryStr := TableColumnQueryStr + ' where table_schema = ''' + FromDBCombo.Items[FromDBCombo.ItemIndex] + '''';
       if (PrefixEdt.text <> '') then
         TableColumnQueryStr := TableColumnQueryStr + ' and table_name like ''' + PrefixEdt.text + '%''';
+    end
+    else
+    begin
+      showmessage('Connect database first');
+      exit;
     end;
     try
       DataForm.TableandColumnsQuery.close;
@@ -1800,9 +1797,7 @@ begin
       SetupGrid.Cells[4,SetupGrid.RowCount - 1] := ColumnsList.Items[ColumnsList.ItemIndex];
       PrimaryTableNameEdt.Text := TableList.Items[TableList.ItemIndex];
       PrimaryColumnEdt.Text := ColumnsList.Items[ColumnsList.ItemIndex];
-      Dataform.ColumnsQuery2.Close;
-      Dataform.ColumnsQuery2.ParamByName('tablename').Value := PrimaryTableNameEdt.Text;
-      Dataform.ColumnsQuery2.Open;
+      Dataform.ColumnsQuery2 := LoadTableColumnsSQLQuery(Dataform.ColumnsQuery2, PrimaryTableNameEdt.Text);
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -1851,7 +1846,7 @@ procedure TMainForm.LoadFromandToDataBtnClick(Sender: TObject);
 var
           ToSQLtext,FromSQLtext:string;
 begin
-          if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
+          if isDBConnected = False then
           begin
             showmessage('Connect database first!');
             exit;
@@ -1889,7 +1884,7 @@ begin
           raise;
           end;
           try
-            If (Dataform.FromConnection.Connected) then
+            If (DBConnectionType = 'mssql') then
             begin
               Dataform.ToConnection.Close;
               Dataform.ToConnection.Params.Clear;
@@ -1899,7 +1894,7 @@ begin
               Dataform.ToConnection.HostName := ToServerName.Text;
               Dataform.ToConnection.Open;
             end
-            else
+            else If (DBConnectionType = 'mysql') then
             begin
               Dataform.ToMySQL80Connection.Close;
               Dataform.ToMySQL80Connection.Params.Clear;
@@ -2045,7 +2040,7 @@ var
           ScriptQuery: TComponent;
           ScriptQuerySource: TComponent;
 begin
-          if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
+          if isDBConnected = False then
           begin
             showmessage('Connect database first');
             exit;
@@ -2149,7 +2144,7 @@ end;
 
 procedure TMainForm.TestLinkedTableBtnClick(Sender: TObject);
 begin
-          if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
+          if isDBConnected = False then
           begin
             showmessage('Connect from database first!');
             exit;
@@ -2225,7 +2220,7 @@ var
 
 begin
       Query1 := TSQLQuery.Create(MainForm);
-      if (Dataform.FromConnection.Connected) then
+      if (DBConnectionType = 'mssql') then
       begin
         Query1.Database := Dataform.FromConnection;
         with Query1.SQL do
@@ -2238,7 +2233,7 @@ begin
         end;
         Query1.Open;
       end
-      else
+      else if (DBConnectionType = 'mysql') then
       begin
         Query1.Database := Dataform.FromMySQL80Connection;
         with Query1.SQL do
@@ -2247,6 +2242,11 @@ begin
              Add('SHOW KEYS FROM ' + TableName + ' WHERE Key_name = ''PRIMARY''');
         end;
         Query1.Open;
+      end
+      else
+      begin
+        showmessage('Connect to database first!');
+        exit;
       end;
       If Query1.RecordCount > 0 then
       begin

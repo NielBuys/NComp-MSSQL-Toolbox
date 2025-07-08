@@ -24,7 +24,6 @@ interface
   function MyRoundTo(const AValue: Double; const ADigit: TRoundToRange): Double;
   function ValidEmail(email: AnsiString): boolean;
   function FixMySQLString(stemp: String): String;
-  function FixSQLString(stemp: String): String;
   function ChangeEnterforSMS(stemp: AnsiString): AnsiString;
   function UrlEncode(const DecodedStr: AnsiString; Pluses: Boolean): AnsiString;
   function UrlDecode(const EncodedStr: AnsiString): AnsiString;
@@ -40,7 +39,6 @@ interface
   function CreateEasyPayNumber(GroupNo,MemNo,BranchNo:Integer):String;
   function replacedoublequotewithsinglequote(stemp: AnsiString): AnsiString;
   //function CreateGuid: string;
-  function ConvertFieldtoSQLString(FieldStore: TField): String;
   procedure Split(const Delimiter: Char; Input: string; const Strings: TStrings);
   function CalculateBMI(LenghtValue,WeightValue: Extended; WeightUnit, LenghtUnit:String): Extended;
   function FloatToLocaleIndependantString(const v: Extended): string;
@@ -401,36 +399,6 @@ begin
   end;
 end;
 
-function FixSQLString(stemp: String): String;
-const SpecialChar = ['%', '\',#39];
-var
-  i: integer;
-  Skiploop:Boolean;
-begin
-  result := '';
-  skiploop := false;
-  for i := 1 to length(stemp) do
-  begin
-    if skiploop = true then
-    begin
-      skiploop := false;
-      continue;
-    end;
- //   showmessage(stemp[i]);
-    if not (stemp[i] in SpecialChar) then
-    begin
-      result := result+stemp[i];
-    end
-    else
-    begin
-      if stemp[i] = #39 then
-        result := result+#39+stemp[i]
-      else
-        result := result+'\'+stemp[i];
-    end;
-  end;
-end;
-
 function ChangeEnterforSMS(stemp: AnsiString): AnsiString;
 const Remove = [#13, #10];
 var
@@ -762,107 +730,6 @@ end;
 //  {$ENDIF}
 //
 //end;
-
-Function ConvertFieldtoSQLString(FieldStore: TField):String;
-var
-      temp:String;
-begin
-        temp := '';
-        case TFieldType(Ord(FieldStore.DataType)) of
-          ftString, ftGuid, ftWideString, ftMemo:
-          begin
-            if (FieldStore.AsString = '') or (FieldStore.IsNull) or (LowerCase(FieldStore.AsString) = 'null') then
-               temp := 'null'  //Put a default string
-            else
-            begin
-                 temp := '''' + trim(FixSQLString(FieldStore.AsString)) + '''';
-            end;
-          end;
-
-          ftInteger, ftWord, ftSmallint, ftAutoinc, ftLargeint:
-          begin
-            if FieldStore.AsInteger > 0 then
-               temp := IntToStr(FieldStore.AsInteger)
-            else
-            begin
-              if FieldStore.IsNull then
-                temp := 'null'
-              else
-                temp := '0';
-            end;
-          end;
-          ftFloat, ftCurrency, ftBCD:
-          begin
-//            Showmessage(FloattoStr(FieldStore.AsFloat) + '==' + FloatToLocaleIndependantString(FieldStore.AsFloat));
-            if FieldStore.AsFloat <> 0 then
-              temp := FloatToLocaleIndependantString(FieldStore.AsFloat)
-            else
-            begin
-              if FieldStore.IsNull then
-                temp := 'null'
-              else
-                temp := '0';
-            end;
-          end;
-          ftBoolean:
-          begin
-            if not FieldStore.isnull then
-            begin
-              if FieldStore.Value then
-                temp:= '1'
-              else
-                temp:= '0';
-            end
-            else
-              temp := 'null';
-          end;
-          ftDate:
-          begin
-            if (not FieldStore.IsNull) or
-               (Length(Trim(FieldStore.AsString)) > 0) then
-              temp := 'convert(datetime, ''' + FormatDateTime('yyyy/MM/dd',
-                             FieldStore.AsDateTime) + ''',111)'
-            else
-            begin
-              if FieldStore.IsNull then
-                temp := 'null'
-              else
-              temp:= 'convert(datetime, ''1900/01/01'',111)'; //put some valid default date
-            end;
-          end;
-          ftDateTime, ftTimeStamp:
-          begin
-            if (not FieldStore.IsNull) or
-               (Length(Trim(FieldStore.AsString)) > 0) then
-              temp := 'convert(datetime, ''' + FormatDateTime('yyyy-MM-dd hh:mm:ss',
-                             FieldStore.AsDateTime) + ''',120)'
-            else
-            begin
-              if FieldStore.IsNull then
-                temp := 'null'
-              else
-                temp := 'convert(datetime, ''1900/01/01 00:00:00'',120)';//Put some valid default date and time
-            end;
-          end;
-          ftTime:
-          begin
-            if (not FieldStore.IsNull) or
-               (Length(Trim(FieldStore.AsString)) > 0) then
-               temp := 'convert(datetime, ''' + FormatDateTime('hh:mm:ss',
-                           FieldStore.AsDateTime) + ''',8)'
-            else
-            begin
-              if FieldStore.IsNull then
-                temp := 'null'
-              else
-                temp := 'convert(datetime, ''00:00:00'',8)'; //Put some valid default time
-            end;
-          end;
-        else
-          showmessage('Field not found' + FieldTypeToString(FieldStore.DataType));
-        end;
-        ConvertFieldtoSQLString := temp;
-end;
 
 procedure Split
    (const Delimiter: Char;

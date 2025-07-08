@@ -13,8 +13,8 @@
       <SessionStorage Value="InProjectDir"/>
       <Title Value="NComp SQL Toolbox"/>
       <Scaled Value="True"/>
-      <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
       <Icon Value="0"/>
     </General>
     <i18n>
@@ -24,7 +24,7 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="3"/>
+      <BuildNr Value="4"/>
       <StringTable CompanyName="ncomp.co.za" FileDescription="NComp SQL Toolbox (ncomp.co.za )" ProductName="NComp SQL Toolbox" ProductVersion="1.0"/>
     </VersionInfo>
     <BuildModes Count="1">
