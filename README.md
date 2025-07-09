@@ -14,7 +14,7 @@ This tool provides essential SQL management and data import functionality throug
 
 ### 1. 📝 SQL IDE
 - Connect to **MSSQL** or **MySQL**.
-- Run SQL queries and view results in a grid.
+- Run or Execute SQL queries and view results in a grid.
 - Export result sets as `INSERT` or `UPDATE` SQL scripts.
 - Edit and manage data directly from query results.
 
