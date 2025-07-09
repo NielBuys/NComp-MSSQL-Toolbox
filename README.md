@@ -65,7 +65,6 @@ Or clone the repo and build it using [Lazarus IDE](https://www.lazarus-ide.org/)
 
 - MSSQL or MySQL server connection.
 - Lazarus IDE (for building from source).
-- FPC-compatible OpenSSL for SSL connections.
 
 ---
 
