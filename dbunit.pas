@@ -5,7 +5,11 @@ unit DBUnit;
 interface
 
 uses
-  Classes, SysUtils, Dialogs, DB, sqldb, UtilsUnit;
+  Classes, SysUtils, Dialogs, DB, sqldb, UtilsUnit, StrUtils;
+
+var
+  CurrentFromConnection: TSQLConnection;
+  DBConnType: String;
 
 function isDBConnected(): Boolean;
 function DBConnectionType(): String;
@@ -20,30 +24,12 @@ implementation
 
 function isDBConnected(): Boolean;
 begin
-     if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
-     begin
-          isDBConnected := False;
-     end
-     else
-     begin
-          isDBConnected := True;
-     end;
+     Result := Assigned(CurrentFromConnection) and CurrentFromConnection.Connected;
 end;
 
 function DBConnectionType(): String;
 begin
-     if (Dataform.FromConnection.Connected = True) then
-     begin
-          DBConnectionType := 'mssql';
-     end
-     else if (Dataform.FromMySQL80Connection.Connected = True) then
-     begin
-          DBConnectionType := 'mysql';
-     end
-     else
-     begin
-          DBConnectionType := 'none';
-     end;
+     DBConnectionType := IfThen(DBConnType <> '', DBConnType, 'none');
 end;
 
 function LoadDBTables(): Boolean;
