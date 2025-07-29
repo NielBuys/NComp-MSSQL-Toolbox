@@ -405,6 +405,7 @@ begin
         DataForm.FromQuery1.SQLConnection := Dataform.FromConnection;
         DataForm.TableandColumnsQuery.SQLConnection := Dataform.FromConnection;
         DataForm.TablesQuery1.SQLConnection := Dataform.FromConnection;
+        DataForm.DBViewsQuery1.SQLConnection := Dataform.FromConnection;
         DataForm.ColumnsQuery1.SQLConnection := Dataform.FromConnection;
         DataForm.ColumnsQuery2.SQLConnection := Dataform.FromConnection;
         DataForm.TempQuery1.SQLConnection := Dataform.FromConnection;
@@ -418,6 +419,7 @@ begin
         DataForm.FromQuery1.SQLConnection := Dataform.FromMySQL80Connection;
         DataForm.TableandColumnsQuery.SQLConnection := Dataform.FromMySQL80Connection;
         DataForm.TablesQuery1.SQLConnection := Dataform.FromMySQL80Connection;
+        DataForm.DBViewsQuery1.SQLConnection := Dataform.FromMySQL80Connection;
         DataForm.ColumnsQuery1.SQLConnection := Dataform.FromMySQL80Connection;
         DataForm.ColumnsQuery2.SQLConnection := Dataform.FromMySQL80Connection;
         DataForm.TempQuery1.SQLConnection := Dataform.FromMySQL80Connection;

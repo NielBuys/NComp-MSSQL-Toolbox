@@ -15,15 +15,21 @@ type
   TTablesDirectoryForm = class(TForm)
     ColumnsList: TDBLookupListBox;
     ColumnsListLbl: TLabel;
+    DBViewsList: TDBLookupListBox;
     DBText1: TDBText;
+    SearchViewsEdit: TEdit;
+    ViewsListLbl: TLabel;
     SearchEdit: TEdit;
     ShortcutLbl: TLabel;
     TableList: TDBLookupListBox;
     TablesListLbl: TLabel;
     procedure ColumnsListKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
+    procedure DBViewsListKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure SearchEditChange(Sender: TObject);
+    procedure SearchViewsEditChange(Sender: TObject);
     procedure TableListClick(Sender: TObject);
     procedure TableListKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -47,6 +53,7 @@ implementation
 
 procedure TTablesDirectoryForm.FormShow(Sender: TObject);
 begin
+  SearchEdit.setFocus;
   if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
   begin
     showmessage('Connect to SQL server first!');
@@ -55,6 +62,10 @@ begin
   if (Dataform.TablesQuery1.Active = False) then
   begin
     LoadDBTables();
+  end;
+  if (Dataform.DBViewsQuery1.Active = False) then
+  begin
+    LoadDBViews();
   end;
 end;
 
@@ -65,12 +76,28 @@ begin
     Dataform.ColumnsQuery1 := LoadTableColumnsSQLQuery(Dataform.ColumnsQuery1, TableList.Items[TableList.ItemIndex]);
 end;
 
+procedure TTablesDirectoryForm.SearchViewsEditChange(Sender: TObject);
+begin
+  Dataform.DBViewsQuery1.Locate('name',SearchViewsEdit.text,[loCaseInsensitive, loPartialKey]);
+  DBViewsList.KeyValue := DataForm.DBViewsQuery1.FieldByName('name').asString;
+end;
+
 procedure TTablesDirectoryForm.ColumnsListKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
   if (Key = VK_A) and (ssCtrl in Shift) then
   begin
     AddTextToMainFormScriptSQLEdit(ColumnsList.Items[ColumnsList.ItemIndex]);
+    Key := 0;
+  end;
+end;
+
+procedure TTablesDirectoryForm.DBViewsListKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if (Key = VK_A) and (ssCtrl in Shift) then
+  begin
+    AddTextToMainFormScriptSQLEdit(DBViewsList.Items[DBViewsList.ItemIndex]);
     Key := 0;
   end;
 end;

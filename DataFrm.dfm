@@ -1,12 +1,12 @@
 object DataForm: TDataForm
   OldCreateOrder = False
   Height = 785
-  HorizontalOffset = 552
-  VerticalOffset = 143
+  HorizontalOffset = 349
+  VerticalOffset = 136
   Width = 985
   PPI = 120
   object FromConnection: TMSSQLConnection
-    Connected = False
+    Connected = True
     LoginPrompt = False
     KeepConnection = True
     Params.Strings = (
@@ -15,10 +15,10 @@ object DataForm: TDataForm
     Password = 'h0enderm1s'
     Transaction = FromTransaction
     UserName = 'sa'
-    HostName = '192.168.0.157'
+    HostName = 'localhost'
     LogEvents = []
     Left = 460
-    Top = 130
+    Top = 140
   end
   object ToConnection: TMSSQLConnection
     Connected = False
@@ -82,10 +82,10 @@ object DataForm: TDataForm
     Top = 290
   end
   object FromTransaction: TSQLTransaction
-    Active = False
+    Active = True
     Database = FromConnection
     Left = 860
-    Top = 130
+    Top = 140
   end
   object ToTransaction: TSQLTransaction
     Active = False
@@ -146,13 +146,13 @@ object DataForm: TDataForm
     Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
-    Left = 90
-    Top = 440
+    Left = 72
+    Top = 400
   end
   object TablesSource1: TDataSource
     DataSet = TablesQuery1
-    Left = 310
-    Top = 440
+    Left = 292
+    Top = 400
   end
   object ColumnsQuery1: TSQLQuery
     PacketRecords = -1
@@ -171,13 +171,13 @@ object DataForm: TDataForm
         ParamType = ptInput
       end>
     Macros = <>
-    Left = 90
-    Top = 516
+    Left = 72
+    Top = 476
   end
   object ColumnsSource1: TDataSource
     DataSet = ColumnsQuery1
-    Left = 310
-    Top = 516
+    Left = 292
+    Top = 476
   end
   object ColumnsQuery2: TSQLQuery
     PacketRecords = -1
@@ -198,13 +198,13 @@ object DataForm: TDataForm
         ParamType = ptInput
       end>
     Macros = <>
-    Left = 90
-    Top = 600
+    Left = 72
+    Top = 560
   end
   object ColumnsSource2: TDataSource
     DataSet = ColumnsQuery2
-    Left = 310
-    Top = 596
+    Left = 292
+    Top = 556
   end
   object DBQuery1: TSQLQuery
     PacketRecords = -1
@@ -259,7 +259,7 @@ object DataForm: TDataForm
     KeepConnection = True
     SkipLibraryVersionCheck = False
     Left = 660
-    Top = 130
+    Top = 140
   end
   object ToMySQL80Connection: TMySQL80Connection
     Connected = False
@@ -278,13 +278,13 @@ object DataForm: TDataForm
     Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
-    Left = 90
-    Top = 670
+    Left = 72
+    Top = 630
   end
   object TableandColumnsSource: TDataSource
     DataSet = TableandColumnsQuery
-    Left = 310
-    Top = 670
+    Left = 292
+    Top = 630
   end
   object TempQuery1: TSQLQuery
     PacketRecords = -1
@@ -296,5 +296,40 @@ object DataForm: TDataForm
     Macros = <>
     Left = 510
     Top = 670
+  end
+  object DBViewsQuery1: TSQLQuery
+    MaxIndexesCount = 4
+    FieldDefs = <    
+      item
+        Name = 'name'
+        DataType = ftString
+        Precision = -1
+        Size = 128
+      end>
+    Database = FromConnection
+    Transaction = FromTransaction
+    SQL.Strings = (
+      'SELECT name FROM sys.views ORDER BY name'
+      ''
+    )
+    Params = <>
+    Macros = <>
+    Left = 72
+    Top = 704
+    object DBViewsQuery1name: TStringField
+      FieldKind = fkData
+      FieldName = 'name'
+      Index = 0
+      LookupCache = False
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      ReadOnly = False
+      Required = True
+      Size = 128
+    end
+  end
+  object DBViewsSource1: TDataSource
+    DataSet = DBViewsQuery1
+    Left = 292
+    Top = 704
   end
 end

@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 406
+  Left = 509
   Height = 812
-  Top = 137
+  Top = 130
   Width = 1346
   Caption = 'NComp SQL Toolbox'
   ClientHeight = 812
@@ -16,10 +16,10 @@ object MainForm: TMainForm
   Font.Pitch = fpVariable
   Font.Quality = fqDraft
   Menu = MainMenu1
+  Position = poScreenCenter
+  LCLVersion = '4.2.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
-  Position = poScreenCenter
-  LCLVersion = '3.8.0.0'
   object Label1: TLabel
     Left = 1062
     Height = 18
@@ -85,8 +85,8 @@ object MainForm: TMainForm
     Top = 1
     Width = 110
     Caption = 'Connect'
-    OnClick = ConnecttoServerBtnClick
     TabOrder = 4
+    OnClick = ConnecttoServerBtnClick
   end
   object ProgressBar1: TProgressBar
     Left = 10
@@ -119,21 +119,21 @@ object MainForm: TMainForm
     ListFieldIndex = 0
     ListSource = DataForm.DBSource1
     LookupCache = False
-    OnSelect = FromDBComboSelect
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
     Style = csOwnerDrawFixed
     TabOrder = 5
+    OnSelect = FromDBComboSelect
   end
   object PageControl1: TPageControl
     Left = 0
     Height = 730
     Top = 41
     Width = 1346
-    ActivePage = TabSheetFindAndReplace
+    ActivePage = TabsheetQueriesAndExport
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 3
+    TabIndex = 0
     TabOrder = 7
     OnExit = PageControl1Exit
     object TabsheetQueriesAndExport: TTabSheet
@@ -159,8 +159,8 @@ object MainForm: TMainForm
           Top = 39
           Width = 98
           Caption = 'Execute'
-          OnClick = ExecuteQueryBtnClick
           TabOrder = 1
+          OnClick = ExecuteQueryBtnClick
         end
         object Label16: TLabel
           Left = 907
@@ -317,9 +317,9 @@ object MainForm: TMainForm
           Increment = 5
           Max = 4000
           Min = 50
-          OnClick = ScriptSQLHeightUpDownClick
           Position = 187
           TabOrder = 10
+          OnClick = ScriptSQLHeightUpDownClick
         end
         object ScriptSQLHeightEdt: TEdit
           AnchorSideTop.Control = ScriptSQLEdit
@@ -373,9 +373,9 @@ object MainForm: TMainForm
             FFFFFFFFFFFFFFFFFFFFFFFFFF000000000000FFFFFFFFFFFFFFFFFFFFFFFFFF
             FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           }
-          OnClick = TablesDirectoryBtnClick
           ShowHint = True
           ParentShowHint = False
+          OnClick = TablesDirectoryBtnClick
         end
       end
     end
@@ -497,8 +497,8 @@ object MainForm: TMainForm
         Width = 208
         Anchors = [akTop, akRight]
         Caption = 'Load From and To data'
-        OnClick = LoadFromandToDataBtnClick
         TabOrder = 11
+        OnClick = LoadFromandToDataBtnClick
       end
       object FromSQLEdit: TMemo
         AnchorSideRight.Control = ToSQLEdit
@@ -755,9 +755,9 @@ object MainForm: TMainForm
           00BF0000BF00007F000040FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         }
         Visible = False
-        OnClick = CompareStopRunBtnClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = CompareStopRunBtnClick
       end
       object BtnCompareRight: TSpeedButton
         Left = 452
@@ -858,8 +858,8 @@ object MainForm: TMainForm
         ListFieldIndex = 0
         ListSource = DataForm.TablesSource1
         LookupCache = False
-        OnClick = TableListClick
         TabOrder = 11
+        OnClick = TableListClick
       end
       object AddPrimaryTableDetailBtn: TButton
         Left = 570
@@ -1436,9 +1436,9 @@ object MainForm: TMainForm
           00BF0000BF00007F000040FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
         }
         Visible = False
-        OnClick = CancelFindBtnClick
         ShowHint = True
         ParentShowHint = False
+        OnClick = CancelFindBtnClick
       end
     end
   end
