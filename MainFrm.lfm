@@ -135,7 +135,6 @@ object MainForm: TMainForm
     Anchors = [akTop, akLeft, akRight, akBottom]
     TabIndex = 0
     TabOrder = 7
-    OnExit = PageControl1Exit
     object TabsheetQueriesAndExport: TTabSheet
       Caption = 'Queries / Export'
       ClientHeight = 699

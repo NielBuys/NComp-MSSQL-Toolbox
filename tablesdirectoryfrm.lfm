@@ -42,8 +42,8 @@ object TablesDirectoryForm: TTablesDirectoryForm
     Left = 10
     Height = 20
     Top = 669
-    Width = 330
-    Caption = 'Press Ctrl+A to add Table or Column to Query text'
+    Width = 369
+    Caption = 'Press Ctrl+A to add Table, Column or View to Query text'
   end
   object DBText1: TDBText
     Left = 280

@@ -54,7 +54,7 @@ implementation
 procedure TTablesDirectoryForm.FormShow(Sender: TObject);
 begin
   SearchEdit.setFocus;
-  if (Dataform.FromConnection.Connected = False) and (Dataform.FromMySQL80Connection.Connected = False) then
+  if (isDBConnected = False) then
   begin
     showmessage('Connect to SQL server first!');
     TablesDirectoryForm.Close;
@@ -71,14 +71,14 @@ end;
 
 procedure TTablesDirectoryForm.SearchEditChange(Sender: TObject);
 begin
-    Dataform.TablesQuery1.Locate('name',SearchEdit.text,[loCaseInsensitive, loPartialKey]);
+    Dataform.TablesQuery1.Locate('name',Variant(SearchEdit.text),[loCaseInsensitive, loPartialKey]);
     TableList.KeyValue := DataForm.TablesQuery1.FieldByName('name').asString;
     Dataform.ColumnsQuery1 := LoadTableColumnsSQLQuery(Dataform.ColumnsQuery1, TableList.Items[TableList.ItemIndex]);
 end;
 
 procedure TTablesDirectoryForm.SearchViewsEditChange(Sender: TObject);
 begin
-  Dataform.DBViewsQuery1.Locate('name',SearchViewsEdit.text,[loCaseInsensitive, loPartialKey]);
+  Dataform.DBViewsQuery1.Locate('name',Variant(SearchViewsEdit.text),[loCaseInsensitive, loPartialKey]);
   DBViewsList.KeyValue := DataForm.DBViewsQuery1.FieldByName('name').asString;
 end;
 
@@ -104,7 +104,7 @@ end;
 
 procedure TTablesDirectoryForm.TableListClick(Sender: TObject);
 begin
-  Dataform.TablesQuery1.Locate('name',TableList.Items[TableList.ItemIndex],[]);
+  Dataform.TablesQuery1.Locate('name',Variant(TableList.Items[TableList.ItemIndex]),[]);
   Dataform.ColumnsQuery1 := LoadTableColumnsSQLQuery(Dataform.ColumnsQuery1, TableList.Items[TableList.ItemIndex]);
 end;
 

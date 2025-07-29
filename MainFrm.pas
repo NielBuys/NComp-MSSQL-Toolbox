@@ -175,7 +175,6 @@ type
     procedure LoadTablesBtnClick(Sender: TObject);
     procedure AddPrimaryTableDetailBtnClick(Sender: TObject);
     procedure ConnecttoServerBtnClick(Sender: TObject);
-    procedure PageControl1Exit(Sender: TObject);
     procedure RefreshCSVColumnsBtnClick(Sender: TObject);
     procedure ScriptGridEnter(Sender: TObject);
     procedure ScriptSQLEditResize(Sender: TObject);
@@ -306,12 +305,9 @@ end;
 procedure TMainForm.ConnecttoServerBtnClick(Sender: TObject);
 var
           s: String;
-      //    PingThread: TPingThread;
 begin
       If ConnecttoServerBtn.Caption = 'Disconnect' then
       begin
-      //    PingThread.Terminate;
-      //    PingThread.WaitFor;
           CloseConnections();
           ConnecttoServerBtn.Caption := 'Connect';
           Dataform.FromConnection.DatabaseName := '';
@@ -324,19 +320,17 @@ begin
             begin
                  Dataform.FromConnection.Close;
                  Dataform.FromConnection.Params.Clear;
-       //     Dataform.FromConnection.Params.Add('DriverID=MSSQL2005');
                  Dataform.FromConnection.UserName := FromUserName.Text;
                  Dataform.FromConnection.Password := FromPassword.Text;
                  Dataform.FromConnection.HostName := FromServerName.Text;
                  Dataform.FromTransaction.DataBase := Dataform.FromConnection;
                  Dataform.ToTransaction.DataBase := Dataform.ToConnection;
                  Dataform.FromConnection.Open;
+                 CurrentFromConnection := Dataform.FromConnection;
+                 DBConnType := 'mssql';
                  Dataform.DBQuery1.SQL.Text := 'SELECT name as [Database] FROM sys.databases order by [Database]';
-                 Dataform.DBQuery1.SQLConnection := Dataform.FromConnection;
+                 Dataform.DBQuery1.SQLConnection := CurrentFromConnection;
                  Dataform.DBQuery1.Open;
-                   // Initialize and start the ping thread
-        //         PingThread := TPingThread.Create(Dataform.FromConnection, 300000); // 5-minute interval
-        //         PingThread.Start; // Start the thread execution
             end
             else
             begin
@@ -350,8 +344,10 @@ begin
                Dataform.FromTransaction.DataBase := Dataform.FromMySQL80Connection;
                Dataform.ToTransaction.DataBase := Dataform.ToMySQL80Connection;
                Dataform.FromMySQL80Connection.Open;
+               CurrentFromConnection := Dataform.FromMySQL80Connection;
+               DBConnType := 'mysql';
                Dataform.DBQuery1.SQL.Text := 'SELECT table_schema as `Database` FROM information_schema.tables Group by TABLE_SCHEMA Order by TABLE_SCHEMA';
-               Dataform.DBQuery1.SQLConnection := Dataform.FromMySQL80Connection;
+               Dataform.DBQuery1.SQLConnection := CurrentFromConnection;
                Dataform.DBQuery1.Open;
             end;
             If (LastFromDB < FromDBCombo.Items.Count) and (LastFromDB >= 0) then
@@ -369,11 +365,6 @@ begin
           raise;
           end;
       end;
-end;
-
-procedure TMainForm.PageControl1Exit(Sender: TObject);
-begin
-
 end;
 
 procedure TMainForm.CloseConnections();
@@ -394,38 +385,22 @@ begin
      begin
        Dataform.FromMySQL80Connection.Close;
      end;
+     CurrentFromConnection := nil;
 end;
 
 procedure TMainForm.setQueryConnections();
 begin
-      if (Dataform.FromConnection.Connected) then
-      begin
-        DataForm.ScriptQuery0.SQLConnection := Dataform.FromConnection;
-        DataForm.ScriptQuery1.SQLConnection := Dataform.FromConnection;
-        DataForm.FromQuery1.SQLConnection := Dataform.FromConnection;
-        DataForm.TableandColumnsQuery.SQLConnection := Dataform.FromConnection;
-        DataForm.TablesQuery1.SQLConnection := Dataform.FromConnection;
-        DataForm.DBViewsQuery1.SQLConnection := Dataform.FromConnection;
-        DataForm.ColumnsQuery1.SQLConnection := Dataform.FromConnection;
-        DataForm.ColumnsQuery2.SQLConnection := Dataform.FromConnection;
-        DataForm.TempQuery1.SQLConnection := Dataform.FromConnection;
-        DataForm.ToQuery1.SQLConnection := Dataform.ToConnection;
-        DataForm.ToQuery2.SQLConnection := Dataform.ToConnection;
-      end
-      else
-      begin
-        DataForm.ScriptQuery0.SQLConnection := Dataform.FromMySQL80Connection;
-        DataForm.ScriptQuery1.SQLConnection := Dataform.FromMySQL80Connection;
-        DataForm.FromQuery1.SQLConnection := Dataform.FromMySQL80Connection;
-        DataForm.TableandColumnsQuery.SQLConnection := Dataform.FromMySQL80Connection;
-        DataForm.TablesQuery1.SQLConnection := Dataform.FromMySQL80Connection;
-        DataForm.DBViewsQuery1.SQLConnection := Dataform.FromMySQL80Connection;
-        DataForm.ColumnsQuery1.SQLConnection := Dataform.FromMySQL80Connection;
-        DataForm.ColumnsQuery2.SQLConnection := Dataform.FromMySQL80Connection;
-        DataForm.TempQuery1.SQLConnection := Dataform.FromMySQL80Connection;
-        DataForm.ToQuery1.SQLConnection := Dataform.ToMySQL80Connection;
-        DataForm.ToQuery2.SQLConnection := Dataform.ToMySQL80Connection;
-      end;
+    DataForm.ScriptQuery0.SQLConnection := CurrentFromConnection;
+    DataForm.ScriptQuery1.SQLConnection := CurrentFromConnection;
+    DataForm.FromQuery1.SQLConnection := CurrentFromConnection;
+    DataForm.TableandColumnsQuery.SQLConnection := CurrentFromConnection;
+    DataForm.TablesQuery1.SQLConnection := CurrentFromConnection;
+    DataForm.DBViewsQuery1.SQLConnection := CurrentFromConnection;
+    DataForm.ColumnsQuery1.SQLConnection := CurrentFromConnection;
+    DataForm.ColumnsQuery2.SQLConnection := CurrentFromConnection;
+    DataForm.TempQuery1.SQLConnection := CurrentFromConnection;
+    DataForm.ToQuery1.SQLConnection := CurrentFromConnection;
+    DataForm.ToQuery2.SQLConnection := CurrentFromConnection;
 end;
 
 procedure TMainForm.FromDBComboSelect(Sender: TObject);
