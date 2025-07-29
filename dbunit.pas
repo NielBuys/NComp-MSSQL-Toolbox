@@ -10,6 +10,7 @@ uses
 function isDBConnected(): Boolean;
 function DBConnectionType(): String;
 function LoadDBTables(): Boolean;
+function LoadDBViews(): Boolean;
 function LoadTableColumnsSQLQuery(ColumnsQuery: TSQLQuery; TableName: String): TSQLQuery;
 function ConvertFieldtoSQLString(FieldStore: TField): String;
 function FixSQLString(stemp: String; IsLikeQuery: Boolean = False): String;
@@ -48,7 +49,7 @@ end;
 function LoadDBTables(): Boolean;
 begin
       LoadDBTables := False;
-      If (Dataform.FromConnection.Connected) then
+      If (DBConnectionType = 'mssql') then
       begin
         try
           Dataform.TablesQuery1.Close;
@@ -67,7 +68,7 @@ begin
           end;
         end;
       end
-      else If (Dataform.FromMySQL80Connection.Connected) then
+      else If (DBConnectionType = 'mysql') then
       begin
         try
           Dataform.TablesQuery1.Close;
@@ -91,11 +92,58 @@ begin
       end;
 end;
 
+function LoadDBViews(): Boolean;
+begin
+  LoadDBViews := False;
+
+  if (DBConnectionType = 'mssql') then
+  begin
+    try
+      Dataform.DBViewsQuery1.Close;
+      with Dataform.DBViewsQuery1.SQL do
+      begin
+        Clear;
+        Add('SELECT name FROM sys.views ORDER BY name');
+      end;
+      Dataform.DBViewsQuery1.Open;
+      LoadDBViews := True;
+    except
+      on E: Exception do
+      begin
+        ShowMessage(E.ClassName + ' ' + E.Message + ' Error loading MSSQL views');
+        Exit;
+      end;
+    end;
+  end
+  else if (DBConnectionType = 'mysql') then
+  begin
+    try
+      Dataform.DBViewsQuery1.Close;
+      with Dataform.DBViewsQuery1.SQL do
+      begin
+        Clear;
+        Add('SELECT TABLE_NAME as name');
+        Add('FROM INFORMATION_SCHEMA.VIEWS');
+        Add('WHERE TABLE_SCHEMA = ''' + Dataform.FromMySQL80Connection.DatabaseName + '''');
+        Add('ORDER BY TABLE_NAME');
+      end;
+      Dataform.DBViewsQuery1.Open;
+      LoadDBViews := True;
+    except
+      on E: Exception do
+      begin
+        ShowMessage(E.ClassName + ' ' + E.Message + ' Error loading MySQL views');
+        Exit;
+      end;
+    end;
+  end;
+end;
+
 function LoadTableColumnsSQLQuery(ColumnsQuery: TSQLQuery; TableName: String): TSQLQuery;
 begin
     try
       ColumnsQuery.Close;
-      If (Dataform.FromConnection.Connected) then
+      If (DBConnectionType = 'mssql') then
       begin
         with ColumnsQuery.SQL do
         begin
@@ -105,7 +153,7 @@ begin
            add('order by name');
         end;
       end
-      else If (Dataform.FromMySQL80Connection.Connected) then
+      else If (DBConnectionType = 'mysql') then
       begin
         with ColumnsQuery.SQL do
         begin

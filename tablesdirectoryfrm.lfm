@@ -1,15 +1,15 @@
 object TablesDirectoryForm: TTablesDirectoryForm
-  Left = 795
+  Left = -1157
   Height = 698
-  Top = 221
-  Width = 900
+  Top = 99
+  Width = 826
   Caption = 'Tables Directory'
   ClientHeight = 698
-  ClientWidth = 900
+  ClientWidth = 826
   DesignTimePPI = 120
-  OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.8.0.0'
+  LCLVersion = '4.2.0.0'
+  OnShow = FormShow
   object TablesListLbl: TLabel
     Left = 10
     Height = 20
@@ -28,8 +28,8 @@ object TablesDirectoryForm: TTablesDirectoryForm
     ListFieldIndex = 0
     ListSource = DataForm.ColumnsSource1
     LookupCache = False
-    OnKeyDown = ColumnsListKeyDown
     TabOrder = 0
+    OnKeyDown = ColumnsListKeyDown
   end
   object ColumnsListLbl: TLabel
     Left = 280
@@ -67,7 +67,7 @@ object TablesDirectoryForm: TTablesDirectoryForm
     OnChange = SearchEditChange
   end
   object TableList: TDBLookupListBox
-    Left = 10
+    Left = 8
     Height = 588
     Top = 70
     Width = 268
@@ -77,8 +77,38 @@ object TablesDirectoryForm: TTablesDirectoryForm
     ListFieldIndex = 0
     ListSource = DataForm.TablesSource1
     LookupCache = False
+    TabOrder = 2
     OnClick = TableListClick
     OnKeyDown = TableListKeyDown
-    TabOrder = 2
+  end
+  object DBViewsList: TDBLookupListBox
+    Left = 552
+    Height = 588
+    Top = 70
+    Width = 268
+    KeyField = 'name'
+    ListField = 'name'
+    ListFieldIndex = 0
+    ListSource = DataForm.DBViewsSource1
+    LookupCache = False
+    TabOrder = 3
+    OnKeyDown = DBViewsListKeyDown
+  end
+  object ViewsListLbl: TLabel
+    Left = 552
+    Height = 20
+    Top = 42
+    Width = 64
+    Caption = 'Views List'
+  end
+  object SearchViewsEdit: TEdit
+    Left = 552
+    Height = 40
+    Top = 0
+    Width = 268
+    AutoSize = False
+    TabOrder = 4
+    TextHint = 'Search views'
+    OnChange = SearchViewsEditChange
   end
 end

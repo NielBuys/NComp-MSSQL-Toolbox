@@ -14,6 +14,9 @@ type
     ColumnsSource2: TDataSource;
     CSVSource: TDataSource;
     ColumnsQuery1: TSQLQuery;
+    DBViewsQuery1name: TStringField;
+    DBViewsSource1: TDataSource;
+    DBViewsQuery1: TSQLQuery;
     TempQuery1: TSQLQuery;
     TableandColumnsSource: TDataSource;
     DBQuery1: TSQLQuery;
