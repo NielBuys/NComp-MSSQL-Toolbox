@@ -1,12 +1,11 @@
 object DataForm: TDataForm
   OldCreateOrder = False
-  Height = 785
-  HorizontalOffset = 349
-  VerticalOffset = 136
-  Width = 985
-  PPI = 120
+  Height = 628
+  HorizontalOffset = 379
+  VerticalOffset = 155
+  Width = 788
   object FromConnection: TMSSQLConnection
-    Connected = True
+    Connected = False
     LoginPrompt = False
     KeepConnection = True
     Params.Strings = (
@@ -17,8 +16,8 @@ object DataForm: TDataForm
     UserName = 'sa'
     HostName = 'localhost'
     LogEvents = []
-    Left = 460
-    Top = 140
+    Left = 368
+    Top = 112
   end
   object ToConnection: TMSSQLConnection
     Connected = False
@@ -29,8 +28,8 @@ object DataForm: TDataForm
     )
     Transaction = ToTransaction
     LogEvents = []
-    Left = 460
-    Top = 210
+    Left = 368
+    Top = 168
   end
   object FromQuery1: TSQLQuery
     PacketRecords = -1
@@ -44,14 +43,14 @@ object DataForm: TDataForm
     Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
-    Left = 70
-    Top = 140
+    Left = 56
+    Top = 112
   end
   object FromQuerySource1: TDataSource
     DataSet = FromQuery1
     Enabled = False
-    Left = 220
-    Top = 140
+    Left = 176
+    Top = 112
   end
   object ToQuery1: TSQLQuery
     PacketRecords = -1
@@ -62,13 +61,13 @@ object DataForm: TDataForm
     Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
-    Left = 70
-    Top = 220
+    Left = 56
+    Top = 176
   end
   object ToQuerySource1: TDataSource
     DataSet = ToQuery1
-    Left = 220
-    Top = 220
+    Left = 176
+    Top = 176
   end
   object ToQuery2: TSQLQuery
     PacketRecords = -1
@@ -78,25 +77,25 @@ object DataForm: TDataForm
     Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
-    Left = 70
-    Top = 290
+    Left = 56
+    Top = 232
   end
   object FromTransaction: TSQLTransaction
-    Active = True
+    Active = False
     Database = FromConnection
-    Left = 860
-    Top = 140
+    Left = 688
+    Top = 112
   end
   object ToTransaction: TSQLTransaction
     Active = False
     Database = ToConnection
-    Left = 860
-    Top = 210
+    Left = 688
+    Top = 168
   end
   object ScriptQuerySource1: TDataSource
     DataSet = ScriptQuery1
-    Left = 660
-    Top = 516
+    Left = 528
+    Top = 413
   end
   object ScriptQuery1: TSQLQuery
     PacketRecords = -1
@@ -109,8 +108,8 @@ object DataForm: TDataForm
     Options = [sqoKeepOpenOnCommit, sqoAutoApplyUpdates, sqoAutoCommit]
     Params = <>
     Macros = <>
-    Left = 500
-    Top = 516
+    Left = 400
+    Top = 413
   end
   object CSVDataset: TSdfDataSet
     FileMustExist = True
@@ -120,13 +119,13 @@ object DataForm: TDataForm
     Delimiter = ','
     FirstLineAsSchema = False
     StripTrailingDelimiters = False
-    Left = 500
-    Top = 330
+    Left = 400
+    Top = 264
   end
   object CSVSource: TDataSource
     DataSet = CSVDataset
-    Left = 500
-    Top = 400
+    Left = 400
+    Top = 320
   end
   object TablesQuery1: TSQLQuery
     PacketRecords = -1
@@ -146,13 +145,13 @@ object DataForm: TDataForm
     Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
-    Left = 72
-    Top = 400
+    Left = 58
+    Top = 320
   end
   object TablesSource1: TDataSource
     DataSet = TablesQuery1
-    Left = 292
-    Top = 400
+    Left = 234
+    Top = 320
   end
   object ColumnsQuery1: TSQLQuery
     PacketRecords = -1
@@ -171,13 +170,13 @@ object DataForm: TDataForm
         ParamType = ptInput
       end>
     Macros = <>
-    Left = 72
-    Top = 476
+    Left = 58
+    Top = 381
   end
   object ColumnsSource1: TDataSource
     DataSet = ColumnsQuery1
-    Left = 292
-    Top = 476
+    Left = 234
+    Top = 381
   end
   object ColumnsQuery2: TSQLQuery
     PacketRecords = -1
@@ -198,13 +197,13 @@ object DataForm: TDataForm
         ParamType = ptInput
       end>
     Macros = <>
-    Left = 72
-    Top = 560
+    Left = 58
+    Top = 448
   end
   object ColumnsSource2: TDataSource
     DataSet = ColumnsQuery2
-    Left = 292
-    Top = 556
+    Left = 234
+    Top = 445
   end
   object DBQuery1: TSQLQuery
     PacketRecords = -1
@@ -226,18 +225,18 @@ object DataForm: TDataForm
     Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
-    Left = 600
-    Top = 20
+    Left = 480
+    Top = 16
   end
   object DBSource1: TDataSource
     DataSet = DBQuery1
-    Left = 710
-    Top = 20
+    Left = 568
+    Top = 16
   end
   object ScriptQuerySource0: TDataSource
     DataSet = ScriptQuery0
-    Left = 660
-    Top = 596
+    Left = 528
+    Top = 477
   end
   object ScriptQuery0: TSQLQuery
     PacketRecords = -1
@@ -250,24 +249,24 @@ object DataForm: TDataForm
     Options = [sqoKeepOpenOnCommit, sqoAutoApplyUpdates, sqoAutoCommit]
     Params = <>
     Macros = <>
-    Left = 500
-    Top = 596
+    Left = 400
+    Top = 477
   end
   object FromMySQL80Connection: TMySQL80Connection
     Connected = False
     LoginPrompt = False
     KeepConnection = True
     SkipLibraryVersionCheck = False
-    Left = 660
-    Top = 140
+    Left = 528
+    Top = 112
   end
   object ToMySQL80Connection: TMySQL80Connection
     Connected = False
     LoginPrompt = False
     KeepConnection = True
     SkipLibraryVersionCheck = False
-    Left = 660
-    Top = 210
+    Left = 528
+    Top = 168
   end
   object TableandColumnsQuery: TSQLQuery
     PacketRecords = -1
@@ -278,13 +277,13 @@ object DataForm: TDataForm
     Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
-    Left = 72
-    Top = 630
+    Left = 58
+    Top = 504
   end
   object TableandColumnsSource: TDataSource
     DataSet = TableandColumnsQuery
-    Left = 292
-    Top = 630
+    Left = 234
+    Top = 504
   end
   object TempQuery1: TSQLQuery
     PacketRecords = -1
@@ -294,8 +293,8 @@ object DataForm: TDataForm
     Options = [sqoKeepOpenOnCommit]
     Params = <>
     Macros = <>
-    Left = 510
-    Top = 670
+    Left = 408
+    Top = 536
   end
   object DBViewsQuery1: TSQLQuery
     MaxIndexesCount = 4
@@ -314,8 +313,8 @@ object DataForm: TDataForm
     )
     Params = <>
     Macros = <>
-    Left = 72
-    Top = 704
+    Left = 58
+    Top = 563
     object DBViewsQuery1name: TStringField
       FieldKind = fkData
       FieldName = 'name'
@@ -329,7 +328,7 @@ object DataForm: TDataForm
   end
   object DBViewsSource1: TDataSource
     DataSet = DBViewsQuery1
-    Left = 292
-    Top = 704
+    Left = 234
+    Top = 563
   end
 end

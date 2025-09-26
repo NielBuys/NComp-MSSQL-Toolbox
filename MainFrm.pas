@@ -22,6 +22,7 @@ type
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
+    ExportResultsettoCSV: TMenuItem;
     TablesDirectoryMenuItem: TMenuItem;
     ViewMenuItem: TMenuItem;
     ScriptSQLHeightEdt: TEdit;
@@ -152,6 +153,7 @@ type
     procedure Button4Click(Sender: TObject);
     procedure CancelFindBtnClick(Sender: TObject);
     procedure CompareStopRunBtnClick(Sender: TObject);
+    procedure ExportResultsettoCSVClick(Sender: TObject);
     procedure FindandReplaceRecordsBtnClick(Sender: TObject);
     procedure ClearProjectBtnClick(Sender: TObject);
     procedure CSVGridEnter(Sender: TObject);
@@ -1541,6 +1543,74 @@ end;
 procedure TMainForm.CompareStopRunBtnClick(Sender: TObject);
 begin
       StopRunBool := true;
+end;
+
+procedure TMainForm.ExportResultsettoCSVClick(Sender: TObject);
+var
+  ScriptQuery: TSQLQuery;
+  CSV: TStringList;
+  Line: string;
+  i: Integer;
+begin
+      if isDBConnected = False then
+      begin
+        showmessage('Connect to SQL server first!');
+        exit;
+      end;
+
+      case TabControl1.TabIndex of
+       0 :
+         begin
+           ScriptQuery := DataForm.ScriptQuery0;
+         end;
+       1 :
+         begin
+           ScriptQuery := DataForm.ScriptQuery1;
+         end;
+      end;
+      SaveDialog1.FilterIndex := 2;
+      SaveDialog1.DefaultExt := '.csv';
+      SaveDialog1.FileName := 'export.csv';
+      if Savedialog1.Execute then
+      begin
+        if not ScriptQuery.Active or ScriptQuery.IsEmpty then
+        begin
+          ShowMessage('No data to export!');
+          Exit;
+        end;
+
+        CSV := TStringList.Create;
+        try
+          // Write header
+          Line := '';
+          for i := 0 to ScriptQuery.FieldCount - 1 do
+          begin
+            if i > 0 then Line := Line + ',';
+            Line := Line + '"' + StringReplace(ScriptQuery.Fields[i].FieldName, '"', '""', [rfReplaceAll]) + '"';
+          end;
+          CSV.Add(Line);
+
+          // Write data
+          ScriptQuery.First;
+          while not ScriptQuery.EOF do
+          begin
+            Line := '';
+            for i := 0 to ScriptQuery.FieldCount - 1 do
+            begin
+              if i > 0 then Line := Line + ',';
+              Line := Line + '"' + StringReplace(ScriptQuery.Fields[i].AsString, '"', '""', [rfReplaceAll]) + '"';
+            end;
+            CSV.Add(Line);
+            ScriptQuery.Next;
+          end;
+
+          // Save to file with UTF-8 encoding
+          CSV.SaveToFile(SaveDialog1.FileName{$IFDEF LCL}, TEncoding.UTF8{$ENDIF});
+        finally
+          CSV.Free;
+        end;
+      end;
+
 end;
 
 procedure TMainForm.FindandReplaceRecordsBtnClick(Sender: TObject);

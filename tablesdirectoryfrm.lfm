@@ -1,111 +1,129 @@
 object TablesDirectoryForm: TTablesDirectoryForm
-  Left = -1157
-  Height = 698
-  Top = 99
-  Width = 826
+  Left = 2224
+  Height = 558
+  Top = 100
+  Width = 852
   Caption = 'Tables Directory'
-  ClientHeight = 698
-  ClientWidth = 826
-  DesignTimePPI = 120
-  Position = poMainFormCenter
-  LCLVersion = '4.2.0.0'
+  ClientHeight = 558
+  ClientWidth = 852
   OnShow = FormShow
+  Position = poMainFormCenter
+  LCLVersion = '3.6.0.0'
   object TablesListLbl: TLabel
-    Left = 10
-    Height = 20
-    Top = 42
-    Width = 67
+    Left = 8
+    Height = 17
+    Top = 34
+    Width = 69
     Caption = 'Tables List'
   end
   object ColumnsList: TDBLookupListBox
-    Left = 280
-    Height = 558
-    Top = 100
-    Width = 268
+    AnchorSideLeft.Control = TableList
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideRight.Control = DBViewsList
+    Left = 290
+    Height = 446
+    Top = 80
+    Width = 270
     Anchors = [akTop, akLeft, akBottom]
+    BorderSpacing.Left = 2
+    BorderSpacing.Right = 2
+    Constraints.MaxWidth = 450
     KeyField = 'name'
     ListField = 'name'
     ListFieldIndex = 0
     ListSource = DataForm.ColumnsSource1
     LookupCache = False
-    TabOrder = 0
     OnKeyDown = ColumnsListKeyDown
+    TabOrder = 0
+    TopIndex = -1
   end
   object ColumnsListLbl: TLabel
-    Left = 280
-    Height = 20
-    Top = 42
-    Width = 106
+    AnchorSideLeft.Control = ColumnsList
+    Left = 290
+    Height = 17
+    Top = 34
+    Width = 107
     Caption = 'Columns List for'
   end
   object ShortcutLbl: TLabel
-    Left = 10
-    Height = 20
-    Top = 669
-    Width = 369
+    Left = 8
+    Height = 17
+    Top = 535
+    Width = 371
     Caption = 'Press Ctrl+A to add Table, Column or View to Query text'
   end
   object DBText1: TDBText
-    Left = 280
-    Height = 20
-    Top = 70
-    Width = 60
-    Constraints.MaxWidth = 268
+    AnchorSideLeft.Control = ColumnsList
+    Left = 290
+    Height = 17
+    Top = 56
+    Width = 59
+    Constraints.MaxWidth = 214
     DataField = 'name'
     DataSource = DataForm.TablesSource1
     Font.Style = [fsBold]
     ParentFont = False
   end
   object SearchEdit: TEdit
-    Left = 10
-    Height = 40
+    Left = 8
+    Height = 32
     Top = 0
-    Width = 268
+    Width = 214
     AutoSize = False
     TabOrder = 1
     TextHint = 'Search tables'
     OnChange = SearchEditChange
   end
   object TableList: TDBLookupListBox
-    Left = 8
-    Height = 588
-    Top = 70
-    Width = 268
+    AnchorSideRight.Control = ColumnsList
+    Left = 4
+    Height = 470
+    Top = 56
+    Width = 284
     Anchors = [akTop, akLeft, akBottom]
+    Constraints.MaxWidth = 450
     KeyField = 'name'
     ListField = 'name'
     ListFieldIndex = 0
     ListSource = DataForm.TablesSource1
     LookupCache = False
-    TabOrder = 2
     OnClick = TableListClick
     OnKeyDown = TableListKeyDown
+    TabOrder = 2
+    TopIndex = -1
   end
   object DBViewsList: TDBLookupListBox
-    Left = 552
-    Height = 588
-    Top = 70
-    Width = 268
+    AnchorSideLeft.Control = ColumnsList
+    AnchorSideLeft.Side = asrBottom
+    Left = 562
+    Height = 470
+    Top = 56
+    Width = 286
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Constraints.MaxWidth = 450
     KeyField = 'name'
     ListField = 'name'
     ListFieldIndex = 0
     ListSource = DataForm.DBViewsSource1
     LookupCache = False
-    TabOrder = 3
     OnKeyDown = DBViewsListKeyDown
+    TabOrder = 3
+    TopIndex = -1
   end
   object ViewsListLbl: TLabel
-    Left = 552
-    Height = 20
-    Top = 42
-    Width = 64
+    AnchorSideLeft.Control = DBViewsList
+    Left = 562
+    Height = 17
+    Top = 34
+    Width = 65
     Caption = 'Views List'
   end
   object SearchViewsEdit: TEdit
-    Left = 552
-    Height = 40
+    AnchorSideLeft.Control = DBViewsList
+    Left = 562
+    Height = 32
     Top = 0
-    Width = 268
+    Width = 214
     AutoSize = False
     TabOrder = 4
     TextHint = 'Search views'
