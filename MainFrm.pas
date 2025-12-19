@@ -329,6 +329,7 @@ begin
                  Dataform.ToTransaction.DataBase := Dataform.ToConnection;
                  Dataform.FromConnection.Open;
                  CurrentFromConnection := Dataform.FromConnection;
+                 CurrentToConnection := Dataform.ToConnection;
                  DBConnType := 'mssql';
                  Dataform.DBQuery1.SQL.Text := 'SELECT name as [Database] FROM sys.databases order by [Database]';
                  Dataform.DBQuery1.SQLConnection := CurrentFromConnection;
@@ -347,6 +348,7 @@ begin
                Dataform.ToTransaction.DataBase := Dataform.ToMySQL80Connection;
                Dataform.FromMySQL80Connection.Open;
                CurrentFromConnection := Dataform.FromMySQL80Connection;
+               CurrentToConnection := Dataform.ToMySQL80Connection;
                DBConnType := 'mysql';
                Dataform.DBQuery1.SQL.Text := 'SELECT table_schema as `Database` FROM information_schema.tables Group by TABLE_SCHEMA Order by TABLE_SCHEMA';
                Dataform.DBQuery1.SQLConnection := CurrentFromConnection;
@@ -388,6 +390,7 @@ begin
        Dataform.FromMySQL80Connection.Close;
      end;
      CurrentFromConnection := nil;
+     CurrentToConnection := nil;
 end;
 
 procedure TMainForm.setQueryConnections();
@@ -401,8 +404,8 @@ begin
     DataForm.ColumnsQuery1.SQLConnection := CurrentFromConnection;
     DataForm.ColumnsQuery2.SQLConnection := CurrentFromConnection;
     DataForm.TempQuery1.SQLConnection := CurrentFromConnection;
-    DataForm.ToQuery1.SQLConnection := CurrentFromConnection;
-    DataForm.ToQuery2.SQLConnection := CurrentFromConnection;
+    DataForm.ToQuery1.SQLConnection := CurrentToConnection;
+    DataForm.ToQuery2.SQLConnection := CurrentToConnection;
 end;
 
 procedure TMainForm.FromDBComboSelect(Sender: TObject);

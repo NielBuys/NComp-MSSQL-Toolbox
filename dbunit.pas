@@ -9,6 +9,7 @@ uses
 
 var
   CurrentFromConnection: TSQLConnection;
+  CurrentToConnection: TSQLConnection;
   DBConnType: String;
 
 function isDBConnected(): Boolean;
