@@ -268,6 +268,20 @@ object DataForm: TDataForm
     Left = 528
     Top = 168
   end
+  object FromSQLite3Connection: TSQLite3Connection
+    Connected = False
+    LoginPrompt = False
+    KeepConnection = True
+    Left = 528
+    Top = 224
+  end
+  object ToSQLite3Connection: TSQLite3Connection
+    Connected = False
+    LoginPrompt = False
+    KeepConnection = True
+    Left = 528
+    Top = 280
+  end
   object TableandColumnsQuery: TSQLQuery
     PacketRecords = -1
     FieldDefs = <>

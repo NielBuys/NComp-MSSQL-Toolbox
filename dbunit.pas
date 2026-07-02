@@ -76,6 +76,27 @@ begin
              exit;
           end;
         end;
+      end
+      else If (DBConnectionType = 'sqlite') then
+      begin
+        try
+          Dataform.TablesQuery1.Close;
+          with Dataform.TablesQuery1.SQL do
+          begin
+             Clear;
+             add('SELECT name FROM sqlite_master');
+             add('WHERE type = ''table'' AND name NOT LIKE ''sqlite_%''');
+             add('order by name');
+          end;
+          Dataform.TablesQuery1.Open;
+          LoadDBTables := True;
+        except
+          on E : Exception do
+          begin
+             ShowMessage(E.ClassName + ' ' + E.Message + ' Error loading tables');
+             exit;
+          end;
+        end;
       end;
 end;
 
@@ -123,6 +144,25 @@ begin
         Exit;
       end;
     end;
+  end
+  else if (DBConnectionType = 'sqlite') then
+  begin
+    try
+      Dataform.DBViewsQuery1.Close;
+      with Dataform.DBViewsQuery1.SQL do
+      begin
+        Clear;
+        Add('SELECT name FROM sqlite_master WHERE type = ''view'' ORDER BY name');
+      end;
+      Dataform.DBViewsQuery1.Open;
+      LoadDBViews := True;
+    except
+      on E: Exception do
+      begin
+        ShowMessage(E.ClassName + ' ' + E.Message + ' Error loading SQLite views');
+        Exit;
+      end;
+    end;
   end;
 end;
 
@@ -150,6 +190,15 @@ begin
            add('WHERE TABLE_NAME = ''' + TableName + '''');
            add('AND TABLE_SCHEMA = ''' + Dataform.FromMySQL80Connection.DatabaseName + '''');
            add('order by COLUMN_NAME')
+        end;
+      end
+      else If (DBConnectionType = 'sqlite') then
+      begin
+        with ColumnsQuery.SQL do
+        begin
+           Clear;
+           add('SELECT name FROM pragma_table_info(''' + TableName + ''')');
+           add('order by name');
         end;
       end;
       ColumnsQuery.Open;

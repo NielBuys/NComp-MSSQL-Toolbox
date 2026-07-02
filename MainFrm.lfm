@@ -1491,11 +1491,26 @@ object MainForm: TMainForm
     Items.Strings = (
       'MSSQL'
       'MySQL'
+      'SQLite'
     )
     ParentDoubleBuffered = False
     Style = csOwnerDrawFixed
     TabOrder = 8
     Text = 'MSSQL'
+    OnChange = SQLTypeSelectChange
+  end
+  object BrowseDBFileBtn: TButton
+    Left = 350
+    Height = 30
+    Hint = 'Browse for SQLite database file'
+    Top = 1
+    Width = 141
+    Caption = 'Browse .db...'
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 9
+    Visible = False
+    OnClick = BrowseDBFileBtnClick
   end
   object FromPort: TEdit
     Left = 720

@@ -17,6 +17,7 @@ type
     RemoveTabBtn: TButton;
     RenameTabBtn: TButton;
     AddColumnBtn: TButton;
+    BrowseDBFileBtn: TButton;
     AddLinkedColumnBtn: TButton;
     AddValueDetailHelpBtn: TSpeedButton;
     AddPrimaryTableDetailBtn: TButton;
@@ -182,6 +183,8 @@ type
     procedure LoadTablesBtnClick(Sender: TObject);
     procedure AddPrimaryTableDetailBtnClick(Sender: TObject);
     procedure ConnecttoServerBtnClick(Sender: TObject);
+    procedure SQLTypeSelectChange(Sender: TObject);
+    procedure BrowseDBFileBtnClick(Sender: TObject);
     procedure RefreshCSVColumnsBtnClick(Sender: TObject);
     procedure ScriptGridEnter(Sender: TObject);
     procedure ScriptSQLEditResize(Sender: TObject);
@@ -367,7 +370,7 @@ begin
                  Dataform.DBQuery1.SQLConnection := CurrentFromConnection;
                  Dataform.DBQuery1.Open;
             end
-            else
+            else if (SQLTypeSelect.ItemIndex = 1) then
             begin
                Dataform.FromMySQL80Connection.Close;
                Dataform.FromMySQL80Connection.Params.Clear;
@@ -383,6 +386,28 @@ begin
                CurrentToConnection := Dataform.ToMySQL80Connection;
                DBConnType := 'mysql';
                Dataform.DBQuery1.SQL.Text := 'SELECT table_schema as `Database` FROM information_schema.tables Group by TABLE_SCHEMA Order by TABLE_SCHEMA';
+               Dataform.DBQuery1.SQLConnection := CurrentFromConnection;
+               Dataform.DBQuery1.Open;
+            end
+            else
+            begin
+               { SQLite: a single database file. FromServerName holds the file path. }
+               if Trim(FromServerName.Text) = '' then
+               begin
+                 ShowMessage('Select a SQLite database file first (use Browse).');
+                 Exit;
+               end;
+               Dataform.FromSQLite3Connection.Close;
+               Dataform.FromSQLite3Connection.DatabaseName := FromServerName.Text;
+               Dataform.FromTransaction.DataBase := Dataform.FromSQLite3Connection;
+               Dataform.FromSQLite3Connection.Transaction := Dataform.FromTransaction;
+               Dataform.ToTransaction.DataBase := Dataform.ToSQLite3Connection;
+               Dataform.ToSQLite3Connection.Transaction := Dataform.ToTransaction;
+               Dataform.FromSQLite3Connection.Open;
+               CurrentFromConnection := Dataform.FromSQLite3Connection;
+               CurrentToConnection := Dataform.ToSQLite3Connection;
+               DBConnType := 'sqlite';
+               Dataform.DBQuery1.SQL.Text := 'SELECT ''main'' AS "Database"';
                Dataform.DBQuery1.SQLConnection := CurrentFromConnection;
                Dataform.DBQuery1.Open;
             end;
@@ -403,6 +428,33 @@ begin
       end;
 end;
 
+procedure TMainForm.SQLTypeSelectChange(Sender: TObject);
+var
+    IsSQLite: Boolean;
+begin
+     { SQLite (ItemIndex = 2) is a single file: no server/user/password/port.
+       Reuse the Server Name box for the file path and offer a Browse button. }
+     IsSQLite := SQLTypeSelect.ItemIndex = 2;
+     BrowseDBFileBtn.Visible := IsSQLite;
+     FromUserName.Enabled := not IsSQLite;
+     FromPassword.Enabled := not IsSQLite;
+     FromPort.Enabled := not IsSQLite;
+     if IsSQLite then
+       FromServerName.Hint := 'SQLite database file path'
+     else
+       FromServerName.Hint := 'Server Name';
+end;
+
+procedure TMainForm.BrowseDBFileBtnClick(Sender: TObject);
+begin
+     OpenDialog1.Title := 'Select SQLite database file';
+     OpenDialog1.Filter := 'SQLite database|*.db;*.db3;*.sqlite;*.sqlite3|All Files|*.*';
+     OpenDialog1.FilterIndex := 1;
+     OpenDialog1.DefaultExt := '';
+     if OpenDialog1.Execute then
+       FromServerName.Text := OpenDialog1.FileName;
+end;
+
 procedure TMainForm.CloseConnections();
 begin
      if (Dataform.FromConnection.Connected) then
@@ -420,6 +472,14 @@ begin
      if (Dataform.FromMySQL80Connection.Connected) then
      begin
        Dataform.FromMySQL80Connection.Close;
+     end;
+     if (Dataform.FromSQLite3Connection.Connected) then
+     begin
+       Dataform.FromSQLite3Connection.Close;
+     end;
+     if (Dataform.ToSQLite3Connection.Connected) then
+     begin
+       Dataform.ToSQLite3Connection.Close;
      end;
      CurrentFromConnection := nil;
      CurrentToConnection := nil;
@@ -466,6 +526,12 @@ begin
               Dataform.FromMySQL80Connection.Close;
               Dataform.FromMySQL80Connection.DatabaseName := s;
               Dataform.FromMySQL80Connection.Open;
+            end
+            else if (DBConnectionType = 'sqlite') then
+            begin
+              { Single-file DB, already open at connect time - nothing to switch.
+                Close the (single-entry) list query so the shared Open re-runs it. }
+              Dataform.DBQuery1.Close;
             end;
             Dataform.DBQuery1.Open;
             FromDBCombo.ItemIndex := LastFromDB;
@@ -1867,6 +1933,13 @@ begin
             '` from ' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
             ' where `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '` like ''%' + FixMySQLString(trim(FindEdt.Text)) +
             '%'';';
+        end
+        else If (DBConnectionType = 'sqlite') then
+        begin
+          RecordCountQueryStr := 'select "' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString +
+            '" from "' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
+            '" where "' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '" like ''%' + FixSQLString(trim(FindEdt.Text)) +
+            '%'';';
         end;
         try
           Dataform.TempQuery1.Close;
@@ -1904,6 +1977,12 @@ begin
           begin
             RecordsFoundMemo.Lines.Add('select * from ' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
             ' where `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '` like ''%' + FixMySQLString(trim(FindEdt.Text)) +
+            '%'';');
+          end
+          else If (DBConnectionType = 'sqlite') then
+          begin
+            RecordsFoundMemo.Lines.Add('select * from "' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
+            '" where "' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '" like ''%' + FixSQLString(trim(FindEdt.Text)) +
             '%'';');
           end;
         end;
@@ -2138,6 +2217,13 @@ begin
             '` from ' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
             ' where `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '` like ''%' + FixMySQLString(trim(FindEdt.Text)) +
             '%'';';
+        end
+        else If (DBConnectionType = 'sqlite') then
+        begin
+          RecordCountQueryStr := 'select "' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString +
+            '" from "' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
+            '" where "' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '" like ''%' + FixSQLString(trim(FindEdt.Text)) +
+            '%'';';
         end;
         try
           Dataform.TempQuery1.Close;
@@ -2178,6 +2264,13 @@ begin
               '` set `' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '` = replace(`' +
               Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '`, ''' + FixMySQLString(trim(FindEdt.Text)) + ''', ''' +
               FixMySQLString(trim(ReplaceWithEdt.Text)) + ''');');
+          end
+          else If (DBConnectionType = 'sqlite') then
+          begin
+            RecordsFoundMemo.Lines.Add('update "' + Dataform.TableandColumnsQuery.FieldByName('table_name').asString +
+              '" set "' + Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '" = replace("' +
+              Dataform.TableandColumnsQuery.FieldByName('column_name').asString + '", ''' + FixSQLString(trim(FindEdt.Text)) + ''', ''' +
+              FixSQLString(trim(ReplaceWithEdt.Text)) + ''');');
           end;
         end;
         Dataform.TableandColumnsQuery.Next;
@@ -2214,6 +2307,14 @@ begin
       TableColumnQueryStr := TableColumnQueryStr + ' where table_schema = ''' + FromDBCombo.Items[FromDBCombo.ItemIndex] + '''';
       if (PrefixEdt.text <> '') then
         TableColumnQueryStr := TableColumnQueryStr + ' and table_name like ''' + PrefixEdt.text + '%''';
+    end
+    else If (DBConnectionType = 'sqlite') then
+    begin
+      TableColumnQueryStr := 'select ''main'' as table_schema, m.name as table_name, p.name as column_name';
+      TableColumnQueryStr := TableColumnQueryStr + ' FROM sqlite_master m JOIN pragma_table_info(m.name) p';
+      TableColumnQueryStr := TableColumnQueryStr + ' WHERE m.type = ''table'' AND m.name NOT LIKE ''sqlite_%''';
+      if (PrefixEdt.text <> '') then
+        TableColumnQueryStr := TableColumnQueryStr + ' AND m.name like ''' + PrefixEdt.text + '%''';
     end
     else
     begin
@@ -2368,6 +2469,8 @@ begin
       finally
         INI.Free;
       end;
+      { Apply SQLite/server field enablement to match the restored SQL type. }
+      SQLTypeSelectChange(SQLTypeSelect);
       { Build the Queries / Export tabs (restores saved tabs and their scripts). }
       InitScriptTabs;
       {$IFDEF LINUX}
@@ -2440,6 +2543,14 @@ begin
               Dataform.ToMySQL80Connection.Port := StrtoInt(ToPort.Text);
               Dataform.ToMySQL80Connection.DatabaseName := ToDatabase.Text;
               Dataform.ToMySQL80Connection.Open;
+            end
+            else If (DBConnectionType = 'sqlite') then
+            begin
+              { SQLite compare target: 'To Database' holds the second file path. }
+              Dataform.ToSQLite3Connection.Close;
+              Dataform.ToSQLite3Connection.DatabaseName := ToDatabase.Text;
+              Dataform.ToSQLite3Connection.Transaction := Dataform.ToTransaction;
+              Dataform.ToSQLite3Connection.Open;
             end;
             DataForm.ToQuery1.close;
             Dataform.ToQuery1.SQL.Text := ToSQLtext;
@@ -2465,7 +2576,7 @@ var
           RecordChanged: Boolean;
           FieldsString,ValuesString,QueryString:String;
 begin
-          if (Dataform.ToConnection.Connected = False) and (Dataform.ToMySQL80Connection.Connected = False) then
+          if (Dataform.ToConnection.Connected = False) and (Dataform.ToMySQL80Connection.Connected = False) and (Dataform.ToSQLite3Connection.Connected = False) then
           begin
             showmessage('Connect to SQL server first');
             exit;
@@ -2776,6 +2887,17 @@ begin
         begin
              Clear;
              Add('SHOW KEYS FROM ' + TableName + ' WHERE Key_name = ''PRIMARY''');
+        end;
+        Query1.Open;
+      end
+      else if (DBConnectionType = 'sqlite') then
+      begin
+        Query1.Database := Dataform.FromSQLite3Connection;
+        Query1.Transaction := Dataform.FromTransaction;
+        with Query1.SQL do
+        begin
+             Clear;
+             Add('SELECT name as Column_name FROM pragma_table_info(''' + TableName + ''') WHERE pk = 1');
         end;
         Query1.Open;
       end
