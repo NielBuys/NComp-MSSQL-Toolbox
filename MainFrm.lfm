@@ -161,6 +161,42 @@ object MainForm: TMainForm
           TabOrder = 1
           OnClick = ExecuteQueryBtnClick
         end
+        object AddTabBtn: TButton
+          Left = 105
+          Height = 34
+          Hint = 'Add a new query tab'
+          Top = 39
+          Width = 34
+          Caption = '+'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 12
+          OnClick = AddTabBtnClick
+        end
+        object RemoveTabBtn: TButton
+          Left = 142
+          Height = 34
+          Hint = 'Remove the current query tab'
+          Top = 39
+          Width = 34
+          Caption = '-'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 13
+          OnClick = RemoveTabBtnClick
+        end
+        object RenameTabBtn: TButton
+          Left = 179
+          Height = 34
+          Hint = 'Rename the current query tab'
+          Top = 39
+          Width = 80
+          Caption = 'Rename'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 14
+          OnClick = RenameTabBtnClick
+        end
         object Label16: TLabel
           Left = 907
           Height = 18

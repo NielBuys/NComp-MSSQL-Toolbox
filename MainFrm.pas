@@ -13,6 +13,9 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    AddTabBtn: TButton;
+    RemoveTabBtn: TButton;
+    RenameTabBtn: TButton;
     AddColumnBtn: TButton;
     AddLinkedColumnBtn: TButton;
     AddValueDetailHelpBtn: TSpeedButton;
@@ -186,6 +189,7 @@ type
       aRect: TRect; aState: TGridDrawState);
     procedure SpeedButton1Click(Sender: TObject);
     procedure TabControl1Change(Sender: TObject);
+    procedure RenameTabBtnClick(Sender: TObject);
     procedure TablesDirectoryBtnClick(Sender: TObject);
     procedure TablesDirectoryMenuItemClick(Sender: TObject);
     procedure TabSheetCompareDBsExit(Sender: TObject);
@@ -202,17 +206,34 @@ type
     procedure About1Click(Sender: TObject);
     procedure LoadFromandToDataBtnClick(Sender: TObject);
     procedure ExecuteQueryBtnClick(Sender: TObject);
+    procedure AddTabBtnClick(Sender: TObject);
+    procedure RemoveTabBtnClick(Sender: TObject);
     procedure LoadCSVBtnClick(Sender: TObject);
     procedure SaveSQLBtnClick(Sender: TObject);
     procedure TestLinkedTableBtnClick(Sender: TObject);
     procedure SetupGridClick(Sender: TObject);
   private
+    FUpdatingScriptTabs: Boolean;
+    NextScriptTabID: Integer;
+    FScriptTabIDs: TList;   { stable ID per tab, kept parallel to TabControl1.Tabs }
     procedure CloseConnections;
     function GenerateQueryLine(typestr: String): String;
     function getTablePrimaryKey(TableName: String): String;
     function LoadPrimaryTable(): Boolean;
     function OpenTableColumnQuery: Boolean;
     procedure setQueryConnections;
+    { Script (Queries / Export) tab management }
+    function CurrentScriptTabID: Integer;
+    function ScriptTabIDAt(AIndex: Integer): Integer;
+    procedure AddScriptTab(AID: Integer; const ACaption: String);
+    procedure EnsureScriptDataComponents(AID: Integer);
+    procedure BindScriptGridToCurrentTab;
+    procedure SaveCurrentScriptText;
+    procedure LoadCurrentScriptTab;
+    procedure RenumberScriptTabCaptions;
+    function CurrentScriptQuery: TSQLQuery;
+    procedure InitScriptTabs;
+    procedure SaveScriptTabsConfig;
     { Private declarations }
   public
     SetupGridSelectedRow: Integer;
@@ -394,9 +415,17 @@ begin
 end;
 
 procedure TMainForm.setQueryConnections();
+var
+    i: Integer;
+    Q: TComponent;
 begin
-    DataForm.ScriptQuery0.SQLConnection := CurrentFromConnection;
-    DataForm.ScriptQuery1.SQLConnection := CurrentFromConnection;
+    { Point every query tab (including runtime-added ones) at the live connection. }
+    for i := 0 to TabControl1.Tabs.Count - 1 do
+    begin
+      Q := DataForm.FindComponent('ScriptQuery' + IntToStr(ScriptTabIDAt(i)));
+      if Q is TSQLQuery then
+        TSQLQuery(Q).SQLConnection := CurrentFromConnection;
+    end;
     DataForm.FromQuery1.SQLConnection := CurrentFromConnection;
     DataForm.TableandColumnsQuery.SQLConnection := CurrentFromConnection;
     DataForm.TablesQuery1.SQLConnection := CurrentFromConnection;
@@ -530,50 +559,364 @@ begin
 end;
 
 procedure TMainForm.TabControl1Change(Sender: TObject);
-var
-  TabName, PreviousTabName: String;
-  TabIndex: Integer;
-  ConfigFilePath :String;
-  INI: TINIFile;
-  ScriptQuery: TComponent;
-  ScriptQuerySource: TComponent;
 begin
-      ConfigFilePath := GetAppConfigFile(False);
-      INI := TINIFile.Create(ConfigFilePath);
+      { Guard against re-entrancy while add/remove reshapes the tab set. }
+      if FUpdatingScriptTabs then
+        Exit;
+      SaveCurrentScriptText;
+      LoadCurrentScriptTab;
+end;
+
+{ Rename the active tab, giving it a custom name (blank restores the default). }
+procedure TMainForm.RenameTabBtnClick(Sender: TObject);
+var
+  idx, id: Integer;
+  newName: String;
+  INI: TINIFile;
+begin
+      idx := TabControl1.TabIndex;
+      if (idx < 0) or (idx >= TabControl1.Tabs.Count) then
+        Exit;
+      id := ScriptTabIDAt(idx);
+      newName := TabControl1.Tabs[idx];
+      if not InputQuery('Rename Tab', 'Tab name (leave blank for default):', newName) then
+        Exit;
+
+      INI := TINIFile.Create(GetAppConfigFile(False));
       try
-        TabIndex := TabControl1.TabIndex;
-        TabName := 'SQL' + InttoStr(TabIndex);
-        PreviousTabName := 'SQL' + InttoStr(PreviousScriptsTab);
-        INI.WriteString('SCRIPTS',PreviousTabName,EncodeStringBase64(ScriptSQLEdit.Text));
-        If INI.ReadString('SCRIPTS',TabName,'') <> '' then
-        begin
-           ScriptSQLEdit.Text := DecodeStringBase64(INI.ReadString('SCRIPTS',TabName,''));
-        end
+        if Trim(newName) = '' then
+          INI.DeleteKey('SCRIPTNAMES', IntToStr(id))
         else
-        begin
-            ScriptSQLEdit.Text := '';
-        end;
-
-        ScriptQuery := DataForm.FindComponent('ScriptQuery' + IntToStr(TabControl1.TabIndex));
-        if not Assigned(ScriptQuery) or not (ScriptQuery is TSQLQuery) then
-        begin
-          ShowMessage('Error: ScriptQuery' + IntToStr(TabControl1.TabIndex) + ' not found or invalid.');
-          Exit;
-        end;
-
-        ScriptQuerySource := DataForm.FindComponent('ScriptQuerySource' + IntToStr(TabControl1.TabIndex));
-        if not Assigned(ScriptQuerySource) or not (ScriptQuerySource is TDataSource) then
-        begin
-          ShowMessage('Error: ScriptQuerySource' + IntToStr(TabControl1.TabIndex) + ' not found or invalid.');
-          Exit;
-        end;
-        ScriptGrid.DataSource := TDataSource(ScriptQuerySource);
-        DBNavigator2.Datasource := TDataSource(ScriptQuerySource);
-        RowsCountLabel.Caption := InttoStr(TSQLQuery(ScriptQuery).RecordCount);
-        PreviousScriptsTab := TabIndex;
+          INI.WriteString('SCRIPTNAMES', IntToStr(id), newName);
       finally
         INI.Free;
       end;
+
+      FUpdatingScriptTabs := True;
+      try
+        RenumberScriptTabCaptions;
+      finally
+        FUpdatingScriptTabs := False;
+      end;
+end;
+
+{ Returns the stable ID stored in the currently active tab, or -1 if none. }
+function TMainForm.CurrentScriptTabID: Integer;
+begin
+      Result := ScriptTabIDAt(TabControl1.TabIndex);
+end;
+
+{ Returns the stable ID for the tab at AIndex, or -1 if invalid.
+  Uses our own parallel list because TTabControl.Tabs.Objects[] is managed
+  internally by the widget and cannot be used to carry application data. }
+function TMainForm.ScriptTabIDAt(AIndex: Integer): Integer;
+begin
+      if Assigned(FScriptTabIDs) and (AIndex >= 0) and (AIndex < FScriptTabIDs.Count) then
+        Result := PtrInt(FScriptTabIDs[AIndex])
+      else
+        Result := -1;
+end;
+
+{ Appends a tab with the given stable ID, keeping the ID list in lockstep. }
+procedure TMainForm.AddScriptTab(AID: Integer; const ACaption: String);
+begin
+      if not Assigned(FScriptTabIDs) then
+        FScriptTabIDs := TList.Create;
+      TabControl1.Tabs.Add(ACaption);
+      FScriptTabIDs.Add(Pointer(PtrInt(AID)));
+end;
+
+{ Creates the TSQLQuery / TDataSource pair for a tab ID if not already present.
+  ID 0 and 1 exist at design time in DataForm; higher IDs are created here.
+  Uses only cross-platform sqldb/DB classes so it behaves the same on Linux. }
+procedure TMainForm.EnsureScriptDataComponents(AID: Integer);
+var
+  Q: TSQLQuery;
+  S: TDataSource;
+  QName, SName: String;
+begin
+      QName := 'ScriptQuery' + IntToStr(AID);
+      SName := 'ScriptQuerySource' + IntToStr(AID);
+      if DataForm.FindComponent(QName) = nil then
+      begin
+        Q := TSQLQuery.Create(DataForm);
+        Q.Name := QName;
+        Q.Database := DataForm.FromConnection;
+        Q.Transaction := DataForm.FromTransaction;
+        Q.PacketRecords := -1;
+        Q.Options := [sqoKeepOpenOnCommit, sqoAutoApplyUpdates, sqoAutoCommit];
+      end;
+      if DataForm.FindComponent(SName) = nil then
+      begin
+        S := TDataSource.Create(DataForm);
+        S.Name := SName;
+        S.DataSet := TSQLQuery(DataForm.FindComponent(QName));
+      end;
+end;
+
+{ Returns the TSQLQuery backing the active tab (nil if unavailable). }
+function TMainForm.CurrentScriptQuery: TSQLQuery;
+var
+  C: TComponent;
+begin
+      Result := nil;
+      C := DataForm.FindComponent('ScriptQuery' + IntToStr(CurrentScriptTabID));
+      if C is TSQLQuery then
+        Result := TSQLQuery(C);
+end;
+
+{ Points the result grid, navigator and row-count label at the active tab. }
+procedure TMainForm.BindScriptGridToCurrentTab;
+var
+  ID: Integer;
+  Q, S: TComponent;
+begin
+      ID := CurrentScriptTabID;
+      Q := DataForm.FindComponent('ScriptQuery' + IntToStr(ID));
+      S := DataForm.FindComponent('ScriptQuerySource' + IntToStr(ID));
+      if S is TDataSource then
+      begin
+        ScriptGrid.DataSource := TDataSource(S);
+        DBNavigator2.DataSource := TDataSource(S);
+      end;
+      if (Q is TSQLQuery) and TSQLQuery(Q).Active then
+        RowsCountLabel.Caption := IntToStr(TSQLQuery(Q).RecordCount)
+      else
+        RowsCountLabel.Caption := '0';
+end;
+
+{ Persists the editor text of the tab currently held in the editor. }
+procedure TMainForm.SaveCurrentScriptText;
+var
+  INI: TINIFile;
+begin
+      if PreviousScriptsTab < 0 then
+        Exit;
+      INI := TINIFile.Create(GetAppConfigFile(False));
+      try
+        INI.WriteString('SCRIPTS', 'SQL' + IntToStr(PreviousScriptsTab),
+          EncodeStringBase64(ScriptSQLEdit.Text));
+      finally
+        INI.Free;
+      end;
+end;
+
+{ Loads the active tab's saved text into the editor and rebinds the grid. }
+procedure TMainForm.LoadCurrentScriptTab;
+var
+  INI: TINIFile;
+  ID: Integer;
+begin
+      ID := CurrentScriptTabID;
+      INI := TINIFile.Create(GetAppConfigFile(False));
+      try
+        ScriptSQLEdit.Text := DecodeStringBase64(INI.ReadString('SCRIPTS', 'SQL' + IntToStr(ID), ''));
+      finally
+        INI.Free;
+      end;
+      BindScriptGridToCurrentTab;
+      PreviousScriptsTab := ID;
+end;
+
+{ Refreshes tab captions while preserving their stable IDs. A tab shows its
+  custom name (stored per ID in the SCRIPTNAMES section) if one was set,
+  otherwise it falls back to the default SQL1..SQLn numbering by position. }
+procedure TMainForm.RenumberScriptTabCaptions;
+var
+  i, id: Integer;
+  INI: TINIFile;
+  nm: String;
+begin
+      INI := TINIFile.Create(GetAppConfigFile(False));
+      try
+        for i := 0 to TabControl1.Tabs.Count - 1 do
+        begin
+          id := ScriptTabIDAt(i);
+          nm := INI.ReadString('SCRIPTNAMES', IntToStr(id), '');
+          if Trim(nm) = '' then
+            nm := 'SQL' + IntToStr(i + 1);
+          TabControl1.Tabs.Strings[i] := nm;
+        end;
+      finally
+        INI.Free;
+      end;
+end;
+
+{ Builds the tab set from saved config (or the default two tabs on first run). }
+procedure TMainForm.InitScriptTabs;
+var
+  INI: TINIFile;
+  IDList: TStringList;
+  i, id, activeIdx: Integer;
+  saved: String;
+begin
+      if not Assigned(FScriptTabIDs) then
+        FScriptTabIDs := TList.Create;
+      INI := TINIFile.Create(GetAppConfigFile(False));
+      IDList := TStringList.Create;
+      try
+        saved := INI.ReadString('SCRIPTS', 'TabIDList', '');
+        if Trim(saved) = '' then
+          saved := '0,1';                 { legacy / first run: the two design-time tabs }
+        IDList.CommaText := saved;
+        NextScriptTabID := INI.ReadInteger('SCRIPTS', 'NextTabID', 0);
+
+        FUpdatingScriptTabs := True;
+        try
+          TabControl1.Tabs.Clear;
+          FScriptTabIDs.Clear;
+          for i := 0 to IDList.Count - 1 do
+          begin
+            id := StrToIntDef(IDList[i], -1);
+            if id < 0 then
+              Continue;
+            EnsureScriptDataComponents(id);
+            AddScriptTab(id, 'SQL' + IntToStr(TabControl1.Tabs.Count + 1));
+            if id >= NextScriptTabID then
+              NextScriptTabID := id + 1;   { keep the counter ahead of every used ID }
+          end;
+          if TabControl1.Tabs.Count = 0 then
+          begin
+            EnsureScriptDataComponents(0);
+            AddScriptTab(0, 'SQL1');
+            if NextScriptTabID < 1 then
+              NextScriptTabID := 1;
+          end;
+          { Apply any custom tab names saved by the user. }
+          RenumberScriptTabCaptions;
+          activeIdx := INI.ReadInteger('SCRIPTS', 'ActiveTab', 0);
+          if activeIdx >= TabControl1.Tabs.Count then
+            activeIdx := 0;
+          if activeIdx < 0 then
+            activeIdx := 0;
+          TabControl1.TabIndex := activeIdx;
+        finally
+          FUpdatingScriptTabs := False;
+        end;
+      finally
+        IDList.Free;
+        INI.Free;
+      end;
+
+      { Prime PreviousScriptsTab so the first tab switch saves to the right key. }
+      PreviousScriptsTab := CurrentScriptTabID;
+      LoadCurrentScriptTab;
+end;
+
+{ Writes the current tab layout and active tab index to the config file. }
+procedure TMainForm.SaveScriptTabsConfig;
+var
+  INI: TINIFile;
+  IDList: TStringList;
+  i: Integer;
+begin
+      INI := TINIFile.Create(GetAppConfigFile(False));
+      IDList := TStringList.Create;
+      try
+        for i := 0 to TabControl1.Tabs.Count - 1 do
+          IDList.Add(IntToStr(ScriptTabIDAt(i)));
+        INI.WriteString('SCRIPTS', 'TabIDList', IDList.CommaText);
+        INI.WriteInteger('SCRIPTS', 'NextTabID', NextScriptTabID);
+        INI.WriteInteger('SCRIPTS', 'ActiveTab', TabControl1.TabIndex);
+      finally
+        IDList.Free;
+        INI.Free;
+      end;
+end;
+
+procedure TMainForm.AddTabBtnClick(Sender: TObject);
+var
+  NewID: Integer;
+  INI: TINIFile;
+begin
+      { Persist the tab we're leaving before switching to the new one. }
+      SaveCurrentScriptText;
+
+      NewID := NextScriptTabID;
+      Inc(NextScriptTabID);
+      EnsureScriptDataComponents(NewID);
+
+      { If a database is already connected, wire the new query to it. }
+      if isDBConnected then
+        TSQLQuery(DataForm.FindComponent('ScriptQuery' + IntToStr(NewID))).SQLConnection := CurrentFromConnection;
+
+      { Start the new tab with an empty script. }
+      INI := TINIFile.Create(GetAppConfigFile(False));
+      try
+        INI.DeleteKey('SCRIPTS', 'SQL' + IntToStr(NewID));
+      finally
+        INI.Free;
+      end;
+
+      FUpdatingScriptTabs := True;
+      try
+        AddScriptTab(NewID, 'SQL' + IntToStr(TabControl1.Tabs.Count + 1));
+        RenumberScriptTabCaptions;
+        TabControl1.TabIndex := TabControl1.Tabs.Count - 1;
+      finally
+        FUpdatingScriptTabs := False;
+      end;
+
+      LoadCurrentScriptTab;
+      SaveScriptTabsConfig;
+end;
+
+procedure TMainForm.RemoveTabBtnClick(Sender: TObject);
+var
+  RemID, RemIndex, NewIndex: Integer;
+  INI: TINIFile;
+  Q, S: TComponent;
+begin
+      if TabControl1.Tabs.Count <= 1 then
+      begin
+        ShowMessage('At least one query tab must remain.');
+        Exit;
+      end;
+
+      RemIndex := TabControl1.TabIndex;
+      RemID := CurrentScriptTabID;
+      if MessageDlg('Remove tab "' + TabControl1.Tabs[RemIndex] + '"?',
+           mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+        Exit;
+
+      { Remove the tab and select a neighbour before freeing its data objects. }
+      FUpdatingScriptTabs := True;
+      try
+        TabControl1.Tabs.Delete(RemIndex);
+        FScriptTabIDs.Delete(RemIndex);
+        NewIndex := RemIndex;
+        if NewIndex >= TabControl1.Tabs.Count then
+          NewIndex := TabControl1.Tabs.Count - 1;
+        RenumberScriptTabCaptions;
+        TabControl1.TabIndex := NewIndex;
+      finally
+        FUpdatingScriptTabs := False;
+      end;
+
+      { The removed tab is gone; do not let SaveCurrentScriptText target it. }
+      PreviousScriptsTab := CurrentScriptTabID;
+      LoadCurrentScriptTab;   { rebinds grid to the surviving tab first }
+
+      { Now the grid no longer references the removed tab's data source. }
+      S := DataForm.FindComponent('ScriptQuerySource' + IntToStr(RemID));
+      if S <> nil then
+        S.Free;
+      Q := DataForm.FindComponent('ScriptQuery' + IntToStr(RemID));
+      if Q is TSQLQuery then
+      begin
+        TSQLQuery(Q).Close;
+        Q.Free;
+      end;
+
+      INI := TINIFile.Create(GetAppConfigFile(False));
+      try
+        INI.DeleteKey('SCRIPTS', 'SQL' + IntToStr(RemID));
+        INI.DeleteKey('SCRIPTNAMES', IntToStr(RemID));
+      finally
+        INI.Free;
+      end;
+
+      SaveScriptTabsConfig;
 end;
 
 procedure TMainForm.TablesDirectoryBtnClick(Sender: TObject);
@@ -762,6 +1105,8 @@ procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
         ConfigFilePath :String;
         INI: TINIFile;
+        ScriptIDList: TStringList;
+        i: Integer;
 begin
       CloseConnections();
 
@@ -790,7 +1135,19 @@ begin
         INI.WriteString('FINDANDREPLACE','Find',FindEdt.Text);
         INI.WriteString('FINDANDREPLACE','ReplaceWith',ReplaceWithEdt.Text);
         INI.WriteString('FINDANDREPLACE','Prefix',PrefixEdt.Text);
-        INI.WriteString('SCRIPTS','SQL' + InttoStr(TabControl1.TabIndex),EncodeStringBase64(ScriptSQLEdit.Text));
+        { Save the active tab's editor text (keyed by its stable ID) and the
+          full tab layout so the tabs are restored on the next launch. }
+        INI.WriteString('SCRIPTS','SQL' + InttoStr(CurrentScriptTabID),EncodeStringBase64(ScriptSQLEdit.Text));
+        ScriptIDList := TStringList.Create;
+        try
+          for i := 0 to TabControl1.Tabs.Count - 1 do
+            ScriptIDList.Add(IntToStr(ScriptTabIDAt(i)));
+          INI.WriteString('SCRIPTS','TabIDList',ScriptIDList.CommaText);
+        finally
+          ScriptIDList.Free;
+        end;
+        INI.WriteInteger('SCRIPTS','NextTabID',NextScriptTabID);
+        INI.WriteInteger('SCRIPTS','ActiveTab',TabControl1.TabIndex);
         INI.WriteInteger('FORM','PageControl1',Pagecontrol1.TabIndex);
       finally
         INI.Free;
@@ -831,15 +1188,11 @@ begin
       ScriptSQL.Clear;
       FieldsString := '';
       ValuesString := '';
-      case TabControl1.TabIndex of
-       0 :
-         begin
-           ScriptQuery := DataForm.ScriptQuery0;
-         end;
-       1 :
-         begin
-           ScriptQuery := DataForm.ScriptQuery1;
-         end;
+      ScriptQuery := CurrentScriptQuery;
+      if ScriptQuery = nil then
+      begin
+        ShowMessage('No active query tab.');
+        Exit;
       end;
 
       ProgressBar1.Max := ScriptQuery.RecordCount;
@@ -1109,15 +1462,11 @@ begin
       KeyColumnName := getTablePrimaryKey(ScriptTableName.Text);
       KeyColumnValue := '';
 
-      case TabControl1.TabIndex of
-       0 :
-         begin
-           ScriptQuery := DataForm.ScriptQuery0;
-         end;
-       1 :
-         begin
-           ScriptQuery := DataForm.ScriptQuery1;
-         end;
+      ScriptQuery := CurrentScriptQuery;
+      if ScriptQuery = nil then
+      begin
+        ShowMessage('No active query tab.');
+        Exit;
       end;
 
       ProgressBar1.Max := ScriptQuery.RecordCount;
@@ -1561,15 +1910,11 @@ begin
         exit;
       end;
 
-      case TabControl1.TabIndex of
-       0 :
-         begin
-           ScriptQuery := DataForm.ScriptQuery0;
-         end;
-       1 :
-         begin
-           ScriptQuery := DataForm.ScriptQuery1;
-         end;
+      ScriptQuery := CurrentScriptQuery;
+      if ScriptQuery = nil then
+      begin
+        ShowMessage('No active query tab.');
+        Exit;
       end;
       SaveDialog1.FilterIndex := 2;
       SaveDialog1.DefaultExt := '.csv';
@@ -1878,12 +2223,12 @@ begin
         FindEdt.Text := INI.ReadString('FINDANDREPLACE','Find','');
         ReplaceWithEdt.Text := INI.ReadString('FINDANDREPLACE','ReplaceWith','');
         PrefixEdt.Text := INI.ReadString('FINDANDREPLACE','Prefix','');
-        If INI.ReadString('SCRIPTS','SQL0','') <> '' then
-           ScriptSQLEdit.Text := DecodeStringBase64(INI.ReadString('SCRIPTS','SQL0',''));
         Pagecontrol1.TabIndex := INI.ReadInteger('FORM','PageControl1',0);
       finally
         INI.Free;
       end;
+      { Build the Queries / Export tabs (restores saved tabs and their scripts). }
+      InitScriptTabs;
       {$IFDEF LINUX}
         MainForm.Font.Name := 'Serif';
       {$ENDIF}
@@ -2102,17 +2447,17 @@ begin
             else
                 SQLString := copy(ScriptSQLEdit.Text,ScriptSQLEdit.SelStart+1,ScriptSQLEdit.SelLength);
 
-            ScriptQuery := DataForm.FindComponent('ScriptQuery' + IntToStr(TabControl1.TabIndex));
+            ScriptQuery := DataForm.FindComponent('ScriptQuery' + IntToStr(CurrentScriptTabID));
             if not Assigned(ScriptQuery) or not (ScriptQuery is TSQLQuery) then
             begin
-              ShowMessage('Error: ScriptQuery' + IntToStr(TabControl1.TabIndex) + ' not found or invalid.');
+              ShowMessage('Error: ScriptQuery for the active tab was not found.');
               Exit;
             end;
 
-            ScriptQuerySource := DataForm.FindComponent('ScriptQuerySource' + IntToStr(TabControl1.TabIndex));
+            ScriptQuerySource := DataForm.FindComponent('ScriptQuerySource' + IntToStr(CurrentScriptTabID));
             if not Assigned(ScriptQuerySource) or not (ScriptQuerySource is TDataSource) then
             begin
-              ShowMessage('Error: ScriptQuerySource' + IntToStr(TabControl1.TabIndex) + ' not found or invalid.');
+              ShowMessage('Error: ScriptQuerySource for the active tab was not found.');
               Exit;
             end;
             TSQLQuery(ScriptQuery).Close;
