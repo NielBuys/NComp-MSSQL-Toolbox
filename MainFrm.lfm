@@ -309,6 +309,7 @@ object MainForm: TMainForm
           Columns = <>
           DataSource = DataForm.ScriptQuerySource1
           Options = [dgEditing, dgTitles, dgIndicator, dgColumnResize, dgColumnMove, dgColLines, dgRowLines, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit, dgAutoSizeColumns, dgDblClickAutoSize]
+          PopupMenu = ScriptGridPopup
           ReadOnly = True
           TabOrder = 8
           TitleFont.CharSet = ANSI_CHARSET
@@ -318,6 +319,7 @@ object MainForm: TMainForm
           TitleFont.Pitch = fpVariable
           TitleFont.Quality = fqDraft
           OnEnter = ScriptGridEnter
+          OnMouseDown = ScriptGridMouseDown
         end
         object Label12: TLabel
           AnchorSideTop.Control = ScriptSQLEdit
@@ -1589,6 +1591,14 @@ object MainForm: TMainForm
     object ExportResultsettoCSV: TMenuItem
       Caption = 'Export Resultset to CSV'
       OnClick = ExportResultsettoCSVClick
+    end
+  end
+  object ScriptGridPopup: TPopupMenu
+    Left = 1040
+    Top = 570
+    object ViewCellContentMnu: TMenuItem
+      Caption = 'View Content'
+      OnClick = ViewCellContentMnuClick
     end
   end
 end

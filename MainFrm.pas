@@ -110,6 +110,8 @@ type
     PrimaryTableNameEdt: TEdit;
     ResultsetEditableMnu: TMenuItem;
     FixLinkedValueMenuBtn: TMenuItem;
+    ScriptGridPopup: TPopupMenu;
+    ViewCellContentMnu: TMenuItem;
     CSVGridMenu: TPopupMenu;
     OpenDialog1: TOpenDialog;
     FromPassword: TEdit;
@@ -208,6 +210,9 @@ type
     procedure ExecuteQueryBtnClick(Sender: TObject);
     procedure AddTabBtnClick(Sender: TObject);
     procedure RemoveTabBtnClick(Sender: TObject);
+    procedure ScriptGridMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure ViewCellContentMnuClick(Sender: TObject);
     procedure LoadCSVBtnClick(Sender: TObject);
     procedure SaveSQLBtnClick(Sender: TObject);
     procedure TestLinkedTableBtnClick(Sender: TObject);
@@ -234,6 +239,8 @@ type
     function CurrentScriptQuery: TSQLQuery;
     procedure InitScriptTabs;
     procedure SaveScriptTabsConfig;
+    function ShowCellContent(const ACaption, AText: String;
+      AEditable: Boolean; var ANewText: String): Boolean;
     { Private declarations }
   public
     SetupGridSelectedRow: Integer;
@@ -254,6 +261,10 @@ implementation
       uses datafrm, AboutFrm, FixLinkedValuesFrm, TablesDirectoryFrm;
 
 {$R *.lfm}
+
+type
+  { Access helper to reach TDBGrid's protected cell-positioning members. }
+  TDBGridAccess = class(TDBGrid);
 
 procedure TMainForm.About1Click(Sender: TObject);
 begin
@@ -490,6 +501,136 @@ begin
      else
      begin
        ScriptGrid.ReadOnly := True;
+     end;
+end;
+
+{ Right-clicking selects the cell under the cursor before the popup appears,
+  so "View Content" always acts on the cell the user pointed at. }
+procedure TMainForm.ScriptGridMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  gCol, gRow: Integer;
+begin
+     if Button <> mbRight then
+       Exit;
+     ScriptGrid.MouseToCell(X, Y, gCol, gRow);
+     with TDBGridAccess(ScriptGrid) do
+     begin
+       if (gRow >= FixedRows) and (gCol >= FixedCols)
+          and (gRow < RowCount) and (gCol < ColCount) then
+       begin
+         try
+           Col := gCol;
+           Row := gRow;
+         except
+           { ignore selection errors; the popup falls back to the current cell }
+         end;
+       end;
+     end;
+end;
+
+{ Shows the selected cell's full content in a resizable memo dialog.
+  When the resultset is editable the text can be changed and saved back to
+  the field; otherwise the memo is read-only. Built in code (no extra form
+  unit) so it works identically on Windows and Linux. }
+function TMainForm.ShowCellContent(const ACaption, AText: String;
+  AEditable: Boolean; var ANewText: String): Boolean;
+var
+  Dlg: TForm;
+  Mem: TMemo;
+  Bar: TPanel;
+  BtnOK, BtnClose: TButton;
+begin
+     Result := False;
+     Dlg := TForm.Create(Self);
+     try
+       Dlg.Caption := ACaption;
+       Dlg.Position := poOwnerFormCenter;
+       Dlg.ClientWidth := 640;
+       Dlg.ClientHeight := 420;
+       Dlg.BorderStyle := bsSizeable;
+
+       { Button bar pinned to the bottom; buttons are placed at fixed
+         positions from the left so they are always visible. }
+       Bar := TPanel.Create(Dlg);
+       Bar.Parent := Dlg;
+       Bar.Align := alBottom;
+       Bar.Height := 48;
+       Bar.BevelOuter := bvNone;
+
+       BtnClose := TButton.Create(Dlg);
+       BtnClose.Parent := Bar;
+       BtnClose.Anchors := [akLeft, akTop];
+       BtnClose.SetBounds(12, 10, 100, 30);
+       BtnClose.Cancel := True;
+
+       if AEditable then
+       begin
+         BtnClose.Caption := 'Cancel';
+         BtnClose.ModalResult := mrCancel;
+
+         BtnOK := TButton.Create(Dlg);
+         BtnOK.Parent := Bar;
+         BtnOK.Anchors := [akLeft, akTop];
+         BtnOK.SetBounds(120, 10, 100, 30);
+         BtnOK.Caption := 'Save';
+         BtnOK.ModalResult := mrOK;
+         BtnOK.Default := True;
+       end
+       else
+       begin
+         BtnClose.Caption := 'Close';
+         BtnClose.ModalResult := mrCancel;
+       end;
+
+       Mem := TMemo.Create(Dlg);
+       Mem.Parent := Dlg;
+       Mem.Align := alClient;
+       Mem.ScrollBars := ssBoth;
+       Mem.WordWrap := False;
+       Mem.Font.Name := 'Courier New';
+       Mem.Font.Height := -13;
+       Mem.ReadOnly := not AEditable;
+       Mem.Lines.Text := AText;
+
+       if Dlg.ShowModal = mrOK then
+       begin
+         ANewText := Mem.Lines.Text;
+         Result := True;
+       end;
+     finally
+       Dlg.Free;
+     end;
+end;
+
+procedure TMainForm.ViewCellContentMnuClick(Sender: TObject);
+var
+  Fld: TField;
+  DS: TDataSet;
+  newText: String;
+  editable: Boolean;
+begin
+     Fld := ScriptGrid.SelectedField;
+     if Fld = nil then
+     begin
+       ShowMessage('No cell selected.');
+       Exit;
+     end;
+
+     editable := ResultsetEditableMnu.Checked and not Fld.ReadOnly;
+     if not ShowCellContent('View Content - ' + Fld.FieldName, Fld.AsString,
+          editable, newText) then
+       Exit;
+
+     { OK was pressed and the field is editable: write the change back. }
+     DS := Fld.DataSet;
+     try
+       DS.Edit;
+       Fld.AsString := newText;
+       DS.Post;
+     except
+       on E: Exception do
+         ShowMessage('Could not save changes: ' + E.Message);
      end;
 end;
 
