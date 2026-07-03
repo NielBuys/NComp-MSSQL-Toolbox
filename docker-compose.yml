@@ -1,0 +1,17 @@
+# Builds the Linux (GTK2, x86_64) binary of NComp SQL Toolbox in a container,
+# so no local Lazarus/FPC install is required.
+#
+#   docker compose run --rm build-linux
+#
+# The compiled ELF is written to ./Output/linux/CompareMSSQLTables on the host.
+# Build artifacts (*.ppu, *.o, the binary, lib/) are already covered by
+# .gitignore.
+services:
+  build-linux:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: ncomp-sqltoolbox-builder:latest
+    volumes:
+      - ./:/src
+    working_dir: /src

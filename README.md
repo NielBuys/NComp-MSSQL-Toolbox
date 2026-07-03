@@ -58,6 +58,14 @@ This tool provides essential SQL management and data import functionality throug
 
 Or clone the repo and build it using [Lazarus IDE](https://www.lazarus-ide.org/).
 
+**Build the Linux binary with Docker** (no local Lazarus install needed):
+
+```bash
+docker compose run --rm build-linux
+```
+
+The compiled binary is written to `./Output/linux/CompareMSSQLTables`.
+
 ---
 
 ## 🖼 Screenshots
@@ -67,17 +75,6 @@ Or clone the repo and build it using [Lazarus IDE](https://www.lazarus-ide.org/)
 ![Import Tools](./screenshots/import-view.png)
 
 *(Screenshots captured on Windows 11)*
-
----
-
-## ⚙️ Requirements
-
-- A connection to an **MSSQL** or **MySQL** server, or a local **SQLite** database file.
-- The matching native client library must be reachable at runtime (next to the executable on Windows, or system-installed on Linux):
-  - **MSSQL** — FreeTDS `dblib.dll` (bundled in the `MSSQL 32bit dblib` / `MSSQL 64bit dblib` folders).
-  - **MySQL** — `libmysql.dll` (bundled in the `MySQL 64bit` folder).
-  - **SQLite** — `sqlite3.dll` on Windows (download the *x64* build from [sqlite.org/download.html](https://sqlite.org/download.html) and place it beside the `.exe`); `libsqlite3` on Linux (`sudo apt install libsqlite3-0`).
-- Lazarus IDE (for building from source).
 
 ---
 

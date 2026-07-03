@@ -7,25 +7,24 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{E0BC6B5A-8189-40FB-99A0-7872252AE44C}
 AppName=NComp SQL Toolbox
-AppVersion=1
-;AppVerName=MSSQL Compare Tool 1
+AppVersion=2.0.0
+AppVerName=NComp SQL Toolbox 2.0
 AppPublisher=ncomp.co.za
 AppPublisherURL=http://www.ncomp.co.za
 AppSupportURL=http://www.ncomp.co.za
 AppUpdatesURL=http://www.ncomp.co.za
-DefaultDirName={pf}\NComp SQL Toolbox
+DefaultDirName={autopf}\NComp SQL Toolbox
 DefaultGroupName=NComp SQL Toolbox
-OutputBaseFilename=NCompSQLToolbox
+OutputBaseFilename=NCompSQLToolbox-2.0.0
 Compression=lzma
 SolidCompression=yes
-ArchitecturesInstallIn64BitMode=x64
+ArchitecturesInstallIn64BitMode=x64compatible
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
 Source: "C:\Development\MSSQL-Compare-Tool\CompareMSSQLTables.exe"; DestName: "CompareSQLTables.exe"; DestDir: "{app}"; Flags: ignoreversion;
@@ -33,6 +32,7 @@ Source: "C:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\dblib.dll"; DestDir
 Source: "C:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\dblib_2008.dll"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "C:\Development\MSSQL-Compare-Tool\MSSQL 64bit dblib\libiconv.dll"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "C:\Development\MSSQL-Compare-Tool\MySQL 64bit\libmysql.dll"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "C:\Development\MSSQL-Compare-Tool\sqlite3.dll"; DestDir: "{app}"; Flags: ignoreversion;
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
@@ -40,7 +40,6 @@ Source: "C:\Development\MSSQL-Compare-Tool\MySQL 64bit\libmysql.dll"; DestDir: "
 Name: "{group}\NComp SQL Toolbox"; Filename: "{app}\CompareSQLTables.exe"
 Name: "{group}\{cm:ProgramOnTheWeb,NComp SQL Toolbox}"; Filename: "https://www.ncomp.co.za"
 Name: "{commondesktop}\NComp SQL Toolbox"; Filename: "{app}\CompareSQLTables.exe"; Tasks: desktopicon
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\SQL Compare Tool"; Filename: "{app}\CompareSQLTables.exe"; Tasks: quicklaunchicon
 
 [Run]
 Filename: "{app}\CompareSQLTables.exe"; Description: "{cm:LaunchProgram,NComp SQL Toolbox}"; Flags: nowait postinstall skipifsilent
