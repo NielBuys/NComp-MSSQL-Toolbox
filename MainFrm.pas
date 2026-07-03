@@ -501,6 +501,9 @@ begin
     DataForm.TableandColumnsQuery.SQLConnection := CurrentFromConnection;
     DataForm.TablesQuery1.SQLConnection := CurrentFromConnection;
     DataForm.DBViewsQuery1.SQLConnection := CurrentFromConnection;
+    DataForm.ProceduresQuery.SQLConnection := CurrentFromConnection;
+    DataForm.ScalarFunctionsQuery.SQLConnection := CurrentFromConnection;
+    DataForm.TableFunctionsQuery.SQLConnection := CurrentFromConnection;
     DataForm.ColumnsQuery1.SQLConnection := CurrentFromConnection;
     DataForm.ColumnsQuery2.SQLConnection := CurrentFromConnection;
     DataForm.TempQuery1.SQLConnection := CurrentFromConnection;

@@ -25,6 +25,12 @@ type
     ToMySQL80Connection: TMySQL80Connection;
     FromSQLite3Connection: TSQLite3Connection;
     ToSQLite3Connection: TSQLite3Connection;
+    ProceduresQuery: TSQLQuery;
+    ProceduresSource: TDataSource;
+    ScalarFunctionsQuery: TSQLQuery;
+    ScalarFunctionsSource: TDataSource;
+    TableFunctionsQuery: TSQLQuery;
+    TableFunctionsSource: TDataSource;
     ScriptQuery0: TSQLQuery;
     ScriptQuerySource0: TDataSource;
     TablesSource1: TDataSource;

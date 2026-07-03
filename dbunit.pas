@@ -16,6 +16,9 @@ function isDBConnected(): Boolean;
 function DBConnectionType(): String;
 function LoadDBTables(): Boolean;
 function LoadDBViews(): Boolean;
+function LoadDBProcedures(): Boolean;
+function LoadDBScalarFunctions(): Boolean;
+function LoadDBTableFunctions(): Boolean;
 function LoadTableColumnsSQLQuery(ColumnsQuery: TSQLQuery; TableName: String): TSQLQuery;
 function ConvertFieldtoSQLString(FieldStore: TField): String;
 function FixSQLString(stemp: String; IsLikeQuery: Boolean = False): String;
@@ -164,6 +167,81 @@ begin
       end;
     end;
   end;
+end;
+
+{ Shared runner for the "list of object names" queries (procedures / functions).
+  Each query returns a single 'name' column so the lookup lists bind uniformly. }
+function RunNameListQuery(Q: TSQLQuery; const ASQL, AErrContext: String): Boolean;
+begin
+  Result := False;
+  try
+    Q.Close;
+    Q.SQL.Text := ASQL;
+    Q.Open;
+    Result := True;
+  except
+    on E: Exception do
+      ShowMessage(E.ClassName + ' ' + E.Message + ' ' + AErrContext);
+  end;
+end;
+
+function LoadDBProcedures(): Boolean;
+begin
+  if (DBConnectionType = 'mssql') then
+    Result := RunNameListQuery(Dataform.ProceduresQuery,
+      'SELECT name FROM sys.objects WHERE type IN (''P'',''PC'') ORDER BY name',
+      'Error loading procedures')
+  else if (DBConnectionType = 'mysql') then
+    Result := RunNameListQuery(Dataform.ProceduresQuery,
+      'SELECT ROUTINE_NAME as name FROM information_schema.routines' +
+      ' WHERE routine_type = ''PROCEDURE'' AND routine_schema = ''' +
+      Dataform.FromMySQL80Connection.DatabaseName + ''' ORDER BY ROUTINE_NAME',
+      'Error loading procedures')
+  else if (DBConnectionType = 'sqlite') then
+    { SQLite has no stored procedures - return an empty list. }
+    Result := RunNameListQuery(Dataform.ProceduresQuery,
+      'SELECT name FROM sqlite_master WHERE 1 = 0', 'Error loading procedures')
+  else
+    Result := False;
+end;
+
+function LoadDBScalarFunctions(): Boolean;
+begin
+  if (DBConnectionType = 'mssql') then
+    Result := RunNameListQuery(Dataform.ScalarFunctionsQuery,
+      'SELECT name FROM sys.objects WHERE type IN (''FN'',''FS'',''AF'') ORDER BY name',
+      'Error loading scalar functions')
+  else if (DBConnectionType = 'mysql') then
+    { MySQL stored functions are all scalar. }
+    Result := RunNameListQuery(Dataform.ScalarFunctionsQuery,
+      'SELECT ROUTINE_NAME as name FROM information_schema.routines' +
+      ' WHERE routine_type = ''FUNCTION'' AND routine_schema = ''' +
+      Dataform.FromMySQL80Connection.DatabaseName + ''' ORDER BY ROUTINE_NAME',
+      'Error loading scalar functions')
+  else if (DBConnectionType = 'sqlite') then
+    { SQLite functions are registered at runtime, not stored in the schema. }
+    Result := RunNameListQuery(Dataform.ScalarFunctionsQuery,
+      'SELECT name FROM sqlite_master WHERE 1 = 0', 'Error loading scalar functions')
+  else
+    Result := False;
+end;
+
+function LoadDBTableFunctions(): Boolean;
+begin
+  if (DBConnectionType = 'mssql') then
+    Result := RunNameListQuery(Dataform.TableFunctionsQuery,
+      'SELECT name FROM sys.objects WHERE type IN (''IF'',''TF'',''FT'') ORDER BY name',
+      'Error loading table functions')
+  else if (DBConnectionType = 'mysql') then
+    { MySQL has no table-valued functions - return an empty list. }
+    Result := RunNameListQuery(Dataform.TableFunctionsQuery,
+      'SELECT ROUTINE_NAME as name FROM information_schema.routines WHERE 1 = 0',
+      'Error loading table functions')
+  else if (DBConnectionType = 'sqlite') then
+    Result := RunNameListQuery(Dataform.TableFunctionsQuery,
+      'SELECT name FROM sqlite_master WHERE 1 = 0', 'Error loading table functions')
+  else
+    Result := False;
 end;
 
 function LoadTableColumnsSQLQuery(ColumnsQuery: TSQLQuery; TableName: String): TSQLQuery;

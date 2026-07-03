@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, DBCtrls, StdCtrls,
-  DBUnit, LCLType, MainFrm, DB;
+  ComCtrls, DBUnit, LCLType, MainFrm, DB;
 
 type
 
@@ -17,10 +17,23 @@ type
     ColumnsListLbl: TLabel;
     DBViewsList: TDBLookupListBox;
     DBText1: TDBText;
+    PageControl1: TPageControl;
+    ProceduresList: TDBLookupListBox;
+    ProcLbl: TLabel;
+    ScalarFunctionsList: TDBLookupListBox;
+    ScalarFuncLbl: TLabel;
+    SearchProcEdit: TEdit;
+    SearchScalarEdit: TEdit;
+    SearchTableFuncEdit: TEdit;
     SearchViewsEdit: TEdit;
+    ShortcutLbl: TLabel;
+    ShortcutLbl2: TLabel;
+    TableFunctionsList: TDBLookupListBox;
+    TableFuncLbl: TLabel;
+    TabSheetRoutines: TTabSheet;
+    TabSheetTables: TTabSheet;
     ViewsListLbl: TLabel;
     SearchEdit: TEdit;
-    ShortcutLbl: TLabel;
     TableList: TDBLookupListBox;
     TablesListLbl: TLabel;
     procedure ColumnsListKeyDown(Sender: TObject; var Key: Word;
@@ -28,7 +41,12 @@ type
     procedure DBViewsListKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure FormShow(Sender: TObject);
+    procedure RoutineListKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
     procedure SearchEditChange(Sender: TObject);
+    procedure SearchProcEditChange(Sender: TObject);
+    procedure SearchScalarEditChange(Sender: TObject);
+    procedure SearchTableFuncEditChange(Sender: TObject);
     procedure SearchViewsEditChange(Sender: TObject);
     procedure TableListClick(Sender: TObject);
     procedure TableListKeyDown(Sender: TObject; var Key: Word;
@@ -58,6 +76,7 @@ begin
   begin
     showmessage('Connect to SQL server first!');
     TablesDirectoryForm.Close;
+    Exit;
   end;
   if (Dataform.TablesQuery1.Active = False) then
   begin
@@ -66,6 +85,18 @@ begin
   if (Dataform.DBViewsQuery1.Active = False) then
   begin
     LoadDBViews();
+  end;
+  if (Dataform.ScalarFunctionsQuery.Active = False) then
+  begin
+    LoadDBScalarFunctions();
+  end;
+  if (Dataform.TableFunctionsQuery.Active = False) then
+  begin
+    LoadDBTableFunctions();
+  end;
+  if (Dataform.ProceduresQuery.Active = False) then
+  begin
+    LoadDBProcedures();
   end;
 end;
 
@@ -80,6 +111,24 @@ procedure TTablesDirectoryForm.SearchViewsEditChange(Sender: TObject);
 begin
   Dataform.DBViewsQuery1.Locate('name',Variant(SearchViewsEdit.text),[loCaseInsensitive, loPartialKey]);
   DBViewsList.KeyValue := DataForm.DBViewsQuery1.FieldByName('name').asString;
+end;
+
+procedure TTablesDirectoryForm.SearchScalarEditChange(Sender: TObject);
+begin
+  Dataform.ScalarFunctionsQuery.Locate('name',Variant(SearchScalarEdit.text),[loCaseInsensitive, loPartialKey]);
+  ScalarFunctionsList.KeyValue := DataForm.ScalarFunctionsQuery.FieldByName('name').asString;
+end;
+
+procedure TTablesDirectoryForm.SearchTableFuncEditChange(Sender: TObject);
+begin
+  Dataform.TableFunctionsQuery.Locate('name',Variant(SearchTableFuncEdit.text),[loCaseInsensitive, loPartialKey]);
+  TableFunctionsList.KeyValue := DataForm.TableFunctionsQuery.FieldByName('name').asString;
+end;
+
+procedure TTablesDirectoryForm.SearchProcEditChange(Sender: TObject);
+begin
+  Dataform.ProceduresQuery.Locate('name',Variant(SearchProcEdit.text),[loCaseInsensitive, loPartialKey]);
+  ProceduresList.KeyValue := DataForm.ProceduresQuery.FieldByName('name').asString;
 end;
 
 procedure TTablesDirectoryForm.ColumnsListKeyDown(Sender: TObject;
@@ -98,6 +147,22 @@ begin
   if (Key = VK_A) and (ssCtrl in Shift) then
   begin
     AddTextToMainFormScriptSQLEdit(DBViewsList.Items[DBViewsList.ItemIndex]);
+    Key := 0;
+  end;
+end;
+
+{ Shared Ctrl+A handler for the scalar-function, table-function and
+  procedure lists - adds the selected name to the query editor. }
+procedure TTablesDirectoryForm.RoutineListKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+var
+  LB: TDBLookupListBox;
+begin
+  if (Key = VK_A) and (ssCtrl in Shift) and (Sender is TDBLookupListBox) then
+  begin
+    LB := TDBLookupListBox(Sender);
+    if LB.ItemIndex >= 0 then
+      AddTextToMainFormScriptSQLEdit(LB.Items[LB.ItemIndex]);
     Key := 0;
   end;
 end;
@@ -138,4 +203,3 @@ begin
 end;
 
 end.
-
