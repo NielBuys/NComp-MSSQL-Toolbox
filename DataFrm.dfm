@@ -268,6 +268,71 @@ object DataForm: TDataForm
     Left = 528
     Top = 168
   end
+  object FromSQLite3Connection: TSQLite3Connection
+    Connected = False
+    LoginPrompt = False
+    KeepConnection = True
+    Left = 528
+    Top = 224
+  end
+  object ToSQLite3Connection: TSQLite3Connection
+    Connected = False
+    LoginPrompt = False
+    KeepConnection = True
+    Left = 528
+    Top = 280
+  end
+  object ProceduresQuery: TSQLQuery
+    PacketRecords = -1
+    FieldDefs = <>
+    Database = FromConnection
+    Transaction = FromTransaction
+    ReadOnly = True
+    Options = [sqoKeepOpenOnCommit]
+    Params = <>
+    Macros = <>
+    Left = 688
+    Top = 224
+  end
+  object ProceduresSource: TDataSource
+    DataSet = ProceduresQuery
+    Left = 688
+    Top = 280
+  end
+  object ScalarFunctionsQuery: TSQLQuery
+    PacketRecords = -1
+    FieldDefs = <>
+    Database = FromConnection
+    Transaction = FromTransaction
+    ReadOnly = True
+    Options = [sqoKeepOpenOnCommit]
+    Params = <>
+    Macros = <>
+    Left = 688
+    Top = 336
+  end
+  object ScalarFunctionsSource: TDataSource
+    DataSet = ScalarFunctionsQuery
+    Left = 688
+    Top = 392
+  end
+  object TableFunctionsQuery: TSQLQuery
+    PacketRecords = -1
+    FieldDefs = <>
+    Database = FromConnection
+    Transaction = FromTransaction
+    ReadOnly = True
+    Options = [sqoKeepOpenOnCommit]
+    Params = <>
+    Macros = <>
+    Left = 688
+    Top = 448
+  end
+  object TableFunctionsSource: TDataSource
+    DataSet = TableFunctionsQuery
+    Left = 688
+    Top = 504
+  end
   object TableandColumnsQuery: TSQLQuery
     PacketRecords = -1
     FieldDefs = <>

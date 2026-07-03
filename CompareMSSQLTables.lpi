@@ -22,10 +22,10 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MajorVersionNr Value="1"/>
-      <MinorVersionNr Value="1"/>
-      <BuildNr Value="4"/>
-      <StringTable CompanyName="ncomp.co.za" FileDescription="NComp SQL Toolbox (ncomp.co.za )" ProductName="NComp SQL Toolbox" ProductVersion="1.0"/>
+      <MajorVersionNr Value="2"/>
+      <MinorVersionNr Value="0"/>
+      <BuildNr Value="0"/>
+      <StringTable CompanyName="ncomp.co.za" FileDescription="NComp SQL Toolbox (ncomp.co.za )" ProductName="NComp SQL Toolbox" ProductVersion="2.0"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>

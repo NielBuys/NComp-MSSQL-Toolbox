@@ -9,124 +9,240 @@ object TablesDirectoryForm: TTablesDirectoryForm
   OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '3.6.0.0'
-  object TablesListLbl: TLabel
-    Left = 8
-    Height = 17
-    Top = 34
-    Width = 69
-    Caption = 'Tables List'
-  end
-  object ColumnsList: TDBLookupListBox
-    AnchorSideLeft.Control = TableList
-    AnchorSideLeft.Side = asrBottom
-    AnchorSideRight.Control = DBViewsList
-    Left = 290
-    Height = 446
-    Top = 80
-    Width = 270
-    Anchors = [akTop, akLeft, akBottom]
-    BorderSpacing.Left = 2
-    BorderSpacing.Right = 2
-    Constraints.MaxWidth = 450
-    KeyField = 'name'
-    ListField = 'name'
-    ListFieldIndex = 0
-    ListSource = DataForm.ColumnsSource1
-    LookupCache = False
-    OnKeyDown = ColumnsListKeyDown
+  object PageControl1: TPageControl
+    Left = 0
+    Height = 558
+    Top = 0
+    Width = 852
+    ActivePage = TabSheetTables
+    Align = alClient
+    TabIndex = 0
     TabOrder = 0
-    TopIndex = -1
-  end
-  object ColumnsListLbl: TLabel
-    AnchorSideLeft.Control = ColumnsList
-    Left = 290
-    Height = 17
-    Top = 34
-    Width = 107
-    Caption = 'Columns List for'
-  end
-  object ShortcutLbl: TLabel
-    Left = 8
-    Height = 17
-    Top = 535
-    Width = 371
-    Caption = 'Press Ctrl+A to add Table, Column or View to Query text'
-  end
-  object DBText1: TDBText
-    AnchorSideLeft.Control = ColumnsList
-    Left = 290
-    Height = 17
-    Top = 56
-    Width = 59
-    Constraints.MaxWidth = 214
-    DataField = 'name'
-    DataSource = DataForm.TablesSource1
-    Font.Style = [fsBold]
-    ParentFont = False
-  end
-  object SearchEdit: TEdit
-    Left = 8
-    Height = 32
-    Top = 0
-    Width = 214
-    AutoSize = False
-    TabOrder = 1
-    TextHint = 'Search tables'
-    OnChange = SearchEditChange
-  end
-  object TableList: TDBLookupListBox
-    AnchorSideRight.Control = ColumnsList
-    Left = 4
-    Height = 470
-    Top = 56
-    Width = 284
-    Anchors = [akTop, akLeft, akBottom]
-    Constraints.MaxWidth = 450
-    KeyField = 'name'
-    ListField = 'name'
-    ListFieldIndex = 0
-    ListSource = DataForm.TablesSource1
-    LookupCache = False
-    OnClick = TableListClick
-    OnKeyDown = TableListKeyDown
-    TabOrder = 2
-    TopIndex = -1
-  end
-  object DBViewsList: TDBLookupListBox
-    AnchorSideLeft.Control = ColumnsList
-    AnchorSideLeft.Side = asrBottom
-    Left = 562
-    Height = 470
-    Top = 56
-    Width = 286
-    Anchors = [akTop, akLeft, akRight, akBottom]
-    Constraints.MaxWidth = 450
-    KeyField = 'name'
-    ListField = 'name'
-    ListFieldIndex = 0
-    ListSource = DataForm.DBViewsSource1
-    LookupCache = False
-    OnKeyDown = DBViewsListKeyDown
-    TabOrder = 3
-    TopIndex = -1
-  end
-  object ViewsListLbl: TLabel
-    AnchorSideLeft.Control = DBViewsList
-    Left = 562
-    Height = 17
-    Top = 34
-    Width = 65
-    Caption = 'Views List'
-  end
-  object SearchViewsEdit: TEdit
-    AnchorSideLeft.Control = DBViewsList
-    Left = 562
-    Height = 32
-    Top = 0
-    Width = 214
-    AutoSize = False
-    TabOrder = 4
-    TextHint = 'Search views'
-    OnChange = SearchViewsEditChange
+    object TabSheetTables: TTabSheet
+      Caption = 'Tables / Columns / Views'
+      ClientHeight = 528
+      ClientWidth = 844
+      object TablesListLbl: TLabel
+        Left = 8
+        Height = 17
+        Top = 40
+        Width = 69
+        Caption = 'Tables List'
+      end
+      object ColumnsListLbl: TLabel
+        Left = 290
+        Height = 17
+        Top = 40
+        Width = 107
+        Caption = 'Columns List for'
+      end
+      object ViewsListLbl: TLabel
+        Left = 562
+        Height = 17
+        Top = 40
+        Width = 65
+        Caption = 'Views List'
+      end
+      object DBText1: TDBText
+        Left = 290
+        Height = 17
+        Top = 60
+        Width = 59
+        Constraints.MaxWidth = 214
+        DataField = 'name'
+        DataSource = DataForm.TablesSource1
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object SearchEdit: TEdit
+        Left = 8
+        Height = 32
+        Top = 4
+        Width = 214
+        AutoSize = False
+        TabOrder = 0
+        TextHint = 'Search tables'
+        OnChange = SearchEditChange
+      end
+      object SearchViewsEdit: TEdit
+        Left = 562
+        Height = 32
+        Top = 4
+        Width = 214
+        AutoSize = False
+        TabOrder = 1
+        TextHint = 'Search views'
+        OnChange = SearchViewsEditChange
+      end
+      object TableList: TDBLookupListBox
+        Left = 4
+        Height = 400
+        Top = 82
+        Width = 284
+        Anchors = [akTop, akLeft, akBottom]
+        Constraints.MaxWidth = 450
+        KeyField = 'name'
+        ListField = 'name'
+        ListFieldIndex = 0
+        ListSource = DataForm.TablesSource1
+        LookupCache = False
+        OnClick = TableListClick
+        OnKeyDown = TableListKeyDown
+        TabOrder = 2
+        TopIndex = -1
+      end
+      object ColumnsList: TDBLookupListBox
+        Left = 290
+        Height = 400
+        Top = 82
+        Width = 270
+        Anchors = [akTop, akLeft, akBottom]
+        Constraints.MaxWidth = 450
+        KeyField = 'name'
+        ListField = 'name'
+        ListFieldIndex = 0
+        ListSource = DataForm.ColumnsSource1
+        LookupCache = False
+        OnKeyDown = ColumnsListKeyDown
+        TabOrder = 3
+        TopIndex = -1
+      end
+      object DBViewsList: TDBLookupListBox
+        Left = 562
+        Height = 400
+        Top = 82
+        Width = 278
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        Constraints.MaxWidth = 450
+        KeyField = 'name'
+        ListField = 'name'
+        ListFieldIndex = 0
+        ListSource = DataForm.DBViewsSource1
+        LookupCache = False
+        OnKeyDown = DBViewsListKeyDown
+        TabOrder = 4
+        TopIndex = -1
+      end
+      object ShortcutLbl: TLabel
+        Left = 8
+        Height = 17
+        Top = 494
+        Width = 371
+        Anchors = [akLeft, akBottom]
+        Caption = 'Press Ctrl+A to add Table, Column or View to Query text'
+      end
+    end
+    object TabSheetRoutines: TTabSheet
+      Caption = 'Functions / Procedures'
+      ClientHeight = 528
+      ClientWidth = 844
+      object ScalarFuncLbl: TLabel
+        Left = 8
+        Height = 17
+        Top = 40
+        Width = 105
+        Caption = 'Scalar Functions'
+      end
+      object TableFuncLbl: TLabel
+        Left = 290
+        Height = 17
+        Top = 40
+        Width = 100
+        Caption = 'Table Functions'
+      end
+      object ProcLbl: TLabel
+        Left = 562
+        Height = 17
+        Top = 40
+        Width = 120
+        Caption = 'Stored Procedures'
+      end
+      object SearchScalarEdit: TEdit
+        Left = 8
+        Height = 32
+        Top = 4
+        Width = 214
+        AutoSize = False
+        TabOrder = 0
+        TextHint = 'Search scalar functions'
+        OnChange = SearchScalarEditChange
+      end
+      object SearchTableFuncEdit: TEdit
+        Left = 290
+        Height = 32
+        Top = 4
+        Width = 214
+        AutoSize = False
+        TabOrder = 1
+        TextHint = 'Search table functions'
+        OnChange = SearchTableFuncEditChange
+      end
+      object SearchProcEdit: TEdit
+        Left = 562
+        Height = 32
+        Top = 4
+        Width = 214
+        AutoSize = False
+        TabOrder = 2
+        TextHint = 'Search procedures'
+        OnChange = SearchProcEditChange
+      end
+      object ScalarFunctionsList: TDBLookupListBox
+        Left = 4
+        Height = 422
+        Top = 60
+        Width = 284
+        Anchors = [akTop, akLeft, akBottom]
+        Constraints.MaxWidth = 450
+        KeyField = 'name'
+        ListField = 'name'
+        ListFieldIndex = 0
+        ListSource = DataForm.ScalarFunctionsSource
+        LookupCache = False
+        OnKeyDown = RoutineListKeyDown
+        TabOrder = 3
+        TopIndex = -1
+      end
+      object TableFunctionsList: TDBLookupListBox
+        Left = 290
+        Height = 422
+        Top = 60
+        Width = 270
+        Anchors = [akTop, akLeft, akBottom]
+        Constraints.MaxWidth = 450
+        KeyField = 'name'
+        ListField = 'name'
+        ListFieldIndex = 0
+        ListSource = DataForm.TableFunctionsSource
+        LookupCache = False
+        OnKeyDown = RoutineListKeyDown
+        TabOrder = 4
+        TopIndex = -1
+      end
+      object ProceduresList: TDBLookupListBox
+        Left = 562
+        Height = 422
+        Top = 60
+        Width = 278
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        Constraints.MaxWidth = 450
+        KeyField = 'name'
+        ListField = 'name'
+        ListFieldIndex = 0
+        ListSource = DataForm.ProceduresSource
+        LookupCache = False
+        OnKeyDown = RoutineListKeyDown
+        TabOrder = 5
+        TopIndex = -1
+      end
+      object ShortcutLbl2: TLabel
+        Left = 8
+        Height = 17
+        Top = 494
+        Width = 420
+        Anchors = [akLeft, akBottom]
+        Caption = 'Press Ctrl+A to add the selected Function or Procedure to Query text'
+      end
+    end
   end
 end
