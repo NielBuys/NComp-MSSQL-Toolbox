@@ -7,15 +7,15 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{E0BC6B5A-8189-40FB-99A0-7872252AE44C}
 AppName=NComp SQL Toolbox
-AppVersion=2.0.0
-AppVerName=NComp SQL Toolbox 2.0
+AppVersion=2.1.0
+AppVerName=NComp SQL Toolbox 2.1
 AppPublisher=ncomp.co.za
 AppPublisherURL=http://www.ncomp.co.za
 AppSupportURL=http://www.ncomp.co.za
 AppUpdatesURL=http://www.ncomp.co.za
 DefaultDirName={autopf}\NComp SQL Toolbox
 DefaultGroupName=NComp SQL Toolbox
-OutputBaseFilename=NCompSQLToolbox-2.0.0
+OutputBaseFilename=NCompSQLToolbox-2.1.0
 Compression=lzma
 SolidCompression=yes
 ArchitecturesInstallIn64BitMode=x64compatible

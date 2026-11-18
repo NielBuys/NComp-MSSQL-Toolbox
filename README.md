@@ -14,6 +14,7 @@ This tool provides essential SQL management and data import functionality throug
 
 ### 1. 📝 SQL IDE
 - Connect to **MSSQL**, **MySQL**, or **SQLite**.
+- Save connections as named presets (**Connections → Save Current Connection...**) and pick one from the **Connections** menu to fill in the details and connect, including the database.
 - Work with **multiple query tabs** — add, remove, and rename tabs, each with its own editor and result grid. Open tabs and their SQL are remembered between sessions.
 - Run or Execute SQL queries and view results in a grid.
 - Right-click any result cell and choose **View Content** to see (or, when *Resultset Editable* is on, edit) the full value of long text fields in a pop-up.

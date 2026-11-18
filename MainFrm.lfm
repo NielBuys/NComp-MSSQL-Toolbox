@@ -1526,6 +1526,19 @@ object MainForm: TMainForm
   object MainMenu1: TMainMenu
     Left = 220
     Top = 510
+    object ConnectionsMnu: TMenuItem
+      Caption = 'Connections'
+      object SaveConnectionMnu: TMenuItem
+        Caption = 'Save Current Connection...'
+        OnClick = SaveConnectionMnuClick
+      end
+      object DeleteConnectionMnu: TMenuItem
+        Caption = 'Delete Saved Connection'
+      end
+      object ConnectionsSepMnu: TMenuItem
+        Caption = '-'
+      end
+    end
     object EditMnu: TMenuItem
       Caption = 'Edit'
       object ResultsetEditableMnu: TMenuItem

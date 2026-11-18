@@ -27,6 +27,10 @@ type
     Button3: TButton;
     Button4: TButton;
     ExportResultsettoCSV: TMenuItem;
+    ConnectionsMnu: TMenuItem;
+    SaveConnectionMnu: TMenuItem;
+    DeleteConnectionMnu: TMenuItem;
+    ConnectionsSepMnu: TMenuItem;
     TablesDirectoryMenuItem: TMenuItem;
     ViewMenuItem: TMenuItem;
     ScriptSQLHeightEdt: TEdit;
@@ -183,6 +187,7 @@ type
     procedure LoadTablesBtnClick(Sender: TObject);
     procedure AddPrimaryTableDetailBtnClick(Sender: TObject);
     procedure ConnecttoServerBtnClick(Sender: TObject);
+    procedure SaveConnectionMnuClick(Sender: TObject);
     procedure SQLTypeSelectChange(Sender: TObject);
     procedure BrowseDBFileBtnClick(Sender: TObject);
     procedure RefreshCSVColumnsBtnClick(Sender: TObject);
@@ -224,6 +229,13 @@ type
     FUpdatingScriptTabs: Boolean;
     NextScriptTabID: Integer;
     FScriptTabIDs: TList;   { stable ID per tab, kept parallel to TabControl1.Tabs }
+    { Saved (preset) connections }
+    FSavedConnNames: TStringList;  { sorted names; menu item Tag = index }
+    FPendingDBName: String;        { database to select after a preset connects }
+    FBaseCaption: String;
+    procedure LoadSavedConnectionsMenu;
+    procedure SavedConnectionMnuClick(Sender: TObject);
+    procedure DeleteSavedConnectionMnuClick(Sender: TObject);
     procedure CloseConnections;
     function GenerateQueryLine(typestr: String): String;
     function getTablePrimaryKey(TableName: String): String;
@@ -411,6 +423,12 @@ begin
                Dataform.DBQuery1.SQLConnection := CurrentFromConnection;
                Dataform.DBQuery1.Open;
             end;
+            { A saved connection names its database; find it in the fresh list. }
+            if FPendingDBName <> '' then
+            begin
+                 LastFromDB := FromDBCombo.Items.IndexOf(FPendingDBName);
+                 FPendingDBName := '';
+            end;
             If (LastFromDB < FromDBCombo.Items.Count) and (LastFromDB >= 0) then
             begin
                  FromDBCombo.ItemIndex := LastFromDB;
@@ -426,6 +444,150 @@ begin
           raise;
           end;
       end;
+end;
+
+const
+  SAVEDCONN_PREFIX = 'CONNECTION:';
+
+procedure TMainForm.LoadSavedConnectionsMenu;
+var
+    INI: TINIFile;
+    Sections: TStringList;
+    i: Integer;
+    Item: TMenuItem;
+begin
+     FSavedConnNames.Clear;
+     Sections := TStringList.Create;
+     INI := TINIFile.Create(GetAppConfigFile(False));
+     try
+       INI.ReadSections(Sections);
+       for i := 0 to Sections.Count - 1 do
+         if Pos(SAVEDCONN_PREFIX, Sections[i]) = 1 then
+           FSavedConnNames.Add(Copy(Sections[i], Length(SAVEDCONN_PREFIX) + 1, MaxInt));
+     finally
+       INI.Free;
+       Sections.Free;
+     end;
+     FSavedConnNames.Sort;
+
+     { Drop the old preset items (everything after the separator) and the
+       Delete submenu entries, then rebuild both from FSavedConnNames. }
+     while ConnectionsMnu.Count > ConnectionsSepMnu.MenuIndex + 1 do
+       ConnectionsMnu.Items[ConnectionsMnu.Count - 1].Free;
+     DeleteConnectionMnu.Clear;
+
+     for i := 0 to FSavedConnNames.Count - 1 do
+     begin
+       Item := TMenuItem.Create(Self);
+       Item.Caption := StringReplace(FSavedConnNames[i], '&', '&&', [rfReplaceAll]);
+       Item.Tag := i;
+       Item.OnClick := @SavedConnectionMnuClick;
+       ConnectionsMnu.Add(Item);
+
+       Item := TMenuItem.Create(Self);
+       Item.Caption := StringReplace(FSavedConnNames[i], '&', '&&', [rfReplaceAll]);
+       Item.Tag := i;
+       Item.OnClick := @DeleteSavedConnectionMnuClick;
+       DeleteConnectionMnu.Add(Item);
+     end;
+     ConnectionsSepMnu.Visible := FSavedConnNames.Count > 0;
+     DeleteConnectionMnu.Enabled := FSavedConnNames.Count > 0;
+end;
+
+procedure TMainForm.SaveConnectionMnuClick(Sender: TObject);
+var
+    ConnName, DBName: String;
+    INI: TINIFile;
+begin
+     if Trim(FromServerName.Text) = '' then
+     begin
+       ShowMessage('Fill in the connection details first.');
+       exit;
+     end;
+     DBName := '';
+     if (FromDBCombo.ItemIndex >= 0) and (FromDBCombo.ItemIndex < FromDBCombo.Items.Count) then
+       DBName := FromDBCombo.Items[FromDBCombo.ItemIndex];
+
+     if SQLTypeSelect.ItemIndex = 2 then
+       ConnName := ExtractFileName(FromServerName.Text)
+     else if DBName <> '' then
+       ConnName := FromServerName.Text + ' - ' + DBName
+     else
+       ConnName := FromServerName.Text;
+
+     if not InputQuery('Save Connection', 'Connection name:', ConnName) then
+       exit;
+     ConnName := Trim(ConnName);
+     if ConnName = '' then
+       exit;
+     if (Pos('[', ConnName) > 0) or (Pos(']', ConnName) > 0) then
+     begin
+       ShowMessage('A connection name cannot contain [ or ].');
+       exit;
+     end;
+     if (FSavedConnNames.IndexOf(ConnName) >= 0) and
+        (MessageDlg('Save Connection', 'A connection named "' + ConnName +
+          '" already exists. Replace it?', mtConfirmation, [mbYes, mbNo], 0) <> mrYes) then
+       exit;
+
+     INI := TINIFile.Create(GetAppConfigFile(False));
+     try
+       INI.EraseSection(SAVEDCONN_PREFIX + ConnName);
+       INI.WriteInteger(SAVEDCONN_PREFIX + ConnName, 'SQLType', SQLTypeSelect.ItemIndex);
+       INI.WriteString(SAVEDCONN_PREFIX + ConnName, 'ServerName', FromServerName.Text);
+       INI.WriteString(SAVEDCONN_PREFIX + ConnName, 'UserName', FromUserName.Text);
+       INI.WriteString(SAVEDCONN_PREFIX + ConnName, 'Password', Encrypt(FromPassword.Text));
+       INI.WriteString(SAVEDCONN_PREFIX + ConnName, 'Port', FromPort.Text);
+       INI.WriteString(SAVEDCONN_PREFIX + ConnName, 'Database', DBName);
+     finally
+       INI.Free;
+     end;
+     LoadSavedConnectionsMenu;
+end;
+
+procedure TMainForm.SavedConnectionMnuClick(Sender: TObject);
+var
+    ConnName: String;
+    INI: TINIFile;
+begin
+     ConnName := FSavedConnNames[TMenuItem(Sender).Tag];
+     { Drop any live connection before switching to the preset. }
+     if ConnecttoServerBtn.Caption = 'Disconnect' then
+       ConnecttoServerBtnClick(ConnecttoServerBtn);
+
+     INI := TINIFile.Create(GetAppConfigFile(False));
+     try
+       SQLTypeSelect.ItemIndex := INI.ReadInteger(SAVEDCONN_PREFIX + ConnName, 'SQLType', 0);
+       FromServerName.Text := INI.ReadString(SAVEDCONN_PREFIX + ConnName, 'ServerName', '');
+       FromUserName.Text := INI.ReadString(SAVEDCONN_PREFIX + ConnName, 'UserName', '');
+       FromPassword.Text := Decrypt(INI.ReadString(SAVEDCONN_PREFIX + ConnName, 'Password', ''));
+       FromPort.Text := INI.ReadString(SAVEDCONN_PREFIX + ConnName, 'Port', '');
+       FPendingDBName := INI.ReadString(SAVEDCONN_PREFIX + ConnName, 'Database', '');
+     finally
+       INI.Free;
+     end;
+     SQLTypeSelectChange(SQLTypeSelect);
+     LastFromDB := -1;
+     Caption := FBaseCaption + ' - ' + ConnName;
+     ConnecttoServerBtnClick(ConnecttoServerBtn);
+end;
+
+procedure TMainForm.DeleteSavedConnectionMnuClick(Sender: TObject);
+var
+    ConnName: String;
+    INI: TINIFile;
+begin
+     ConnName := FSavedConnNames[TMenuItem(Sender).Tag];
+     if MessageDlg('Delete Connection', 'Delete the saved connection "' + ConnName + '"?',
+          mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+       exit;
+     INI := TINIFile.Create(GetAppConfigFile(False));
+     try
+       INI.EraseSection(SAVEDCONN_PREFIX + ConnName);
+     finally
+       INI.Free;
+     end;
+     LoadSavedConnectionsMenu;
 end;
 
 procedure TMainForm.SQLTypeSelectChange(Sender: TObject);
@@ -2474,6 +2636,10 @@ begin
       end;
       { Apply SQLite/server field enablement to match the restored SQL type. }
       SQLTypeSelectChange(SQLTypeSelect);
+      { Build the Connections menu from the saved connection presets. }
+      FBaseCaption := Caption;
+      FSavedConnNames := TStringList.Create;
+      LoadSavedConnectionsMenu;
       { Build the Queries / Export tabs (restores saved tabs and their scripts). }
       InitScriptTabs;
       {$IFDEF LINUX}
