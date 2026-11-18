@@ -47,7 +47,7 @@ This tool provides essential SQL management and data import functionality throug
 
 ## 💻 Platforms
 
-- ✅ Windows (32-bit & 64-bit)
+- ✅ Windows (64-bit)
 - ✅ Linux (Debian-based)
 
 ---
